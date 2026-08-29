@@ -1,0 +1,294 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+  --font-display: var(--font-archivo);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-stamp-red: var(--stempelrot);
+  --color-stamp-green: var(--genehmigtgrun);
+  --color-behordenblau: var(--behordenblau);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+}
+
+/*
+ * VERTRAG.MA — "Das Amt" design system
+ * German official registry aesthetic: paper, ink, rubber stamps, file numbers.
+ * Palette: Papier #F4F2EC · Tinte #1A1D21 · Behördenblau #1E4475 ·
+ *          Stempelrot #B3391F · Genehmigtgrün #2F6B4A · Hilfsgrau #75797F
+ */
+:root {
+  --radius: 0.25rem;
+  --background: #f4f2ec;
+  --foreground: #1a1d21;
+  --card: #ffffff;
+  --card-foreground: #1a1d21;
+  --popover: #ffffff;
+  --popover-foreground: #1a1d21;
+  --primary: #1e4475;
+  --primary-foreground: #f4f2ec;
+  --secondary: #e9e6dd;
+  --secondary-foreground: #1a1d21;
+  --muted: #eceae3;
+  --muted-foreground: #75797f;
+  --accent: #e9e6dd;
+  --accent-foreground: #1a1d21;
+  --destructive: #b3391f;
+  --destructive-foreground: #f4f2ec;
+  --border: #d8d5cc;
+  --input: #c9c6bc;
+  --ring: #1e4475;
+  --chart-1: #1e4475;
+  --chart-2: #b3391f;
+  --chart-3: #2f6b4a;
+  --chart-4: #75797f;
+  --chart-5: #d9a441;
+  --sidebar: #1a1d21;
+  --sidebar-foreground: #d8d5cc;
+  --sidebar-primary: #f4f2ec;
+  --sidebar-primary-foreground: #1a1d21;
+  --sidebar-accent: #2a2e34;
+  --sidebar-accent-foreground: #f4f2ec;
+  --sidebar-border: #2a2e34;
+  --sidebar-ring: #1e4475;
+  --stempelrot: #b3391f;
+  --genehmigtgrun: #2f6b4a;
+  --behordenblau: #1e4475;
+}
+
+.dark {
+  --background: #1a1d21;
+  --foreground: #f4f2ec;
+  --card: #22262b;
+  --card-foreground: #f4f2ec;
+  --popover: #22262b;
+  --popover-foreground: #f4f2ec;
+  --primary: #7ba3d9;
+  --primary-foreground: #1a1d21;
+  --secondary: #2a2e34;
+  --secondary-foreground: #f4f2ec;
+  --muted: #2a2e34;
+  --muted-foreground: #9a9ea6;
+  --accent: #2a2e34;
+  --accent-foreground: #f4f2ec;
+  --destructive: #d95c3f;
+  --destructive-foreground: #1a1d21;
+  --border: #2a2e34;
+  --input: #2a2e34;
+  --ring: #7ba3d9;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01";
+  }
+  ::selection {
+    background: #1e4475;
+    color: #f4f2ec;
+  }
+}
+
+@layer utilities {
+  /* ─── Typography ─────────────────────────────────────────── */
+  .font-display {
+    font-family: var(--font-archivo), var(--font-plex-sans), sans-serif;
+  }
+  .eyebrow {
+    font-family: var(--font-plex-mono), monospace;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #75797f;
+  }
+  .aktenzeichen {
+    font-family: var(--font-plex-mono), monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    color: #75797f;
+  }
+
+  /* ─── The Stamp (signature element) ──────────────────────── */
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-family: var(--font-plex-mono), monospace;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.625rem;
+    border: 1.5px solid currentColor;
+    border-radius: 2px;
+    transform: rotate(-1.5deg);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0);
+    background-image: radial-gradient(
+      circle at 30% 40%,
+      rgba(255, 255, 255, 0.16) 0%,
+      transparent 45%
+    );
+    white-space: nowrap;
+  }
+  .stamp-ink {
+    color: #75797f;
+    background-color: rgba(117, 121, 127, 0.06);
+  }
+  .stamp-blue {
+    color: #1e4475;
+    background-color: rgba(30, 68, 117, 0.06);
+  }
+  .stamp-red {
+    color: #b3391f;
+    background-color: rgba(179, 57, 31, 0.06);
+  }
+  .stamp-green {
+    color: #2f6b4a;
+    background-color: rgba(47, 107, 74, 0.06);
+  }
+  .stamp-gold {
+    color: #8a6a1f;
+    background-color: rgba(217, 164, 65, 0.1);
+  }
+  .stamp-flat {
+    transform: none;
+  }
+
+  /* Stamp thunk animation */
+  @keyframes stamp-thunk {
+    0% {
+      transform: rotate(-1.5deg) scale(1.6);
+      opacity: 0;
+    }
+    60% {
+      transform: rotate(-1.5deg) scale(0.95);
+      opacity: 1;
+    }
+    100% {
+      transform: rotate(-1.5deg) scale(1);
+      opacity: 1;
+    }
+  }
+  .stamp-anim {
+    animation: stamp-thunk 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  }
+
+  /* ─── Paper & form sheets ────────────────────────────────── */
+  .form-sheet {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(26, 29, 33, 0.04);
+  }
+  .sheet-band {
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(to bottom, #fafaf6, #ffffff);
+  }
+  .rule-dashed {
+    background-image: linear-gradient(to right, var(--border) 55%, transparent 45%);
+    background-size: 8px 1px;
+    background-repeat: repeat-x;
+    height: 1px;
+  }
+
+  /* ─── Page load / scroll reveal ──────────────────────────── */
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .fade-up {
+    animation: fade-up 0.5s ease-out both;
+  }
+  .fade-up-delay-1 {
+    animation-delay: 0.08s;
+  }
+  .fade-up-delay-2 {
+    animation-delay: 0.16s;
+  }
+  .fade-up-delay-3 {
+    animation-delay: 0.24s;
+  }
+
+  /* ─── Misc ───────────────────────────────────────────────── */
+  .num {
+    font-family: var(--font-plex-mono), monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  .scroll-slim::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scroll-slim::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scroll-slim::-webkit-scrollbar-thumb {
+    background: #c9c6bc;
+    border-radius: 3px;
+  }
+  .scroll-slim::-webkit-scrollbar-thumb:hover {
+    background: #75797f;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visibility — quality floor */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}

@@ -1,0 +1,21 @@
+{
+  "name": "vertrag-workflow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vertrag.ma — GitHub Actions worker: sends daily postulations and relaunches failed ones",
+  "scripts": {
+    "send-postulations": "tsx send-postulations.ts",
+    "check-postulations": "tsx check-postulations.ts",
+    "re-execute-postulations": "tsx re-execute-postulations.ts"
+  },
+  "dependencies": {
+    "mongoose": "^8.9.0",
+    "nodemailer": "^9.0.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/nodemailer": "^8.0.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5"
+  }
+}

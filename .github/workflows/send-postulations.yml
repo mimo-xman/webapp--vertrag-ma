@@ -1,0 +1,81 @@
+name: Send Postulations
+
+# Daily sending of due postulations (status en_attente, scheduled today or overdue).
+# 3 parallel instances × 60 postulations per batch, with self re-trigger to
+# drain the queue (sidesteps the 6-hour GitHub Actions job limit).
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * *" # 06:00 UTC daily
+
+jobs:
+  send:
+    name: Send batch (Instance ${{ matrix.instance }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        instance: [1, 2, 3]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: workflow
+        run: npm install
+
+      - name: Run sender
+        working-directory: workflow
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+        run: npx tsx send-postulations.ts || test $? -eq 1
+        # exit 1 = queue drained (expected), exit 0 = more to process
+
+  re-trigger:
+    name: Check and re-run
+    needs: send
+    runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: workflow
+        run: npm install
+
+      - name: Check for remaining postulations
+        id: check
+        working-directory: workflow
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+        run: |
+          if npx tsx check-postulations.ts; then
+            echo "has_more=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_more=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Re-run workflow
+        if: steps.check.outputs.has_more == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "More postulations pending, re-triggering in 30s..."
+          sleep 30
+          gh workflow run send-postulations.yml -R ${{ github.repository }}

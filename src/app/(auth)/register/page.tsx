@@ -1,0 +1,264 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { apiFetch } from "@/lib/api-utils";
+import { useI18n } from "@/components/language-provider";
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
+
+// Password strength: 4 bars. Very Strong = 12+ chars, upper+lower+digit+special.
+function computeStrength(pw: string): 0 | 1 | 2 | 3 | 4 {
+  if (!pw) return 0;
+  let score = 0;
+  if (pw.length >= 8) score += 1;
+  if (pw.length >= 12) score += 1;
+  const hasUpper = /[A-Z]/.test(pw);
+  const hasLower = /[a-z]/.test(pw);
+  const hasDigit = /\d/.test(pw);
+  const hasSpecial = /[^A-Za-z0-9]/.test(pw);
+  const variety = [hasUpper, hasLower, hasDigit, hasSpecial].filter(Boolean).length;
+  if (variety >= 3) score += 1;
+  if (variety === 4 && pw.length >= 12) score += 1;
+  return Math.min(4, score) as 0 | 1 | 2 | 3 | 4;
+}
+
+const STRENGTH_COLORS = ["#d8d5cc", "#b3391f", "#d9a441", "#7ba3d9", "#2f6b4a"];
+
+export default function RegisterPage() {
+  const { t } = useI18n();
+
+  const [fullName, setFullName] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  // Debounced email validation via @el-zazo/email-verifier.
+  const [emailState, setEmailState] = useState<"idle" | "checking" | "valid" | "invalid">("idle");
+  const [emailMessage, setEmailMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailState("idle");
+      setEmailMessage(null);
+      return;
+    }
+    setEmailState("checking");
+    setEmailMessage(null);
+    const timer = setTimeout(async () => {
+      try {
+        const data = await fetch("/api/auth/validate-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }).then((r) => r.json());
+        if (data.valid) {
+          setEmailState("valid");
+          setEmailMessage(null);
+        } else {
+          setEmailState("invalid");
+          setEmailMessage(data.message);
+        }
+      } catch {
+        setEmailState("valid"); // benefit of the doubt
+      }
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [email]);
+
+  const strength = useMemo(() => computeStrength(password), [password]);
+  const strengthLabel = [
+    "",
+    t("auth.passwordStrength.weak"),
+    t("auth.passwordStrength.medium"),
+    t("auth.passwordStrength.strong"),
+    t("auth.passwordStrength.veryStrong"),
+  ][strength];
+
+  const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
+  const canSubmit =
+    fullName.length >= 3 &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
+    emailState === "valid" &&
+    password.length >= 6 &&
+    passwordsMatch &&
+    !loading;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      await apiFetch("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          full_name: fullName,
+          date_of_birth: dateOfBirth || null,
+          email,
+          password,
+          confirm_password: confirmPassword,
+        }),
+      });
+      setSuccess(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("auth.registerFailed"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="form-sheet p-8 text-center">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-[#2f6b4a] text-[#2f6b4a]">
+          <CheckCircle2 className="h-7 w-7" />
+        </div>
+        <h1 className="font-display text-xl font-bold">{t("auth.emailSent")}</h1>
+        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+          Cliquez sur le lien d'activation reçu par email pour activer votre compte. Le lien expire
+          dans 24 heures.
+        </p>
+        <Button asChild variant="outline" className="mt-6">
+          <Link href="/login">{t("auth.loginCta")}</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="form-sheet">
+      <div className="sheet-band px-6 py-5 border-b border-border rounded-t-[var(--radius)]">
+        <p className="eyebrow mb-1.5">Vertrag.ma — {t("auth.registerTitle")}</p>
+        <h1 className="font-display text-2xl font-bold tracking-tight">{t("auth.registerTitle")}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{t("auth.registerSubtitle")}</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4 p-6">
+        {error && (
+          <div className="rounded-sm border border-[#b3391f]/40 bg-[#b3391f]/10 px-3 py-2.5 text-sm text-[#b3391f]">
+            {error}
+          </div>
+        )}
+
+        <div className="space-y-1.5">
+          <Label htmlFor="fullname">{t("auth.fullName")} *</Label>
+          <Input
+            id="fullname"
+            required
+            minLength={3}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder={t("auth.fullNamePlaceholder")}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="dob">
+            {t("auth.dateOfBirth")} <span className="text-muted-foreground">({t("common.optional")})</span>
+          </Label>
+          <Input
+            id="dob"
+            type="date"
+            value={dateOfBirth}
+            onChange={(e) => setDateOfBirth(e.target.value)}
+            max={new Date().toISOString().slice(0, 10)}
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="email">{t("auth.email")} *</Label>
+          <div className="relative">
+            <Input
+              id="email"
+              type="email"
+              required
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("auth.emailPlaceholder")}
+              className="pr-9"
+            />
+            {emailState === "checking" && (
+              <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+            )}
+            {emailState === "valid" && (
+              <CheckCircle2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#2f6b4a]" />
+            )}
+            {emailState === "invalid" && (
+              <XCircle className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#b3391f]" />
+            )}
+          </div>
+          {emailState === "checking" && (
+            <p className="text-xs text-muted-foreground">{t("auth.emailChecking")}</p>
+          )}
+          {emailState === "invalid" && emailMessage && (
+            <p className="text-xs text-[#b3391f]">{emailMessage}</p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="password">{t("auth.password")} *</Label>
+          <Input
+            id="password"
+            type="password"
+            required
+            minLength={6}
+            autoComplete="new-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {password && (
+            <div className="flex items-center gap-2 pt-1">
+              <div className="flex flex-1 gap-1">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="h-1 flex-1 rounded-full transition-colors"
+                    style={{ background: strength >= i ? STRENGTH_COLORS[strength] : "#d8d5cc" }}
+                  />
+                ))}
+              </div>
+              <span className="text-xs font-mono text-muted-foreground">{strengthLabel}</span>
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground">{t("auth.passwordHint")}</p>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="confirm">{t("auth.confirmPassword")} *</Label>
+          <Input
+            id="confirm"
+            type="password"
+            required
+            autoComplete="new-password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className={confirmPassword ? (passwordsMatch ? "border-[#2f6b4a]" : "border-[#b3391f]") : ""}
+          />
+          {confirmPassword && !passwordsMatch && (
+            <p className="text-xs text-[#b3391f]">Les mots de passe ne correspondent pas.</p>
+          )}
+        </div>
+
+        <Button type="submit" className="w-full font-semibold" disabled={!canSubmit}>
+          {loading ? t("common.loading") : t("auth.registerCta")}
+        </Button>
+
+        <div className="rule-dashed my-1" />
+
+        <p className="text-center text-sm text-muted-foreground">
+          {t("auth.registerHaveAccount")}{" "}
+          <Link href="/login" className="font-medium text-[#1e4475] hover:underline">
+            {t("auth.loginLink")}
+          </Link>
+        </p>
+      </form>
+    </div>
+  );
+}
