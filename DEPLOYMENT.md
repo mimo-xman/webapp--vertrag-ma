@@ -1,13 +1,13 @@
-# Déploiement Vertrag.ma — Oracle Cloud VM
+# Déploiement Vertrag.ma
 
-Ce document décrit la configuration qui maintient l'application **toujours ON** et **accessible publiquement** sur `http://130.110.240.95:4000`.
+Ce document décrit la configuration qui maintient l'application **toujours ON** après chaque reboot du serveur.
 
 ---
 
 ## Architecture
 
 ```
-Boot VM (Ubuntu 24.04 aarch64)
+Boot serveur
   └─ netfilter-persistent.service (charge /etc/iptables/rules.v4)
        └─ vertrag-iptables.service (oneshot : ouvre port 4000)
             └─ vertrag.service (PM2 → node server.js sur port 4000)
@@ -17,7 +17,7 @@ Boot VM (Ubuntu 24.04 aarch64)
 
 | Service | Rôle | Utilisateur |
 |---------|------|-------------|
-| `vertrag-iptables.service` | Règle iptables pour port 4000 | root (ExecStartPre) |
+| `vertrag-iptables.service` | Règle iptables pour port 4000 | root |
 | `vertrag.service` | Lance l'app standalone via PM2 | ubuntu |
 
 ### Fichiers clés
@@ -41,15 +41,12 @@ bun run build && cp .env .next/standalone/.env
 sudo systemctl restart vertrag.service
 ```
 
-### Vérifier que tout marche
+### Vérifier le service
 
 ```bash
 sudo systemctl status vertrag.service --no-pager
-curl -s -o /dev/null -w "%{http_code}" http://localhost:4000/
-curl -s -o /dev/null -w "%{http_code}" http://130.110.240.95:4000/
+pm2 list
 ```
-
-Les deux doivent retourner `200`.
 
 ---
 
@@ -76,7 +73,6 @@ sudo iptables -L INPUT -n --line-numbers
 
 ## Points importants
 
-- **Jamais `pm2 kill` ni `pm2 stop all`** — tue les autres apps sur la VM
-- **L'URL publique est dans `NEXT_PUBLIC_APP_URL`** — les liens d'email pointent vers cette URL
-- **Les cookies sont en `secure: false`** via `ALLOW_HTTP_COOKIES=true` — car pas de HTTPS
-- **Le rate limit est désactivé** via `DISABLE_RATE_LIMIT=test` — le réactiver en production si besoin
+- **Jamais `pm2 kill` ni `pm2 stop all`** — tue les autres apps sur le serveur
+- **Les cookies sont en `secure: false`** via `ALLOW_HTTP_COOKIES=true`
+- **Le rate limit est désactivé** via `DISABLE_RATE_LIMIT=test`
