@@ -203,10 +203,12 @@ export default function DossierPage() {
                 <p className="text-sm font-medium">
                   {activeCreate.status === "en_attente"
                     ? t("dossier.waitingPayment")
+                    : activeCreate.status === "in_creation"
+                    ? t("dossier.inCreation")
                     : t("dossier.inCreation")}{" "}
                   <span className="aktenzeichen">({activeCreate.ref_number})</span>
                 </p>
-                {activeCreate.dossier_ready_at && activeCreate.status === "payed" && (
+                {activeCreate.dossier_ready_at && (activeCreate.status === "payed" || activeCreate.status === "in_creation") && (
                   <p className="text-xs text-muted-foreground">
                     {t("dossier.readyAt")} :{" "}
                     {new Date(activeCreate.dossier_ready_at).toLocaleDateString("fr-FR")}
@@ -214,15 +216,37 @@ export default function DossierPage() {
                 )}
               </div>
               {activeCreate.status === "en_attente" && (
-                <Button
-                  asChild
-                  size="sm"
-                >
-                  <a href={data.whatsapp_url} target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="mr-1.5 h-4 w-4" />
-                    {t("common.whatsapp")}
-                  </a>
-                </Button>
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      const ok = await confirmApp(t("demandes.cancelConfirmMessage"), {
+                        title: t("demandes.cancelConfirmTitle"),
+                        destructive: true,
+                        confirmLabel: t("demandes.cancel"),
+                      });
+                      if (!ok) return;
+                      try {
+                        await apiFetch(`/api/dossier/demandes-creation/${activeCreate._id}/cancel`, {
+                          method: "POST",
+                        });
+                        toast({ title: t("common.operationSuccess") });
+                        load();
+                      } catch (err) {
+                        await alertApp(err instanceof Error ? err.message : "Erreur");
+                      }
+                    }}
+                  >
+                    {t("demandes.cancel")}
+                  </Button>
+                  <Button asChild size="sm">
+                    <a href={data.whatsapp_url} target="_blank" rel="noopener noreferrer">
+                      <MessageCircle className="mr-1.5 h-4 w-4" />
+                      {t("common.whatsapp")}
+                    </a>
+                  </Button>
+                </>
               )}
             </div>
           )}

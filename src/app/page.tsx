@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/components/language-provider";
+import { HomeHeader } from "@/components/home-header";
 import { Logo } from "@/components/logo";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -39,34 +39,7 @@ export default function HomePage() {
   return (
     <div className="bg-background">
       {/* ── Briefkopf (letterhead nav) ─────────────────────── */}
-      <header className="sticky top-0 z-40 border-b border-[#d8d5cc] bg-[#fafaf6]/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Logo />
-          <nav className="hidden items-center gap-6 md:flex" aria-label="Navigation principale">
-            <a href="#services" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              {t("home.servicesTitle")}
-            </a>
-            <a href="#how" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              {t("home.howTitle")}
-            </a>
-            <a href="#pricing" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              {t("home.pricingTitle")}
-            </a>
-            <a href="#faq" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-              {t("home.faqTitle")}
-            </a>
-          </nav>
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <Button variant="outline" asChild className="hidden sm:inline-flex">
-              <Link href="/login">{t("nav.login")}</Link>
-            </Button>
-            <Button asChild className="font-semibold">
-              <Link href="/register">{t("nav.register")}</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <HomeHeader />
 
       <main className="flex-1">
         {/* ── Hero ───────────────────────────────────────────── */}
@@ -157,12 +130,12 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Stamps */}
-                <div className="stamp stamp-green stamp-anim absolute -right-3 top-16 !text-[10px] sm:!text-xs">
+                {/* Stamps — positioned outside card boundaries */}
+                <div className="stamp stamp-green stamp-anim absolute -right-4 top-12 !text-[10px] sm:!text-xs">
                   GEPRÜFT ✓
                 </div>
                 <div
-                  className="stamp stamp-blue stamp-anim absolute -left-4 bottom-24 !text-[10px] sm:!text-xs"
+                  className="stamp stamp-blue stamp-anim absolute -left-6 bottom-12 !text-[10px] sm:!text-xs"
                   style={{ animationDelay: "0.25s" }}
                 >
                   500 / TAG
@@ -350,7 +323,7 @@ export default function HomePage() {
                 { icon: Lock, title: t("home.trust2Title"), desc: t("home.trust2Desc") },
                 { icon: Banknote, title: t("home.trust3Title"), desc: t("home.trust3Desc") },
               ].map((item, i) => (
-                <div key={item.title} className="form-sheet p-6 fade-up fade-up-delay-${i + 1}">
+                <div key={item.title} className={`form-sheet p-6 fade-up fade-up-delay-${i + 1}`}>
                   <item.icon className="h-6 w-6 text-[#1e4475]" />
                   <h3 className="mt-3 font-display text-base font-bold">{item.title}</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>

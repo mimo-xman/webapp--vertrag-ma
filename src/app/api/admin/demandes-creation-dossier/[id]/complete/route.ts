@@ -36,7 +36,7 @@ export async function POST(
   if (!demande) {
     return NextResponse.json({ success: false, error: "Demande introuvable" }, { status: 404 });
   }
-  if (demande.status !== "payed") {
+  if (demande.status !== "payed" && demande.status !== "in_creation") {
     return NextResponse.json(
       { success: false, error: "Le paiement doit être confirmé avant de livrer le dossier." },
       { status: 400 }

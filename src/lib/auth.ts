@@ -41,7 +41,7 @@ export async function setAuthCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set(TOKEN_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.ALLOW_HTTP_COOKIES !== "true" && process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: TOKEN_MAX_AGE,
@@ -152,7 +152,7 @@ export function createAuthResponse(data: unknown, token: string, status = 200): 
   const response = NextResponse.json(data, { status });
   response.cookies.set(TOKEN_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.ALLOW_HTTP_COOKIES !== "true" && process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: TOKEN_MAX_AGE,

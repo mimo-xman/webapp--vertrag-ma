@@ -100,6 +100,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: "Compte créé ! Vérifiez votre email pour l'activer.",
+      ...(process.env.DISABLE_RATE_LIMIT === "test" && { devToken: emailToken }),
     });
   } catch (error) {
     console.error("[REGISTER]", error);

@@ -1,5 +1,6 @@
 // Simple in-memory rate limiter (single-instance design, like CVAutoSender).
 // For multi-instance production deployments, swap for Redis/Upstash.
+// Set DISABLE_RATE_LIMIT=true to bypass (for automated testing).
 
 interface RateLimitEntry {
   count: number;
@@ -41,6 +42,11 @@ export function rateLimit(
   limit: number,
   windowMs: number
 ): RateLimitResult {
+  // Bypass for automated testing
+  if (process.env.DISABLE_RATE_LIMIT === "true") {
+    return { success: true, remaining: 999, resetAt: Date.now() + windowMs };
+  }
+
   initCleanup();
   const ip = getClientIp(request);
   const key = `${identifier}:${ip}`;

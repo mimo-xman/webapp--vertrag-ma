@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
-// Status values: en_attente | payed | completed | canceled
-export type DossierCreateDemandeStatus = "en_attente" | "payed" | "completed" | "canceled";
+// Status values: en_attente | payed | in_creation | completed | canceled
+export type DossierCreateDemandeStatus = "en_attente" | "payed" | "in_creation" | "completed" | "canceled";
 
 export interface IDossierDemandeForCreate extends mongoose.Document {
   ref_number: string;
@@ -29,7 +29,7 @@ const DossierDemandeForCreateSchema = new Schema<IDossierDemandeForCreate>(
     dossier_pdf_link: { type: String, default: null },
     status: {
       type: String,
-      enum: ["en_attente", "payed", "completed", "canceled"],
+      enum: ["en_attente", "payed", "in_creation", "completed", "canceled"],
       default: "en_attente",
       index: true,
     },

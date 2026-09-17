@@ -181,6 +181,41 @@ export default function AdminDemandesCreationDossierPage() {
             </Button>
           )}
           {row.status === "payed" && (
+            <>
+              <Button
+                size="sm"
+                className="h-7 gap-1 bg-[#1e4475] text-xs hover:bg-[#163358]"
+                onClick={async () => {
+                  const ok = await confirmApp("Marquer cette demande comme en cours de création ?", {
+                    title: "En cours de création",
+                    confirmLabel: "Confirmer",
+                  });
+                  if (!ok) return;
+                  try {
+                    await apiFetch(`/api/admin/demandes-creation-dossier/${row._id}/mark-in-creation`, {
+                      method: "POST",
+                    });
+                    toast({ title: t("common.operationSuccess") });
+                    setRefreshKey((k) => k + 1);
+                  } catch (err) {
+                    await alertApp(err instanceof Error ? err.message : "Erreur");
+                  }
+                }}
+              >
+                <Loader2 className="h-3.5 w-3.5" />
+                En cours
+              </Button>
+              <Button
+                size="sm"
+                className="h-7 gap-1 bg-[#2f6b4a] text-xs hover:bg-[#245540]"
+                onClick={() => openComplete(row)}
+              >
+                <Upload className="h-3.5 w-3.5" />
+                {t("admin.markCompleted")}
+              </Button>
+            </>
+          )}
+          {row.status === "in_creation" && (
             <Button
               size="sm"
               className="h-7 gap-1 bg-[#2f6b4a] text-xs hover:bg-[#245540]"
