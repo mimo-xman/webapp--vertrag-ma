@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
       status: d.status,
       cancelled_by: d.cancelled_by,
       cancelled_at: d.cancelled_at,
+      cancel_message: d.cancel_message,
       payed_at: d.payed_at,
       dossier_ready_at: d.dossier_ready_at,
       completed_at: d.completed_at,

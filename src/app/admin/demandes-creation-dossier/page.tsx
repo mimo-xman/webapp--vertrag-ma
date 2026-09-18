@@ -25,7 +25,7 @@ import {
   statusVariant,
   adminCanCancel,
 } from "@/lib/dossier-status";
-import { Banknote, CalendarClock, Upload, Loader2, XCircle } from "lucide-react";
+import { Banknote, CalendarClock, Upload, Loader2, XCircle, MessageSquare, FileUp } from "lucide-react";
 
 interface DemandeRow {
   _id: string;
@@ -35,6 +35,7 @@ interface DemandeRow {
   status: string;
   cancelled_by: "user" | "admin" | null;
   cancelled_at: string | null;
+  cancel_message: string | null;
   payed_at: string | null;
   dossier_ready_at: string | null;
   completed_at: string | null;
@@ -116,7 +117,9 @@ export default function AdminDemandesCreationDossierPage() {
         `/api/admin/demandes-creation-dossier/${completeTarget._id}/complete`,
         { method: "POST", body: formData }
       );
-      const data = await response.json();
+      const data = await response
+        .json()
+        .catch(() => ({ success: false, error: `Erreur serveur (${response.status})` }));
       if (!response.ok || !data.success) throw new Error(data.error || "Erreur");
       toast({ title: t("admin.completedSuccess") });
       setCompleteOpen(false);
@@ -201,7 +204,22 @@ export default function AdminDemandesCreationDossierPage() {
       header: t("demandes.status"),
       sortable: true,
       render: (row) => (
-        <StatusStamp status={statusVariant(row)} label={t(createStatusKey(row))} />
+        <div className="space-y-1">
+          <StatusStamp status={statusVariant(row)} label={t(createStatusKey(row))} />
+          {row.status === "cancelled" && row.cancelled_by === "admin" && row.cancel_message && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-6 gap-1 px-2 text-[11px] text-[#b3391f]"
+              onClick={() =>
+                alertApp(row.cancel_message!, t("admin.cancelMessageTitle", { ref: row.ref_number }))
+              }
+            >
+              <MessageSquare className="h-3 w-3" />
+              {t("admin.viewMessage")}
+            </Button>
+          )}
+        </div>
       ),
     },
     {
@@ -265,11 +283,22 @@ export default function AdminDemandesCreationDossierPage() {
             </Button>
           )}
           {row.status === "completed" && row.dossier_pdf_link && (
-            <Button variant="outline" size="sm" className="h-7 gap-1 text-xs" asChild>
-              <a href={row.dossier_pdf_link} target="_blank" rel="noopener noreferrer">
-                {t("dossier.downloadDossier")}
-              </a>
-            </Button>
+            <>
+              <Button variant="outline" size="sm" className="h-7 gap-1 text-xs" asChild>
+                <a href={row.dossier_pdf_link} target="_blank" rel="noopener noreferrer">
+                  {t("dossier.downloadDossier")}
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 gap-1 text-xs text-[#1e4475]"
+                onClick={() => openComplete(row)}
+              >
+                <FileUp className="h-3.5 w-3.5" />
+                {t("admin.replacePdf")}
+              </Button>
+            </>
           )}
           {adminCanCancel("creation", row) && (
             <Button
@@ -364,7 +393,7 @@ export default function AdminDemandesCreationDossierPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-1.5">
-            <Label>Message d&apos;annulation (visible par l&apos;équipe)</Label>
+            <Label>Message d&apos;annulation (visible par l&apos;utilisateur)</Label>
             <Textarea
               autoFocus
               value={cancelMessage}
@@ -395,7 +424,10 @@ export default function AdminDemandesCreationDossierPage() {
           <DialogHeader>
             <DialogTitle className="font-display">{t("admin.uploadFinalDossier")}</DialogTitle>
             <DialogDescription>
-              {completeTarget?.ref_number} — {t("admin.markCompleted")}
+              {completeTarget?.ref_number} —{" "}
+              {completeTarget?.status === "completed"
+                ? t("admin.replacePdfHint")
+                : t("admin.markCompleted")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">

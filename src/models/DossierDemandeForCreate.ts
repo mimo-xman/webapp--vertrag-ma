@@ -21,6 +21,7 @@ export interface IDossierDemandeForCreate extends mongoose.Document {
   active: boolean; // true tant que la demande n'est pas terminée
   cancelled_by: "user" | "admin" | null;
   cancelled_at: Date | null;
+  cancel_message: string | null; // message de l'admin lors d'une annulation (visible par l'utilisateur)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -44,6 +45,7 @@ const DossierDemandeForCreateSchema = new Schema<IDossierDemandeForCreate>(
     active: { type: Boolean, default: true, index: true },
     cancelled_by: { type: String, enum: ["user", "admin"], default: null },
     cancelled_at: { type: Date, default: null },
+    cancel_message: { type: String, default: null, maxlength: 2000 },
   },
   { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
 );

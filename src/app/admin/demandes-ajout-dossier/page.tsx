@@ -19,7 +19,7 @@ import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
 import { addStatusKey, statusVariant, addPriceParts } from "@/lib/dossier-status";
-import { CheckCircle2, XCircle, ExternalLink, Eye, Clock } from "lucide-react";
+import { CheckCircle2, XCircle, ExternalLink, Eye, Clock, MessageSquare } from "lucide-react";
 
 interface DemandeRow {
   _id: string;
@@ -118,9 +118,17 @@ export default function AdminDemandesAjoutDossierPage() {
         <div className="space-y-1">
           <StatusStamp status={statusVariant(row)} label={t(addStatusKey(row))} />
           {row.status === "rejected" && row.message_on_failed && (
-            <p className="max-w-48 truncate text-[11px] text-[#b3391f]" title={row.message_on_failed}>
-              {row.message_on_failed}
-            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-6 gap-1 px-2 text-[11px] text-[#b3391f]"
+              onClick={() =>
+                alertApp(row.message_on_failed!, t("admin.rejectMessageTitle", { ref: row.ref_number }))
+              }
+            >
+              <MessageSquare className="h-3 w-3" />
+              {t("admin.viewMessage")}
+            </Button>
           )}
         </div>
       ),
@@ -136,31 +144,33 @@ export default function AdminDemandesAjoutDossierPage() {
               {t("admin.previewDossier")}
             </a>
           </Button>
-          {row.status === "en_attente" && (
+          {(row.status === "en_attente" || row.status === "en_cours_de_revision") && (
             <div className="flex gap-1">
-              <Button
-                size="sm"
-                className="h-7 gap-1 bg-[#1e4475] text-xs hover:bg-[#163358]"
-                onClick={async () => {
-                  const ok = await confirmApp("Marquer ce dossier comme en cours de révision ? L'utilisateur ne pourra plus l'annuler.", {
-                    title: "En cours de révision",
-                    confirmLabel: "Confirmer",
-                  });
-                  if (!ok) return;
-                  try {
-                    await apiFetch(`/api/admin/demandes-ajout-dossier/${row._id}/mark-in-review`, {
-                      method: "POST",
+              {row.status === "en_attente" && (
+                <Button
+                  size="sm"
+                  className="h-7 gap-1 bg-[#1e4475] text-xs hover:bg-[#163358]"
+                  onClick={async () => {
+                    const ok = await confirmApp("Marquer ce dossier comme en cours de révision ? L'utilisateur ne pourra plus l'annuler.", {
+                      title: "En cours de révision",
+                      confirmLabel: "Confirmer",
                     });
-                    toast({ title: t("common.operationSuccess") });
-                    setRefreshKey((k) => k + 1);
-                  } catch (err) {
-                    await alertApp(err instanceof Error ? err.message : "Erreur");
-                  }
-                }}
-              >
-                <Clock className="h-3.5 w-3.5" />
-                En cours de révision
-              </Button>
+                    if (!ok) return;
+                    try {
+                      await apiFetch(`/api/admin/demandes-ajout-dossier/${row._id}/mark-in-review`, {
+                        method: "POST",
+                      });
+                      toast({ title: t("common.operationSuccess") });
+                      setRefreshKey((k) => k + 1);
+                    } catch (err) {
+                      await alertApp(err instanceof Error ? err.message : "Erreur");
+                    }
+                  }}
+                >
+                  <Clock className="h-3.5 w-3.5" />
+                  En cours de révision
+                </Button>
+              )}
               <Button
                 size="sm"
                 className="h-7 gap-1 bg-[#2f6b4a] text-xs hover:bg-[#245540]"

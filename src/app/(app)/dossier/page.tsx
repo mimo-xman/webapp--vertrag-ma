@@ -67,6 +67,7 @@ interface CreateDemande {
   payed_at: string | null;
   cancelled_by: "user" | "admin" | null;
   cancelled_at: string | null;
+  cancel_message: string | null;
   dossier_pdf_link: string | null;
 }
 
@@ -204,63 +205,7 @@ export default function DossierPage() {
         <p className="mt-0.5 text-sm text-muted-foreground">{t("dossier.subtitle")}</p>
       </div>
 
-      {/* ── Single active-request bar ────────────────────────────────────── */}
-      {activeRequest && (
-        <div className="form-sheet flex flex-col gap-3 border-[#1e4475]/30 bg-[#1e4475]/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            {activeRequest.type === "creation" ? (
-              <FilePlus2 className="h-5 w-5 shrink-0 text-[#1e4475]" />
-            ) : (
-              <FolderUp className="h-5 w-5 shrink-0 text-[#1e4475]" />
-            )}
-            <div>
-              <p className="text-sm font-medium">
-                {activeRequest.type === "creation"
-                  ? t("dossier.activeRequestCreate")
-                  : t("dossier.activeRequestAdd")}{" "}
-                <span className="aktenzeichen">({activeRequest.demande.ref_number})</span>
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {t(statusKeyOf(activeRequest.type, activeRequest.demande))} —{" "}
-                <span className="num">
-                  {priceLabelOf(activeRequest.type, activeRequest.demande)}
-                </span>
-              </p>
-              {activeRequest.type === "creation" &&
-                (activeRequest.demande as CreateDemande).dossier_ready_at &&
-                ["payed", "in_creation"].includes(activeRequest.demande.status) && (
-                  <p className="text-xs text-muted-foreground">
-                    {t("dossier.readyAt")} :{" "}
-                    {new Date(
-                      (activeRequest.demande as CreateDemande).dossier_ready_at!
-                    ).toLocaleDateString("fr-FR")}
-                  </p>
-                )}
-            </div>
-          </div>
-          <div className="flex shrink-0 gap-2">
-            {userCanCancel(activeRequest.type, activeRequest.demande) && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => cancelDemande(activeRequest.type, activeRequest.demande)}
-              >
-                {t("demandes.cancel")}
-              </Button>
-            )}
-            {activeRequest.type === "creation" && activeRequest.demande.status === "en_attente" && (
-              <Button asChild size="sm">
-                <a href={data.whatsapp_url} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="mr-1.5 h-4 w-4" />
-                  {t("common.whatsapp")}
-                </a>
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ── Current dossier state ───────────────────────────────────────── */}
+      {/* ── Current dossier state (always visible) ─────────────────────── */}
       <div
         className={cn(
           "form-sheet p-6",
@@ -280,21 +225,11 @@ export default function DossierPage() {
               {hasDossier ? <CheckCircle2 className="h-6 w-6" /> : <FolderOpen className="h-6 w-6" />}
             </div>
             <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="font-display text-lg font-bold">
-                  {hasDossier ? t("dossier.statusActive") : t("dossier.statusMissing")}
-                </h2>
-                <StatusStamp
-                  status={hasDossier ? "active" : "en_attente"}
-                  label={hasDossier ? t("statuses.active") : t("statuses.en_attente")}
-                />
-              </div>
+              <h2 className="font-display text-lg font-bold">
+                {hasDossier ? t("dossier.statusActive") : t("dossier.statusMissing")}
+              </h2>
               <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-                {hasDossier
-                  ? t("dossier.statusActiveDesc")
-                  : activeRequest
-                    ? t(statusKeyOf(activeRequest.type, activeRequest.demande))
-                    : t("dossier.statusMissingDesc")}
+                {hasDossier ? t("dossier.statusActiveDesc") : t("dossier.statusMissingDesc")}
               </p>
               {hasDossier && data.dossier.source_type && (
                 <p className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
@@ -329,6 +264,59 @@ export default function DossierPage() {
           )}
         </div>
       </div>
+
+      {/* ── Active request bar (only the real status of the demande) ────── */}
+      {activeRequest && (
+        <div className="form-sheet border-[#1e4475]/30 bg-[#1e4475]/5 p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex items-center gap-3">
+              {activeRequest.type === "creation" ? (
+                <FilePlus2 className="h-5 w-5 shrink-0 text-[#1e4475]" />
+              ) : (
+                <FolderUp className="h-5 w-5 shrink-0 text-[#1e4475]" />
+              )}
+              <div>
+                <p className="text-sm font-semibold">
+                  {t(statusKeyOf(activeRequest.type, activeRequest.demande))}{" "}
+                  <span className="aktenzeichen font-normal">({activeRequest.demande.ref_number})</span>
+                </p>
+                <p className="num text-xs text-muted-foreground">
+                  {priceLabelOf(activeRequest.type, activeRequest.demande)}
+                </p>
+                {activeRequest.type === "creation" &&
+                  (activeRequest.demande as CreateDemande).dossier_ready_at &&
+                  ["payed", "in_creation"].includes(activeRequest.demande.status) && (
+                    <p className="text-xs text-muted-foreground">
+                      {t("dossier.readyAt")} :{" "}
+                      {new Date(
+                        (activeRequest.demande as CreateDemande).dossier_ready_at!
+                      ).toLocaleDateString("fr-FR")}
+                    </p>
+                  )}
+              </div>
+            </div>
+            <div className="flex shrink-0 gap-2">
+              {userCanCancel(activeRequest.type, activeRequest.demande) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => cancelDemande(activeRequest.type, activeRequest.demande)}
+                >
+                  {t("demandes.cancel")}
+                </Button>
+              )}
+              {activeRequest.type === "creation" && activeRequest.demande.status === "en_attente" && (
+                <Button asChild size="sm">
+                  <a href={data.whatsapp_url} target="_blank" rel="noopener noreferrer">
+                    <MessageCircle className="mr-1.5 h-4 w-4" />
+                    {t("common.whatsapp")}
+                  </a>
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Deletion email-sent banner ──────────────────────────────────── */}
       {searchParams.get("dossier_deleted") === "1" && (
@@ -455,6 +443,11 @@ export default function DossierPage() {
                     {d.dossier_ready_at && ["payed", "in_creation"].includes(d.status) && (
                       <p className="text-xs text-muted-foreground">
                         {t("dossier.readyAt")} : {new Date(d.dossier_ready_at).toLocaleDateString("fr-FR")}
+                      </p>
+                    )}
+                    {d.status === "cancelled" && d.cancelled_by === "admin" && d.cancel_message && (
+                      <p className="rounded-sm bg-[#b3391f]/5 px-2.5 py-1.5 text-xs text-[#b3391f]">
+                        {d.cancel_message}
                       </p>
                     )}
                     {d.status === "completed" && d.dossier_pdf_link && (
@@ -593,7 +586,9 @@ function UploadDossierDialog({
         method: "POST",
         body: formData,
       });
-      const data = await response.json();
+      const data = await response
+        .json()
+        .catch(() => ({ success: false, error: `Erreur serveur (${response.status})` }));
       if (!response.ok || !data.success) {
         throw new Error(data.error || "Erreur d'envoi");
       }

@@ -30,9 +30,12 @@ export async function POST(
   if (!demande) {
     return NextResponse.json({ success: false, error: "Demande introuvable" }, { status: 404 });
   }
-  if (demande.status !== "en_attente" && demande.status !== "payed" && demande.status !== "in_creation") {
+  // Same rule as the user side: only UNPAID demandes (en_attente) can be
+  // cancelled. Once the payment is confirmed, the demande can no longer be
+  // cancelled.
+  if (demande.status !== "en_attente") {
     return NextResponse.json(
-      { success: false, error: "Cette demande ne peut plus être annulée." },
+      { success: false, error: "Seules les demandes non payées (en attente de paiement) peuvent être annulées." },
       { status: 400 }
     );
   }
@@ -41,6 +44,7 @@ export async function POST(
   demande.active = false;
   demande.cancelled_by = "admin";
   demande.cancelled_at = new Date();
+  demande.cancel_message = parsed.data.message; // visible par l'utilisateur sur /dossier
   await demande.save();
 
   await logAdminAction({

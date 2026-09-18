@@ -114,6 +114,7 @@ export async function GET(request: NextRequest) {
       createdAt: d.createdAt,
       cancelled_by: d.cancelled_by,
       cancelled_at: d.cancelled_at,
+      cancel_message: d.cancel_message,
       dossier_pdf_link: d.dossier_pdf_link,
     })),
     deletion_history: deletionHistory.map((d) => ({

@@ -92,12 +92,14 @@ export function userCanCancel(type: DossierDemandeType, d: StatusLike): boolean 
 }
 
 /**
- * Can the ADMIN cancel this demande? Admin may cancel a creation demande
- * until it is completed. Add demandes are rejected (with a message) instead.
+ * Can the ADMIN cancel this demande? Same rule as the user: a creation
+ * demande can only be cancelled while it is UNPAID (en_attente). Once the
+ * payment is confirmed (payed / in_creation), it cannot be cancelled.
+ * Add demandes are rejected (with a message) instead.
  */
 export function adminCanCancel(type: DossierDemandeType, d: StatusLike): boolean {
   if (type === "creation") {
-    return ["en_attente", "payed", "in_creation"].includes(d.status);
+    return d.status === "en_attente";
   }
   return false;
 }

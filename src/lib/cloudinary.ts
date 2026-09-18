@@ -1,8 +1,17 @@
 // Cloudinary PDF upload via REST API with signature.
 //
-// Uploads PDFs through the `image` resource type (Cloudinary handles PDFs as
-// image assets), producing delivery URLs of the form:
-//   https://res.cloudinary.com/<cloud>/image/upload/v<version>/<random_id>.pdf
+// PDFs are uploaded as RAW resources (resource_type=raw), delivered at:
+//   https://res.cloudinary.com/<cloud>/raw/upload/v<version>/<public_id>.pdf
+//
+// WHY RAW: Cloudinary blocks PDF delivery through the `image` pipeline on
+// some accounts (HTTP 401 "deny or ACL failure" — PDF delivery restriction /
+// security scanner). Images still deliver fine, only PDFs are blocked.
+// Raw files are served byte-for-byte without that restriction, making
+// /raw/upload/ the reliable delivery path for PDFs.
+//
+// After every upload, the delivery URL is VERIFIED with an HTTP request.
+// If the file is not publicly reachable, the asset is destroyed and an
+// explicit error is thrown — a broken link is NEVER persisted in the DB.
 //
 // Configuration (any of the following, checked in order):
 //   1. CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
@@ -57,6 +66,64 @@ export function cloudinaryEnabled(): boolean {
   return readCredentials() !== null;
 }
 
+/** Cloudinary signature: sorted params joined as k=v&k=v, + api_secret, sha1. */
+function sign(params: Record<string, string>, apiSecret: string): string {
+  const toSign = Object.keys(params)
+    .sort()
+    .map((k) => `${k}=${params[k]}`)
+    .join("&");
+  return crypto.createHash("sha1").update(toSign + apiSecret).digest("hex");
+}
+
+/** Best-effort cleanup: delete an uploaded raw asset (e.g. verification failed). */
+async function destroyRawAsset(
+  credentials: CloudinaryCredentials,
+  publicId: string
+): Promise<void> {
+  const timestamp = String(Math.round(Date.now() / 1000));
+  const signature = sign({ public_id: publicId, timestamp }, credentials.apiSecret);
+  const formData = new FormData();
+  formData.append("api_key", credentials.apiKey);
+  formData.append("timestamp", timestamp);
+  formData.append("signature", signature);
+  formData.append("public_id", publicId);
+  await fetch(`https://api.cloudinary.com/v1_1/${credentials.cloudName}/raw/destroy`, {
+    method: "POST",
+    body: formData,
+  }).catch(() => {});
+}
+
+/**
+ * Verify that a delivery URL is publicly reachable (HTTP 200, no Cloudinary
+ * error header). Tries HEAD first, falls back to a 1-byte ranged GET when
+ * HEAD is not supported. Retries once after a short delay.
+ */
+async function verifyDeliveryUrl(url: string): Promise<boolean> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const head = await fetch(url, { method: "HEAD", redirect: "follow" });
+      if (head.ok && !head.headers.get("x-cld-error")) return true;
+      if (head.status === 405 || head.status === 501) {
+        const ranged = await fetch(url, {
+          headers: { Range: "bytes=0-0" },
+          redirect: "follow",
+        });
+        await ranged.body?.cancel().catch(() => {});
+        if (
+          (ranged.status === 200 || ranged.status === 206) &&
+          !ranged.headers.get("x-cld-error")
+        ) {
+          return true;
+        }
+      }
+    } catch {
+      // network hiccup → retry
+    }
+  }
+  return false;
+}
+
 export async function uploadPdfToCloudinary(
   buffer: Buffer,
   originalName: string
@@ -69,14 +136,12 @@ export async function uploadPdfToCloudinary(
   }
 
   const { cloudName, apiKey, apiSecret } = credentials;
-  const timestamp = Math.round(Date.now() / 1000);
+  const timestamp = String(Math.round(Date.now() / 1000));
 
-  // Signature without a folder: Cloudinary assigns a random public_id,
-  // exactly like the standard unsigned delivery URLs.
-  const signature = crypto
-    .createHash("sha1")
-    .update(`timestamp=${timestamp}${apiSecret}`)
-    .digest("hex");
+  // Explicit random public_id with .pdf extension → clean, unique,
+  // URL-safe delivery link.
+  const publicId = `dossier-${timestamp}-${crypto.randomBytes(5).toString("hex")}.pdf`;
+  const signature = sign({ public_id: publicId, timestamp }, apiSecret);
 
   const formData = new FormData();
   formData.append(
@@ -85,13 +150,13 @@ export async function uploadPdfToCloudinary(
     originalName
   );
   formData.append("api_key", apiKey);
-  formData.append("timestamp", String(timestamp));
+  formData.append("timestamp", timestamp);
   formData.append("signature", signature);
+  formData.append("public_id", publicId);
 
-  // PDFs are uploaded via the `image` resource type so the delivery URL is
-  // https://res.cloudinary.com/<cloud>/image/upload/... (consistent with the
-  // links already shared with users).
-  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+  // RAW upload: PDFs are delivered as-is via /raw/upload/ and are NOT
+  // affected by the PDF delivery restriction of the image pipeline.
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`, {
     method: "POST",
     body: formData,
   });
@@ -102,6 +167,17 @@ export async function uploadPdfToCloudinary(
   }
 
   const data = (await response.json()) as { secure_url: string; public_id: string };
+
+  // Never persist a link we cannot reach: verify, and clean up on failure.
+  const reachable = await verifyDeliveryUrl(data.secure_url);
+  if (!reachable) {
+    await destroyRawAsset(credentials, data.public_id || publicId);
+    throw new Error(
+      `Cloudinary : le PDF a été envoyé mais son lien n'est pas accessible publiquement (${data.secure_url}). ` +
+        "Le fichier a été supprimé. Vérifiez dans la console Cloudinary que la distribution de fichiers est autorisée pour ce compte."
+    );
+  }
+
   return { url: data.secure_url, publicId: data.public_id };
 }
 
