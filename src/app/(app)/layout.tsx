@@ -19,7 +19,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <footer className="border-t border-border">
         <div className="mx-auto flex h-12 max-w-7xl items-center justify-between px-4 text-xs text-muted-foreground">
           <span className="font-mono">© {new Date().getFullYear()} Vertrag.ma</span>
-          <span className="font-mono aktenzeichen">AKTE · {user._id.slice(-8).toUpperCase()}</span>
         </div>
       </footer>
       <Toaster />

@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { requireAuth } from "@/lib/auth";
 import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
 
-// Cancel a pending add-demande (if not already confirmed/rejected).
+// Cancel a pending add-demande (only while en_attente).
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -20,11 +20,16 @@ export async function POST(
   }
   if (demande.status !== "en_attente") {
     return NextResponse.json(
-      { success: false, error: "Cette demande ne peut plus être annulée." },
+      { success: false, error: "Cette demande ne peut plus être annulée (seulement en attente)." },
       { status: 400 }
     );
   }
 
-  await DossierDemandeForAdd.findByIdAndDelete(id);
+  demande.status = "cancelled";
+  demande.active = false;
+  demande.cancelled_by = "user";
+  demande.cancelled_at = new Date();
+  await demande.save();
+
   return NextResponse.json({ success: true, message: "Demande annulée" });
 }

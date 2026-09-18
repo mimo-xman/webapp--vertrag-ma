@@ -130,12 +130,12 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Stamps — positioned outside card boundaries */}
-                <div className="stamp stamp-green stamp-anim absolute -right-4 top-12 !text-[10px] sm:!text-xs">
+                {/* Stamps — positioned like official document stamps (overlapping edges) */}
+                <div className="stamp stamp-green stamp-anim absolute -right-3 -top-3 !text-[10px] sm:!text-xs">
                   GEPRÜFT ✓
                 </div>
                 <div
-                  className="stamp stamp-blue stamp-anim absolute -left-6 bottom-12 !text-[10px] sm:!text-xs"
+                  className="stamp stamp-blue stamp-anim absolute -left-3 -bottom-3 !text-[10px] sm:!text-xs"
                   style={{ animationDelay: "0.25s" }}
                 >
                   500 / TAG

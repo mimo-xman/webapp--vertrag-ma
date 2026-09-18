@@ -16,6 +16,7 @@ export interface ISetting extends mongoose.Document {
   };
   dossier: {
     creation_price: number;
+    add_price: number;
   };
   contact: {
     whatsapp_url: string;
@@ -44,8 +45,9 @@ const SettingSchema = new Schema<ISetting>(
       email_subject: { type: String, default: "Bewerbung" },
     },
     dossier: {
-      creation_price: { type: Number, default: 20 },
-    },
+        creation_price: { type: Number, default: 20 },
+        add_price: { type: Number, default: 0 },
+      },
     contact: {
       whatsapp_url: { type: String, default: "https://wa.me/212600000000" },
     },

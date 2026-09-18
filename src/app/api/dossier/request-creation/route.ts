@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/mongodb";
 import { requireAuth } from "@/lib/auth";
 import { getSettings } from "@/models/Setting";
 import { DossierDemandeForCreate } from "@/models/DossierDemandeForCreate";
+import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
+import { User } from "@/models/User";
 import { generateRefNumber } from "@/lib/audit";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
@@ -23,14 +25,28 @@ export async function POST(request: NextRequest) {
     await connectDB();
     const settings = await getSettings();
 
-    // Only one active creation demande at a time.
-    const active = await DossierDemandeForCreate.findOne({
-      user_id: auth.user._id,
-      status: { $in: ["en_attente", "payed"] },
-    });
-    if (active) {
+    // Check if user already has an active demande (add or create) or existing dossier
+    const [activeAdd, activeCreate, user] = await Promise.all([
+      DossierDemandeForAdd.findOne({ user_id: auth.user._id, active: true }),
+      DossierDemandeForCreate.findOne({ user_id: auth.user._id, active: true }),
+      User.findById(auth.user._id).select("dossier_pdf_link").lean(),
+    ]);
+
+    if (activeAdd) {
+      return NextResponse.json(
+        { success: false, error: "Vous avez déjà une demande d'ajout en cours." },
+        { status: 400 }
+      );
+    }
+    if (activeCreate) {
       return NextResponse.json(
         { success: false, error: "Vous avez déjà une demande de création en cours." },
+        { status: 400 }
+      );
+    }
+    if (user?.dossier_pdf_link) {
+      return NextResponse.json(
+        { success: false, error: "Vous avez déjà un dossier actif." },
         { status: 400 }
       );
     }
@@ -41,6 +57,7 @@ export async function POST(request: NextRequest) {
       price: settings.dossier.creation_price,
       traduction_price: 0,
       status: "en_attente",
+      active: true,
     });
 
     return NextResponse.json({

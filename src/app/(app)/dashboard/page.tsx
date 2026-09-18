@@ -27,6 +27,8 @@ interface StatsResponse {
       dossier_pdf_link: string | null;
       pending_add_demande: boolean;
       pending_create_demande: { status: string; ref_number: string } | null;
+      total_add_demandes: number;
+      total_create_demandes: number;
     };
   };
   upcoming: { _id: string; scheduled_at: string; company_name: string }[];
@@ -92,21 +94,18 @@ export default function DashboardPage() {
     : stats.dossier.pending_add_demande
       ? { variant: "ink" as const, label: t("dashboard.dossierPending") }
       : stats.dossier.pending_create_demande
-        ? { variant: "blue" as const, label: t("dossier.waitingPayment") }
+        ? { variant: "blue" as const, label: stats.dossier.pending_create_demande.status === "payed" ? t("statuses.payed") : t("dossier.waitingPayment") }
         : { variant: "red" as const, label: t("dashboard.dossierMissing") };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="eyebrow mb-1">{t("dashboard.title")}</p>
-          <h1 className="font-display text-2xl font-bold tracking-tight">
-            {t("dashboard.welcome", { name: "" })}
-          </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
-        </div>
-        <StatusStamp status={dossierState.variant === "green" ? "active" : "en_attente"} label={dossierState.label} />
+      {/* Header - sans badge */}
+      <div>
+        <p className="eyebrow mb-1">{t("dashboard.title")}</p>
+        <h1 className="font-display text-2xl font-bold tracking-tight">
+          {t("dashboard.welcome", { name: "" })}
+        </h1>
+        <p className="mt-0.5 text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
       </div>
 
       {/* Stat cards */}
@@ -185,7 +184,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Dossier summary */}
+        {/* Dossier summary - only dossier-related info */}
         <div className="form-sheet">
           <div className="sheet-band flex items-center justify-between px-5 py-3.5">
             <div className="flex items-center gap-2">
@@ -198,17 +197,33 @@ export default function DashboardPage() {
           </div>
           <div className="space-y-3 p-5">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">{t("dossier.status")}</span>
+              <span className="text-sm text-muted-foreground">{t("dashboard.dossierStatus")}</span>
               <StatusStamp status={dossierState.variant === "green" ? "active" : "en_attente"} label={dossierState.label} />
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">{t("dashboard.demandesTotal")}</span>
-              <span className="num text-sm font-semibold">{stats.demandes.total}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">{t("statuses.payed")}</span>
-              <span className="num text-sm font-semibold">{stats.demandes.payed}</span>
-            </div>
+            {stats.dossier.has_dossier ? (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">{t("dashboard.totalAddDemandes")}</span>
+                  <span className="num text-sm font-semibold">{stats.dossier.total_add_demandes}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">{t("dashboard.totalCreateDemandes")}</span>
+                  <span className="num text-sm font-semibold">{stats.dossier.total_create_demandes}</span>
+                </div>
+              </>
+            ) : stats.dossier.pending_add_demande ? (
+              <div className="text-sm text-muted-foreground">
+                {t("dashboard.dossierPending")}
+              </div>
+            ) : stats.dossier.pending_create_demande ? (
+              <div className="text-sm text-muted-foreground">
+                {t("dossier.waitingPayment")}
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                {t("dashboard.dossierMissing")}
+              </div>
+            )}
             <div className="rule-dashed" />
             {stats.dossier.dossier_pdf_link ? (
               <a

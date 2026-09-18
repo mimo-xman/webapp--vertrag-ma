@@ -38,6 +38,7 @@ const schema = z.object({
   dossier: z
     .object({
       creation_price: z.number().min(0).max(10000),
+      add_price: z.number().min(0).max(10000),
     })
     .partial()
     .optional(),

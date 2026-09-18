@@ -6,7 +6,14 @@ import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useI18n } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, LayoutDashboard, LogOut, UserRound } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ShieldCheck, LayoutDashboard, LogOut, UserRound, ChevronDown } from "lucide-react";
 
 interface AuthUser {
   _id: string;
@@ -51,40 +58,47 @@ export function HomeHeader() {
           {loading ? (
             <div className="h-9 w-24 animate-pulse rounded-sm bg-[#e9e6dd]" />
           ) : user ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="flex items-center gap-1.5 rounded-sm border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground transition-colors"
-              >
-                <LayoutDashboard className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">{t("nav.dashboard")}</span>
-              </Link>
-              {user.role === "admin" && (
-                <Link
-                  href="/admin"
-                  className="flex items-center gap-1.5 rounded-sm border border-[#1e4475]/40 px-3 py-1.5 text-sm font-medium text-[#1e4475] hover:bg-[#1e4475]/10 transition-colors"
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="gap-1.5 h-9 px-3">
+                  <UserRound className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline truncate max-w-32 font-medium">{user.full_name}</span>
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="px-3 py-2 border-b border-border">
+                  <p className="text-xs font-medium text-muted-foreground">{user.email}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
+                </div>
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard" className="flex items-center gap-2 w-full">
+                    <LayoutDashboard className="h-3.5 w-3.5" />
+                    {t("nav.dashboard")}
+                  </Link>
+                </DropdownMenuItem>
+                {user.role === "admin" && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="flex items-center gap-2 w-full text-[#1e4475]">
+                      <ShieldCheck className="h-3.5 w-3.5" />
+                      {t("nav.admin")}
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={async () => {
+                    await fetch("/api/auth/logout", { method: "POST" });
+                    document.cookie = "vertrag_token=; path=/; max-age=0";
+                    window.location.href = "/";
+                  }}
+                  className="text-destructive focus:text-destructive"
                 >
-                  <ShieldCheck className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">{t("nav.admin")}</span>
-                </Link>
-              )}
-              <span className="hidden sm:inline text-sm font-medium text-muted-foreground truncate max-w-32">
-                {user.full_name}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={async () => {
-                  await fetch("/api/auth/logout", { method: "POST" });
-                  document.cookie = "vertrag_token=; path=/; max-age=0";
-                  window.location.href = "/";
-                }}
-                className="gap-1.5 font-medium"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                <span className="hidden md:inline">{t("nav.logout")}</span>
-              </Button>
-            </>
+                  <LogOut className="h-3.5 w-3.5" />
+                  {t("nav.logout")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <>
               <Button variant="outline" asChild className="hidden sm:inline-flex">

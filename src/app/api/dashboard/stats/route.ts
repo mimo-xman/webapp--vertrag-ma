@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
   if ("error" in auth) return auth.error;
 
   await connectDB();
-  // Aggregation pipelines do NOT auto-cast: use a real ObjectId.
   const userId = new mongoose.Types.ObjectId(auth.user._id);
 
   const [
@@ -23,6 +22,8 @@ export async function GET(request: NextRequest) {
     user,
     pendingAddDemande,
     pendingCreateDemande,
+    allAddDemandes,
+    allCreateDemandes,
   ] = await Promise.all([
     Postulation.aggregate<{ _id: string; count: number }>([
       { $match: { user_id: userId } },
@@ -47,6 +48,8 @@ export async function GET(request: NextRequest) {
       user_id: userId,
       status: { $in: ["en_attente", "payed"] },
     }).lean(),
+    DossierDemandeForAdd.find({ user_id: userId }).lean(),
+    DossierDemandeForCreate.find({ user_id: userId }).lean(),
   ]);
 
   const statusMap: Record<string, number> = {};
@@ -81,6 +84,8 @@ export async function GET(request: NextRequest) {
               ref_number: pendingCreateDemande.ref_number,
             }
           : null,
+        total_add_demandes: allAddDemandes.length,
+        total_create_demandes: allCreateDemandes.length,
       },
     },
     upcoming: upcoming.map((p) => ({

@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { requireAuth } from "@/lib/auth";
 import { User } from "@/models/User";
 import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
+import { DossierDemandeForCreate } from "@/models/DossierDemandeForCreate";
 import { uploadPdfToCloudinary, validatePdfFile } from "@/lib/cloudinary";
 import { generateRefNumber } from "@/lib/audit";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
@@ -37,14 +38,28 @@ export async function POST(request: NextRequest) {
 
     await connectDB();
 
-    // Cannot have two pending add-demandes.
-    const pending = await DossierDemandeForAdd.findOne({
-      user_id: auth.user._id,
-      status: "en_attente",
-    });
-    if (pending) {
+    // Check if user already has an active demande (add or create) or existing dossier
+    const [activeAdd, activeCreate, user] = await Promise.all([
+      DossierDemandeForAdd.findOne({ user_id: auth.user._id, active: true }),
+      DossierDemandeForCreate.findOne({ user_id: auth.user._id, active: true }),
+      User.findById(auth.user._id).select("dossier_pdf_link").lean(),
+    ]);
+
+    if (activeAdd) {
       return NextResponse.json(
-        { success: false, error: "Vous avez déjà une demande d'ajout en attente de vérification." },
+        { success: false, error: "Vous avez déjà une demande d'ajout en cours." },
+        { status: 400 }
+      );
+    }
+    if (activeCreate) {
+      return NextResponse.json(
+        { success: false, error: "Vous avez déjà une demande de création en cours." },
+        { status: 400 }
+      );
+    }
+    if (user?.dossier_pdf_link) {
+      return NextResponse.json(
+        { success: false, error: "Vous avez déjà un dossier actif." },
         { status: 400 }
       );
     }
@@ -56,7 +71,9 @@ export async function POST(request: NextRequest) {
       ref_number: generateRefNumber("DA"),
       user_id: auth.user._id,
       dossier_pdf_link: url,
+      price: 0,
       status: "en_attente",
+      active: true,
     });
 
     return NextResponse.json({

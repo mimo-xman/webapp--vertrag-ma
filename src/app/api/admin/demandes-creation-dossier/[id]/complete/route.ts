@@ -50,10 +50,16 @@ export async function POST(
   demande.completed_at = new Date();
   demande.dossier_pdf_link = url;
   if (traductionPrice > 0) demande.traduction_price = traductionPrice;
+  demande.active = false;
   await demande.save();
 
-  // The dossier link goes into the user document too.
-  await User.findByIdAndUpdate(demande.user_id, { dossier_pdf_link: url });
+  // The dossier link goes into the user document too with source info.
+  await User.findByIdAndUpdate(demande.user_id, { 
+    dossier_pdf_link: url,
+    dossier_source_type: "creation",
+    dossier_source_demande_id: demande._id,
+    dossier_source_ref_number: demande.ref_number,
+  });
 
   await logAdminAction({
     admin_id: auth.user._id,

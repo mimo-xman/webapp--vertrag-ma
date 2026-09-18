@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { requireAuth } from "@/lib/auth";
 import { DossierDemandeForCreate } from "@/models/DossierDemandeForCreate";
 
-// Cancel a creation-demande (only while awaiting payment, before team confirmation).
+// Cancel a creation-demande (only while en_attente - awaiting payment).
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -20,12 +20,16 @@ export async function POST(
   }
   if (demande.status !== "en_attente") {
     return NextResponse.json(
-      { success: false, error: "Cette demande ne peut plus être annulée." },
+      { success: false, error: "Cette demande ne peut plus être annulée (seulement en attente de paiement)." },
       { status: 400 }
     );
   }
 
-  demande.status = "canceled";
+  demande.status = "cancelled";
+  demande.active = false;
+  demande.cancelled_by = "user";
+  demande.cancelled_at = new Date();
   await demande.save();
+
   return NextResponse.json({ success: true, message: "Demande annulée" });
 }

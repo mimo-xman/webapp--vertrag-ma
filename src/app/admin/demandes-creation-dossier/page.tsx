@@ -19,7 +19,7 @@ import {
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
-import { Banknote, CalendarClock, Upload, Loader2 } from "lucide-react";
+import { Banknote, CalendarClock, Upload, Loader2, XCircle } from "lucide-react";
 
 interface DemandeRow {
   _id: string;
@@ -232,6 +232,30 @@ export default function AdminDemandesCreationDossierPage() {
               </a>
             </Button>
           )}
+          {(row.status === "en_attente" || row.status === "payed" || row.status === "in_creation") && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 gap-1 text-xs text-[#b3391f] hover:bg-[#b3391f]/10"
+              onClick={async () => {
+                const message = prompt("Message d'annulation (5 caractères minimum) :");
+                if (!message || message.trim().length < 5) return;
+                try {
+                  await apiFetch(`/api/admin/demandes-creation-dossier/${row._id}/cancel`, {
+                    method: "POST",
+                    body: JSON.stringify({ message: message.trim() }),
+                  });
+                  toast({ title: t("common.operationSuccess") });
+                  setRefreshKey((k) => k + 1);
+                } catch (err) {
+                  await alertApp(err instanceof Error ? err.message : "Erreur");
+                }
+              }}
+            >
+              <XCircle className="h-3.5 w-3.5" />
+              Annuler
+            </Button>
+          )}
         </div>
       ),
     },
@@ -254,8 +278,9 @@ export default function AdminDemandesCreationDossierPage() {
           options: [
             { value: "en_attente", label: t("statuses.en_attente") },
             { value: "payed", label: t("statuses.payed") },
+            { value: "in_creation", label: t("statuses.in_creation") },
             { value: "completed", label: t("statuses.completed") },
-            { value: "canceled", label: t("statuses.canceled") },
+            { value: "cancelled", label: t("statuses.cancelled") },
           ],
         }}
       />

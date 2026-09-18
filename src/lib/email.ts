@@ -117,3 +117,8 @@ export async function send2faDisableEmail(email: string, token: string): Promise
     `),
   });
 }
+
+// Generic sendEmail wrapper
+export async function sendEmail(options: BrevoEmailOptions): Promise<void> {
+  await sendEmailBrevo(options);
+}

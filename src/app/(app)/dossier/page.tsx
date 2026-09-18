@@ -24,12 +24,24 @@ import {
   MessageCircle,
   Upload,
   CheckCircle2,
+  XCircle,
+  Clock,
+  AlertCircle,
+  History,
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DossierResponse {
-  dossier: { pdf_link: string | null; status: string };
+  dossier: {
+    pdf_link: string | null;
+    status: string;
+    source_type: "ajout" | "creation" | null;
+    source_demande_id: string | null;
+    source_ref_number: string | null;
+  };
   creation_price: number;
+  add_price: number;
   whatsapp_url: string;
   demandes_add: {
     _id: string;
@@ -37,6 +49,10 @@ interface DossierResponse {
     status: string;
     message_on_failed: string | null;
     createdAt: string;
+    confirmed_at: string | null;
+    cancelled_by: "user" | "admin" | null;
+    cancelled_at: string | null;
+    price: number;
   }[];
   demandes_create: {
     _id: string;
@@ -47,7 +63,75 @@ interface DossierResponse {
     dossier_ready_at: string | null;
     completed_at: string | null;
     createdAt: string;
+    payed_at: string | null;
+    cancelled_by: "user" | "admin" | null;
+    cancelled_at: string | null;
+    dossier_pdf_link: string | null;
   }[];
+  deletion_history: {
+    _id: string;
+    deleted_at: string;
+    source_type: "ajout" | "creation" | null;
+    source_ref_number: string | null;
+    dossier_pdf_link: string | null;
+  }[];
+}
+
+function getStatusLabel(t: (key: string) => string, d: { status: string; cancelled_by?: "user" | "admin" | null }) {
+  switch (d.status) {
+    case "en_attente":
+      return t("dossier.statusAwaitingPayment");
+    case "en_cours_de_revision":
+      return t("dossier.statusUnderReview");
+    case "confirmed":
+      return t("dossier.statusConfirmed");
+    case "rejected":
+      return t("dossier.statusRejected");
+    case "cancelled":
+      return d.cancelled_by === "admin" ? t("dossier.statusCancelledByAdmin") : t("dossier.statusCancelledByUser");
+    case "payed":
+      return t("dossier.statusPaidAwaitingCreation");
+    case "in_creation":
+      return t("dossier.statusPaidInCreation");
+    case "completed":
+      return t("dossier.statusCompleted");
+    default:
+      return t(`statuses.${d.status}`);
+  }
+}
+
+function getStatusVariant(d: { status: string; cancelled_by?: "user" | "admin" | null }): "green" | "blue" | "ink" | "red" | "gold" {
+  switch (d.status) {
+    case "confirmed":
+    case "completed":
+      return "green";
+    case "en_attente":
+    case "payed":
+    case "in_creation":
+      return "blue";
+    case "en_cours_de_revision":
+      return "ink";
+    case "rejected":
+    case "cancelled":
+      return "red";
+    default:
+      return "ink";
+  }
+}
+
+function getPriceLabel(t: (key: string) => string, d: { status: string; price: number; traduction_price: number }) {
+  const total = d.price + (d.traduction_price || 0);
+  if (d.status === "en_attente") {
+    return `${total} $ ${t("dossier.priceToPay")}`;
+  }
+  return `${total} $ ${t("dossier.pricePaid")}`;
+}
+
+function getAddPriceLabel(t: (key: string) => string, d: { status: string; price: number }) {
+  if (d.status === "en_attente" || d.status === "en_cours_de_revision") {
+    return `${d.price} $ ${t("dossier.priceToPay")}`;
+  }
+  return `${d.price} $ ${t("dossier.pricePaid")}`;
 }
 
 export default function DossierPage() {
@@ -93,8 +177,11 @@ export default function DossierPage() {
   if (!data) return null;
 
   const hasDossier = Boolean(data.dossier.pdf_link);
-  const pendingAdd = data.demandes_add.find((d) => d.status === "en_attente");
-  const activeCreate = data.demandes_create.find((d) => d.status === "en_attente" || d.status === "payed");
+  const activeAdd = data.demandes_add.find((d) => d.status === "en_attente" || d.status === "en_cours_de_revision");
+  const activeCreate = data.demandes_create.find((d) => d.status === "en_attente" || d.status === "payed" || d.status === "in_creation");
+
+  // Determine active request for the top bar
+  const activeRequest = activeCreate || activeAdd;
 
   return (
     <div className="space-y-6">
@@ -104,7 +191,88 @@ export default function DossierPage() {
         <p className="mt-0.5 text-sm text-muted-foreground">{t("dossier.subtitle")}</p>
       </div>
 
-      {/* ── Current dossier state ──────────────────────────── */}
+      {/* ── Active request bar ────────────────────────────────────────────── */}
+      {activeRequest && (
+        <div className="form-sheet flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-[#1e4475]/30 bg-[#1e4475]/5 p-4">
+          <div className="flex items-center gap-3">
+            {activeCreate ? (
+              <FilePlus2 className="h-5 w-5 shrink-0 text-[#1e4475]" />
+            ) : (
+              <FolderUp className="h-5 w-5 shrink-0 text-[#1e4475]" />
+            )}
+            <div>
+              <p className="text-sm font-medium">
+                {t("dossier.activeRequestBar")} <span className="aktenzeichen">({activeRequest.ref_number})</span>
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {getStatusLabel(t, activeRequest)}
+              </p>
+            </div>
+          </div>
+          <div className="flex shrink-0 gap-2">
+            {activeCreate && activeCreate.status === "en_attente" && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={async () => {
+                    const ok = await confirmApp(t("demandes.cancelConfirmMessage"), {
+                      title: t("demandes.cancelConfirmTitle"),
+                      destructive: true,
+                      confirmLabel: t("demandes.cancel"),
+                    });
+                    if (!ok) return;
+                    try {
+                      await apiFetch(`/api/dossier/demandes-creation/${activeCreate._id}/cancel`, {
+                        method: "POST",
+                      });
+                      toast({ title: t("common.operationSuccess") });
+                      load();
+                    } catch (err) {
+                      await alertApp(err instanceof Error ? err.message : "Erreur");
+                    }
+                  }}
+                >
+                  {t("demandes.cancel")}
+                </Button>
+                <Button asChild size="sm">
+                  <a href={data.whatsapp_url} target="_blank" rel="noopener noreferrer">
+                    <MessageCircle className="mr-1.5 h-4 w-4" />
+                    {t("common.whatsapp")}
+                  </a>
+                </Button>
+              </>
+            )}
+            {activeAdd && activeAdd.status === "en_attente" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  const ok = await confirmApp(t("demandes.cancelConfirmMessage"), {
+                    title: t("demandes.cancelConfirmTitle"),
+                    destructive: true,
+                    confirmLabel: t("demandes.cancel"),
+                  });
+                  if (!ok) return;
+                  try {
+                    await apiFetch(`/api/dossier/demandes-ajout/${activeAdd._id}/cancel`, {
+                      method: "POST",
+                    });
+                    toast({ title: t("common.operationSuccess") });
+                    load();
+                  } catch (err) {
+                    await alertApp(err instanceof Error ? err.message : "Erreur");
+                  }
+                }}
+              >
+                {t("demandes.cancel")}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Current dossier state ───────────────────────────────────────── */}
       <div
         className={cn(
           "form-sheet p-6",
@@ -136,10 +304,18 @@ export default function DossierPage() {
               <p className="mt-1 max-w-xl text-sm text-muted-foreground">
                 {hasDossier
                   ? t("dossier.statusActiveDesc")
-                  : pendingAdd
-                    ? t("dossier.statusMissingDesc")
-                    : t("dossier.statusMissingDesc")}
+                  : activeAdd
+                    ? t("dossier.statusAwaitingReview")
+                    : activeCreate
+                      ? getStatusLabel(t, activeCreate)
+                      : t("dossier.statusMissingDesc")}
               </p>
+              {hasDossier && data.dossier.source_type && (
+                <p className="mt-1.5 text-xs text-muted-foreground flex items-center gap-1">
+                  {t("dossier.sourceAdd") === "Ajout" ? <FolderUp className="h-3 w-3" /> : <FilePlus2 className="h-3 w-3" />}
+                  {t(data.dossier.source_type === "ajout" ? "dossier.sourceAdd" : "dossier.sourceCreation")} : {data.dossier.source_ref_number}
+                </p>
+              )}
             </div>
           </div>
           {hasDossier && (
@@ -159,15 +335,18 @@ export default function DossierPage() {
         </div>
       </div>
 
-      {/* ── Two options (when no dossier) ───────────────────── */}
+      {/* ── Two options (when no dossier) ───────────────────────────────── */}
       {!hasDossier && (
         <>
-          {pendingAdd && (
+          {activeAdd && (
             <div className="form-sheet flex items-center gap-3 border-[#1e4475]/30 bg-[#1e4475]/5 p-4">
               <FolderUp className="h-5 w-5 shrink-0 text-[#1e4475]" />
               <div className="flex-1">
                 <p className="text-sm font-medium">
-                  {t("dossier.uploadSuccess")} <span className="aktenzeichen">({pendingAdd.ref_number})</span>
+                  {t("dossier.uploadSuccess")} <span className="aktenzeichen">({activeAdd.ref_number})</span>
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {getStatusLabel(t, activeAdd)} — {getAddPriceLabel(t, activeAdd)}
                 </p>
               </div>
               <Button
@@ -181,7 +360,7 @@ export default function DossierPage() {
                   });
                   if (!ok) return;
                   try {
-                    await apiFetch(`/api/dossier/demandes-ajout/${pendingAdd._id}/cancel`, {
+                    await apiFetch(`/api/dossier/demandes-ajout/${activeAdd._id}/cancel`, {
                       method: "POST",
                     });
                     toast({ title: t("common.operationSuccess") });
@@ -201,17 +380,14 @@ export default function DossierPage() {
               <FilePlus2 className="h-5 w-5 shrink-0 text-[#1e4475]" />
               <div className="flex-1">
                 <p className="text-sm font-medium">
-                  {activeCreate.status === "en_attente"
-                    ? t("dossier.waitingPayment")
-                    : activeCreate.status === "in_creation"
-                    ? t("dossier.inCreation")
-                    : t("dossier.inCreation")}{" "}
-                  <span className="aktenzeichen">({activeCreate.ref_number})</span>
+                  {getStatusLabel(t, activeCreate)} <span className="aktenzeichen">({activeCreate.ref_number})</span>
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {getPriceLabel(t, activeCreate)}
                 </p>
                 {activeCreate.dossier_ready_at && (activeCreate.status === "payed" || activeCreate.status === "in_creation") && (
                   <p className="text-xs text-muted-foreground">
-                    {t("dossier.readyAt")} :{" "}
-                    {new Date(activeCreate.dossier_ready_at).toLocaleDateString("fr-FR")}
+                    {t("dossier.readyAt")} : {new Date(activeCreate.dossier_ready_at).toLocaleDateString("fr-FR")}
                   </p>
                 )}
               </div>
@@ -251,7 +427,7 @@ export default function DossierPage() {
             </div>
           )}
 
-          {!pendingAdd && !activeCreate && (
+          {!activeAdd && !activeCreate && (
             <>
               <p className="eyebrow">{t("dossier.optionsTitle")}</p>
               <div className="grid gap-4 md:grid-cols-2">
@@ -298,7 +474,7 @@ export default function DossierPage() {
         </>
       )}
 
-      {/* ── History ─────────────────────────────────────────── */}
+      {/* ── History ─────────────────────────────────────────────────────── */}
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Add requests history */}
         <div className="form-sheet">
@@ -314,25 +490,27 @@ export default function DossierPage() {
               <ul className="divide-y divide-border">
                 {data.demandes_add.map((d) => (
                   <li key={d._id} className="space-y-1.5 px-5 py-3">
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
                       <span className="aktenzeichen">{d.ref_number}</span>
-                      <StatusStamp status={d.status} label={t(`statuses.${d.status}`)} />
+                      <StatusStamp
+                        status={getStatusVariant(d)}
+                        label={getStatusLabel(t, d)}
+                      />
                     </div>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(d.createdAt).toLocaleDateString("fr-FR")}
-                      </span>
-                      {d.status === "confirmed" && (
-                        <a
-                          href={data.dossier.pdf_link || "#"}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs font-medium text-[#1e4475] hover:underline"
-                        >
-                          {t("dossier.downloadDossier")} →
-                        </a>
-                      )}
+                    <div className="flex items-center justify-between gap-2 flex-wrap text-xs text-muted-foreground">
+                      <span>{new Date(d.createdAt).toLocaleDateString("fr-FR")}</span>
+                      <span className="num">{getAddPriceLabel(t, d)}</span>
                     </div>
+                    {d.status === "confirmed" && data.dossier.pdf_link && (
+                      <a
+                        href={data.dossier.pdf_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-[#1e4475] hover:underline"
+                      >
+                        {t("dossier.downloadDossier")} →
+                      </a>
+                    )}
                     {d.status === "rejected" && d.message_on_failed && (
                       <p className="rounded-sm bg-[#b3391f]/5 px-2.5 py-1.5 text-xs text-[#b3391f]">
                         {d.message_on_failed}
@@ -359,17 +537,32 @@ export default function DossierPage() {
               <ul className="divide-y divide-border">
                 {data.demandes_create.map((d) => (
                   <li key={d._id} className="space-y-1.5 px-5 py-3">
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
                       <span className="aktenzeichen">{d.ref_number}</span>
-                      <StatusStamp status={d.status} label={t(`statuses.${d.status}`)} />
+                      <StatusStamp
+                        status={getStatusVariant(d)}
+                        label={getStatusLabel(t, d)}
+                      />
                     </div>
-                    <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between gap-2 flex-wrap text-xs text-muted-foreground">
                       <span>{new Date(d.createdAt).toLocaleDateString("fr-FR")}</span>
-                      <span className="num">
-                        {d.price} $
-                        {d.traduction_price > 0 && ` + ${d.traduction_price} $ (${t("dossier.traductionPrice")})`}
-                      </span>
+                      <span className="num">{getPriceLabel(t, d)}</span>
                     </div>
+                    {d.dossier_ready_at && (d.status === "payed" || d.status === "in_creation") && (
+                      <p className="text-xs text-muted-foreground">
+                        {t("dossier.readyAt")} : {new Date(d.dossier_ready_at).toLocaleDateString("fr-FR")}
+                      </p>
+                    )}
+                    {d.status === "completed" && d.dossier_pdf_link && (
+                      <a
+                        href={d.dossier_pdf_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-[#1e4475] hover:underline"
+                      >
+                        {t("dossier.downloadDossier")} →
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -378,20 +571,58 @@ export default function DossierPage() {
         </div>
       </div>
 
-      {/* ── Upload dialog ───────────────────────────────────── */}
+      {/* ── Deletion History ───────────────────────────────────────────── */}
+      {data.deletion_history && data.deletion_history.length > 0 && (
+        <div className="form-sheet">
+          <div className="sheet-band px-5 py-3.5">
+            <h2 className="font-display text-sm font-bold flex items-center gap-2">
+              <History className="h-4 w-4" />
+              {t("dossier.historyDeletion")}
+            </h2>
+          </div>
+          <div className="max-h-72 overflow-y-auto scroll-slim">
+            <ul className="divide-y divide-border">
+              {data.deletion_history.map((d) => (
+                <li key={d._id} className="space-y-1.5 px-5 py-3">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <span className="text-sm font-medium text-[#b3391f]">
+                      {t("dossier.deleteDossier")} — {new Date(d.deleted_at).toLocaleDateString("fr-FR", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2 flex-wrap text-xs text-muted-foreground">
+                    <span>
+                      {d.source_type === "ajout"
+                        ? `${t("dossier.sourceAdd")} : ${d.source_ref_number || "—"}`
+                        : d.source_type === "creation"
+                        ? `${t("dossier.sourceCreation")} : ${d.source_ref_number || "—"}`
+                        : t("common.noData")}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {/* ── Upload dialog ───────────────────────────────────────────────── */}
       <UploadDossierDialog
         open={uploadOpen}
         onOpenChange={setUploadOpen}
         onUploaded={load}
       />
 
-      {/* ── Create request dialog ───────────────────────────── */}
+      {/* ── Create request dialog ───────────────────────────────────────── */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-display text-lg">
-              {t("dossier.createConfirmTitle")}
-            </DialogTitle>
+            <DialogTitle className="font-display text-lg">{t("dossier.createConfirmTitle")}</DialogTitle>
             <DialogDescription>{t("dossier.createConfirmDesc")}</DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:flex-row">

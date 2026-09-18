@@ -18,7 +18,7 @@ import {
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, XCircle, ExternalLink, Eye } from "lucide-react";
+import { CheckCircle2, XCircle, ExternalLink, Eye, Clock } from "lucide-react";
 
 interface DemandeRow {
   _id: string;
@@ -32,7 +32,7 @@ interface DemandeRow {
 
 export default function AdminDemandesAjoutDossierPage() {
   const { t } = useI18n();
-  const { alertApp } = useAppPopup();
+  const { confirmApp, alertApp } = useAppPopup();
   const { toast } = useToast();
   const [refreshKey, setRefreshKey] = useState(0);
   const [rejectOpen, setRejectOpen] = useState(false);
@@ -127,26 +127,49 @@ export default function AdminDemandesAjoutDossierPage() {
             </a>
           </Button>
           {row.status === "en_attente" && (
-            <>
-              <Button
-                size="sm"
-                className="h-7 gap-1 bg-[#2f6b4a] text-xs hover:bg-[#245540]"
-                onClick={() => handleConfirm(row)}
-              >
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                {t("admin.confirmDossier")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-7 gap-1 text-xs text-[#b3391f] hover:bg-[#b3391f]/10"
-                onClick={() => openReject(row)}
-              >
-                <XCircle className="h-3.5 w-3.5" />
-                {t("admin.rejectDossier")}
-              </Button>
-            </>
-          )}
+                      <div className="flex gap-1">
+                        <Button
+                          size="sm"
+                          className="h-7 gap-1 bg-[#1e4475] text-xs hover:bg-[#163358]"
+                          onClick={async () => {
+                            const ok = await confirmApp("Marquer ce dossier comme en cours de révision ? L'utilisateur ne pourra plus l'annuler.", {
+                              title: "En cours de révision",
+                              confirmLabel: "Confirmer",
+                            });
+                            if (!ok) return;
+                            try {
+                              await apiFetch(`/api/admin/demandes-ajout-dossier/${row._id}/mark-in-review`, {
+                                method: "POST",
+                              });
+                              toast({ title: t("common.operationSuccess") });
+                              setRefreshKey((k) => k + 1);
+                            } catch (err) {
+                              await alertApp(err instanceof Error ? err.message : "Erreur");
+                            }
+                          }}
+                        >
+                          <Clock className="h-3.5 w-3.5" />
+                          En cours de révision
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="h-7 gap-1 bg-[#2f6b4a] text-xs hover:bg-[#245540]"
+                          onClick={() => handleConfirm(row)}
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          {t("admin.confirmDossier")}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 gap-1 text-xs text-[#b3391f] hover:bg-[#b3391f]/10"
+                          onClick={() => openReject(row)}
+                        >
+                          <XCircle className="h-3.5 w-3.5" />
+                          {t("admin.rejectDossier")}
+                        </Button>
+                      </div>
+                    )}
         </div>
       ),
     },
@@ -168,8 +191,10 @@ export default function AdminDemandesAjoutDossierPage() {
           label: t("common.status"),
           options: [
             { value: "en_attente", label: t("statuses.en_attente") },
+            { value: "en_cours_de_revision", label: t("statuses.en_cours_de_revision") },
             { value: "confirmed", label: t("statuses.confirmed") },
             { value: "rejected", label: t("statuses.rejected") },
+            { value: "cancelled", label: t("statuses.cancelled") },
           ],
         }}
       />

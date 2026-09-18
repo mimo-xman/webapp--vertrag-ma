@@ -8,6 +8,9 @@ export interface IUser extends mongoose.Document {
   role: "user" | "admin";
   active: boolean;
   dossier_pdf_link: string | null;
+  dossier_source_type: "ajout" | "creation" | null;
+  dossier_source_demande_id: mongoose.Types.ObjectId | null;
+  dossier_source_ref_number: string | null;
   email_verification_token: string | null;
   email_verification_expires: Date | null;
   delete_account_token: string | null;
@@ -40,6 +43,9 @@ const UserSchema = new Schema<IUser>(
     role: { type: String, enum: ["user", "admin"], default: "user", index: true },
     active: { type: Boolean, default: false },
     dossier_pdf_link: { type: String, default: null },
+    dossier_source_type: { type: String, enum: ["ajout", "creation"], default: null },
+    dossier_source_demande_id: { type: Schema.Types.ObjectId, default: null },
+    dossier_source_ref_number: { type: String, default: null },
     email_verification_token: { type: String, default: null },
     email_verification_expires: { type: Date, default: null },
     delete_account_token: { type: String, default: null },
