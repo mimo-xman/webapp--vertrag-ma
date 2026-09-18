@@ -165,12 +165,12 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
                   <CircleHelp className="h-5 w-5" />
                 )}
               </div>
-              <div>
+              <div className="min-w-0">
                 <DialogTitle className="font-display text-lg font-bold tracking-tight">
                   {request?.title}
                 </DialogTitle>
                 {request?.message && (
-                  <DialogDescription className="mt-1.5 text-sm leading-relaxed whitespace-pre-line">
+                  <DialogDescription className="mt-1.5 max-h-[55vh] overflow-y-auto break-all text-sm leading-relaxed whitespace-pre-line">
                     {request.message}
                   </DialogDescription>
                 )}

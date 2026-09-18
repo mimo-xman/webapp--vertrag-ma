@@ -10,7 +10,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
-import { Save } from "lucide-react";
+import { CloudUpload, Save } from "lucide-react";
+
+type CloudinaryTestStatus = "ok" | "blocked" | "not_configured" | "error";
+
+interface CloudinaryTestResult {
+  status: CloudinaryTestStatus;
+  message: string;
+  testedUrl?: string;
+}
 
 interface SettingsData {
   postulation_demandes: {
@@ -33,12 +41,36 @@ export default function AdminSettingsPage() {
   const { toast } = useToast();
   const [settings, setSettings] = useState<SettingsData | null>(null);
   const [saving, setSaving] = useState(false);
+  const [cloudTest, setCloudTest] = useState<CloudinaryTestResult | null>(null);
+  const [cloudTesting, setCloudTesting] = useState(false);
 
   useEffect(() => {
     apiFetch<{ settings: SettingsData }>("/api/admin/settings")
       .then((data) => setSettings(data.settings))
       .catch(() => {});
   }, []);
+
+  // Cloudinary self-diagnostic: upload a tiny test PDF, verify its public
+  // delivery, then the server deletes the test asset. Returns the exact fix
+  // steps when the account blocks PDF delivery (console setting).
+  const handleCloudinaryTest = async () => {
+    setCloudTesting(true);
+    setCloudTest(null);
+    try {
+      const data = await apiFetch<{ result: CloudinaryTestResult }>(
+        "/api/admin/cloudinary-test",
+        { method: "POST" }
+      );
+      setCloudTest(data.result);
+    } catch (err) {
+      setCloudTest({
+        status: "error",
+        message: err instanceof Error ? err.message : "Erreur lors du test.",
+      });
+    } finally {
+      setCloudTesting(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!settings) return;
@@ -209,6 +241,50 @@ export default function AdminSettingsPage() {
                 placeholder="https://wa.me/2126XXXXXXXX"
               />
             </div>
+          </div>
+        </div>
+        {/* Cloudinary — PDF hosting diagnostic */}
+        <div className="form-sheet lg:col-span-2">
+          <div className="sheet-band px-5 py-3.5">
+            <h2 className="font-display text-sm font-bold">{t("admin.cloudinaryTitle")}</h2>
+          </div>
+          <div className="space-y-4 p-5">
+            <p className="text-sm text-muted-foreground">{t("admin.cloudinaryHint")}</p>
+            <div>
+              <Button
+                variant="outline"
+                onClick={handleCloudinaryTest}
+                disabled={cloudTesting}
+                className="font-semibold"
+              >
+                <CloudUpload className="mr-1.5 h-4 w-4" />
+                {cloudTesting ? t("common.loading") : t("admin.cloudinaryTestBtn")}
+              </Button>
+            </div>
+            {cloudTest && (
+              <div
+                className={`rounded-sm border p-4 text-sm leading-relaxed ${
+                  cloudTest.status === "ok"
+                    ? "border-emerald-600/30 bg-emerald-600/10"
+                    : cloudTest.status === "not_configured"
+                      ? "border-amber-600/30 bg-amber-600/10"
+                      : "border-[#b3391f]/30 bg-[#b3391f]/10"
+                }`}
+              >
+                <p className="mb-1 font-display font-bold">
+                  {cloudTest.status === "ok"
+                    ? t("admin.cloudinaryStatusOk")
+                    : cloudTest.status === "blocked"
+                      ? t("admin.cloudinaryStatusBlocked")
+                      : cloudTest.status === "not_configured"
+                        ? t("admin.cloudinaryStatusNotConfigured")
+                        : t("admin.cloudinaryStatusError")}
+                </p>
+                <p className="break-all whitespace-pre-line text-muted-foreground">
+                  {cloudTest.message}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

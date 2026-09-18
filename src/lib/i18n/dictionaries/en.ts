@@ -513,5 +513,13 @@ export default {
     dossierAddPrice: "Dossier addition price ($)",
     dossierAddPriceHint: "0 by default: verifying an uploaded dossier is free.",
     settingsSaved: "Settings saved",
+    cloudinaryTitle: "File hosting (Cloudinary)",
+    cloudinaryHint:
+      "Automatic test: a tiny PDF is uploaded to Cloudinary, its public link is verified, then the test file is deleted. Run it after every configuration change.",
+    cloudinaryTestBtn: "Test PDF delivery",
+    cloudinaryStatusOk: "Cloudinary is operational",
+    cloudinaryStatusBlocked: "PDF delivery blocked",
+    cloudinaryStatusNotConfigured: "Cloudinary not configured",
+    cloudinaryStatusError: "Cloudinary error",
   },
 } as const;

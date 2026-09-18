@@ -520,5 +520,13 @@ export default {
     dossierAddPrice: "Prix d'ajout du dossier ($)",
     dossierAddPriceHint: "0 par défaut : la vérification d'un dossier téléversé est gratuite.",
     settingsSaved: "Paramètres enregistrés",
+    cloudinaryTitle: "Hébergement des fichiers (Cloudinary)",
+    cloudinaryHint:
+      "Test automatique : un mini-PDF est envoyé sur Cloudinary, son lien public est vérifié, puis le fichier de test est supprimé. À exécuter après chaque changement de configuration.",
+    cloudinaryTestBtn: "Tester la distribution PDF",
+    cloudinaryStatusOk: "Cloudinary est opérationnel",
+    cloudinaryStatusBlocked: "Distribution des PDF bloquée",
+    cloudinaryStatusNotConfigured: "Cloudinary non configuré",
+    cloudinaryStatusError: "Erreur Cloudinary",
   },
 } as const;

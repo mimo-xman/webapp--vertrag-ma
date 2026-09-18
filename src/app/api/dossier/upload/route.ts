@@ -5,7 +5,7 @@ import { User } from "@/models/User";
 import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
 import { DossierDemandeForCreate } from "@/models/DossierDemandeForCreate";
 import { getSettings } from "@/models/Setting";
-import { uploadPdfToCloudinary, validatePdfFile } from "@/lib/cloudinary";
+import { CloudinaryError, uploadPdfToCloudinary, validatePdfFile } from "@/lib/cloudinary";
 import { generateRefNumber } from "@/lib/audit";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
@@ -84,13 +84,16 @@ export async function POST(request: NextRequest) {
       demande: { _id: String(demande._id), ref_number: demande.ref_number },
     });
   } catch (error) {
-    // Surface the real cause (e.g. Cloudinary not configured) instead of a
-    // generic message, so the problem can be fixed immediately.
+    // Users get a clean message; the detailed Cloudinary cause (with fix
+    // steps) is logged and available to the admin via the settings page test.
     console.error("[DOSSIER-UPLOAD]", error);
-    const message =
-      error instanceof Error && error.message.startsWith("Cloudinary")
-        ? "Le service d'hébergement des fichiers n'est pas configuré. Contactez l'équipe Vertrag.ma."
-        : "Erreur lors de l'envoi du dossier";
+    let message = "Erreur lors de l'envoi du dossier";
+    if (error instanceof CloudinaryError) {
+      message =
+        error.code === "not_configured"
+          ? "Le service d'hébergement des fichiers n'est pas configuré. Contactez l'équipe Vertrag.ma."
+          : "Le service d'hébergement des fichiers rencontre un problème technique. Contactez l'équipe Vertrag.ma puis réessayez.";
+    }
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

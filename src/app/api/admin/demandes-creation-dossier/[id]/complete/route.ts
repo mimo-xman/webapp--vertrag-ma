@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/auth";
 import { DossierDemandeForCreate } from "@/models/DossierDemandeForCreate";
 import { User } from "@/models/User";
 import { logAdminAction } from "@/lib/audit";
-import { uploadPdfToCloudinary, validatePdfFile } from "@/lib/cloudinary";
+import { CloudinaryError, uploadPdfToCloudinary, validatePdfFile } from "@/lib/cloudinary";
 
 // POST — complete: multipart form with "file" (final dossier PDF) +
 // optional traduction_price. Uploads to Cloudinary, saves the link in
@@ -18,13 +18,12 @@ export async function POST(
   try {
     return await handleComplete(request, (await params).id);
   } catch (error) {
-    // Surface the real cause (e.g. Cloudinary not configured / link not
-    // publicly reachable) as a clean JSON error for the admin UI.
+    // Surface the real cause with the exact fix steps (e.g. Cloudinary
+    // account blocks PDF delivery) as a clean JSON error for the admin UI.
     console.error("[DOSSIER-COMPLETE]", error);
     const message =
-      error instanceof Error && error.message.startsWith("Cloudinary")
-        ? "Le service d'hébergement des fichiers n'est pas configuré ou le lien généré n'est pas accessible. Détail : " +
-          error.message
+      error instanceof CloudinaryError
+        ? error.message
         : "Erreur lors de la livraison du dossier";
     return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
