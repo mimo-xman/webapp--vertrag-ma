@@ -7,9 +7,27 @@ import { hashPassword } from "@/lib/auth";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 import { sendVerificationEmail } from "@/lib/email";
 
+// Birth date between 01/01/1900 and today — reasonable bounds only.
+function isValidBirthDate(value: string): boolean {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  if (Number.isNaN(date.getTime())) return false;
+  const min = new Date(1900, 0, 1);
+  const now = new Date();
+  const max = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return date >= min && date <= max;
+}
+
 const schema = z.object({
   full_name: z.string().trim().min(3).max(80),
-  date_of_birth: z.string().optional().nullable(),
+  date_of_birth: z
+    .string()
+    .optional()
+    .nullable()
+    .refine((v) => !v || isValidBirthDate(v), {
+      message: "Date de naissance invalide (entre 01/01/1900 et aujourd'hui)",
+    }),
   email: z.string().email(),
   password: z.string().min(6).max(128),
   confirm_password: z.string().min(6).max(128),

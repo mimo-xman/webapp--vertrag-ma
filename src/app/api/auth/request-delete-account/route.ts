@@ -7,6 +7,7 @@ import { User } from "@/models/User";
 import { comparePassword, requireAuth } from "@/lib/auth";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 import { sendDeleteAccountEmail } from "@/lib/email";
+import { verifyTotp } from "@/lib/totp";
 
 const schema = z.object({
   password: z.string().min(1),
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
     await connectDB();
     const user = await User.findById(auth.user._id);
     if (!user) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ success: false, error: "Session expirée", code: "AUTH_REQUIRED" }, { status: 401 });
     }
 
     const valid = await comparePassword(parsed.data.password, user.password);
@@ -54,16 +55,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-      const { authenticator } = await import("otplib");
-      let codeOk = false;
-      try {
-        codeOk = authenticator.verify({
-          token: parsed.data.two_factor_code,
-          secret: user.two_factor_secret!,
-        });
-      } catch {
-        codeOk = false;
-      }
+      let codeOk = verifyTotp(user.two_factor_secret!, parsed.data.two_factor_code);
       if (!codeOk) {
         const codeIndex = user.two_factor_backup_codes.findIndex(
           (c) => c.toLowerCase() === parsed.data.two_factor_code!.toLowerCase()

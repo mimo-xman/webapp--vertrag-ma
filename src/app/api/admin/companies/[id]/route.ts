@@ -60,7 +60,7 @@ export async function PUT(
       email: parsed.data.email.toLowerCase(),
       categorie_ids: parsed.data.categorie_ids,
     },
-    { new: true }
+    { returnDocument: "after" }
   );
   if (!company) {
     return NextResponse.json({ success: false, error: "Entreprise introuvable" }, { status: 404 });

@@ -30,7 +30,7 @@ export async function POST(
     );
   }
 
-  const user = await User.findByIdAndUpdate(id, { role: parsed.data.role }, { new: true });
+  const user = await User.findByIdAndUpdate(id, { role: parsed.data.role }, { returnDocument: "after" });
   if (!user) {
     return NextResponse.json({ success: false, error: "Utilisateur introuvable" }, { status: 404 });
   }

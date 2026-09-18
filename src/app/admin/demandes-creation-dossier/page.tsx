@@ -8,6 +8,7 @@ import { StatusStamp } from "@/components/stamp";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +20,11 @@ import {
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
+import {
+  createStatusKey,
+  statusVariant,
+  adminCanCancel,
+} from "@/lib/dossier-status";
 import { Banknote, CalendarClock, Upload, Loader2, XCircle } from "lucide-react";
 
 interface DemandeRow {
@@ -27,6 +33,8 @@ interface DemandeRow {
   price: number;
   traduction_price: number;
   status: string;
+  cancelled_by: "user" | "admin" | null;
+  cancelled_at: string | null;
   payed_at: string | null;
   dossier_ready_at: string | null;
   completed_at: string | null;
@@ -54,6 +62,11 @@ export default function AdminDemandesCreationDossierPage() {
   const [finalFile, setFinalFile] = useState<File | null>(null);
   const [finalTraduction, setFinalTraduction] = useState("");
   const [uploading, setUploading] = useState(false);
+
+  // Cancel dialog (proper dialog instead of browser prompt)
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelTarget, setCancelTarget] = useState<DemandeRow | null>(null);
+  const [cancelMessage, setCancelMessage] = useState("");
 
   const openPay = (row: DemandeRow) => {
     setPayTarget(row);
@@ -115,6 +128,30 @@ export default function AdminDemandesCreationDossierPage() {
     }
   };
 
+  const openCancel = (row: DemandeRow) => {
+    setCancelTarget(row);
+    setCancelMessage("");
+    setCancelOpen(true);
+  };
+
+  const handleCancel = async () => {
+    if (!cancelTarget) return;
+    setSaving(true);
+    try {
+      await apiFetch(`/api/admin/demandes-creation-dossier/${cancelTarget._id}/cancel`, {
+        method: "POST",
+        body: JSON.stringify({ message: cancelMessage.trim() }),
+      });
+      toast({ title: t("common.operationSuccess") });
+      setCancelOpen(false);
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      await alertApp(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const columns: DataTableColumn<DemandeRow>[] = [
     {
       key: "ref_number",
@@ -163,7 +200,9 @@ export default function AdminDemandesCreationDossierPage() {
       key: "status",
       header: t("demandes.status"),
       sortable: true,
-      render: (row) => <StatusStamp status={row.status} label={t(`statuses.${row.status}`)} />,
+      render: (row) => (
+        <StatusStamp status={statusVariant(row)} label={t(createStatusKey(row))} />
+      ),
     },
     {
       key: "actions",
@@ -232,25 +271,12 @@ export default function AdminDemandesCreationDossierPage() {
               </a>
             </Button>
           )}
-          {(row.status === "en_attente" || row.status === "payed" || row.status === "in_creation") && (
+          {adminCanCancel("creation", row) && (
             <Button
               size="sm"
               variant="outline"
               className="h-7 gap-1 text-xs text-[#b3391f] hover:bg-[#b3391f]/10"
-              onClick={async () => {
-                const message = prompt("Message d'annulation (5 caractères minimum) :");
-                if (!message || message.trim().length < 5) return;
-                try {
-                  await apiFetch(`/api/admin/demandes-creation-dossier/${row._id}/cancel`, {
-                    method: "POST",
-                    body: JSON.stringify({ message: message.trim() }),
-                  });
-                  toast({ title: t("common.operationSuccess") });
-                  setRefreshKey((k) => k + 1);
-                } catch (err) {
-                  await alertApp(err instanceof Error ? err.message : "Erreur");
-                }
-              }}
+              onClick={() => openCancel(row)}
             >
               <XCircle className="h-3.5 w-3.5" />
               Annuler
@@ -276,11 +302,11 @@ export default function AdminDemandesCreationDossierPage() {
           key: "status",
           label: t("common.status"),
           options: [
-            { value: "en_attente", label: t("statuses.en_attente") },
-            { value: "payed", label: t("statuses.payed") },
-            { value: "in_creation", label: t("statuses.in_creation") },
-            { value: "completed", label: t("statuses.completed") },
-            { value: "cancelled", label: t("statuses.cancelled") },
+            { value: "en_attente", label: t("dossier.statusAwaitingPayment") },
+            { value: "payed", label: t("dossier.statusPaidAwaitingCreation") },
+            { value: "in_creation", label: t("dossier.statusPaidInCreation") },
+            { value: "completed", label: t("dossier.statusCompleted") },
+            { value: "cancelled", label: t("dossier.statusCancelledByUser") },
           ],
         }}
       />
@@ -312,7 +338,7 @@ export default function AdminDemandesCreationDossierPage() {
                 onChange={(e) => setTraductionPrice(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                0 si l'utilisateur a payé ses diplômes déjà traduits.
+                0 si l&apos;utilisateur a payé ses diplômes déjà traduits.
               </p>
             </div>
           </div>
@@ -322,6 +348,42 @@ export default function AdminDemandesCreationDossierPage() {
             </Button>
             <Button onClick={handleConfirmPayment} disabled={saving} className="font-semibold">
               {saving ? t("common.loading") : t("admin.confirmPayed")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel with message dialog */}
+      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display">Annuler la demande</DialogTitle>
+            <DialogDescription>
+              {cancelTarget?.ref_number} — la demande sera marquée « annulée par
+              l&apos;admin » et l&apos;utilisateur pourra en créer une nouvelle.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-1.5">
+            <Label>Message d&apos;annulation (visible par l&apos;équipe)</Label>
+            <Textarea
+              autoFocus
+              value={cancelMessage}
+              onChange={(e) => setCancelMessage(e.target.value)}
+              rows={4}
+              placeholder="Expliquez la raison de l'annulation…"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleCancel}
+              disabled={cancelMessage.trim().length < 5 || saving}
+              className="font-semibold"
+            >
+              {saving ? t("common.loading") : "Annuler la demande"}
             </Button>
           </DialogFooter>
         </DialogContent>

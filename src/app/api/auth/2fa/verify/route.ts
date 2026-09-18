@@ -4,6 +4,7 @@ import { z } from "zod";
 import { connectDB } from "@/lib/mongodb";
 import { User } from "@/models/User";
 import { requireAuth } from "@/lib/auth";
+import { verifyTotp } from "@/lib/totp";
 
 const schema = z.object({ code: z.string().length(6) });
 
@@ -28,16 +29,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { authenticator } = await import("otplib");
-  let verified = false;
-  try {
-    verified = authenticator.verify({
-      token: parsed.data.code,
-      secret: user.two_factor_secret,
-    });
-  } catch {
-    verified = false;
-  }
+  const verified = verifyTotp(user.two_factor_secret, parsed.data.code);
 
   if (!verified) {
     return NextResponse.json({ success: false, error: "Code incorrect" }, { status: 400 });

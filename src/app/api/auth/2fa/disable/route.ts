@@ -3,6 +3,7 @@ import { z } from "zod";
 import { connectDB } from "@/lib/mongodb";
 import { User } from "@/models/User";
 import { comparePassword, requireAuth } from "@/lib/auth";
+import { verifyTotp } from "@/lib/totp";
 
 const schema = z.object({
   password: z.string().min(1),
@@ -33,16 +34,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: "Mot de passe incorrect" }, { status: 400 });
   }
 
-  const { authenticator } = await import("otplib");
-  let codeOk = false;
-  try {
-    codeOk = authenticator.verify({
-      token: parsed.data.code,
-      secret: user.two_factor_secret!,
-    });
-  } catch {
-    codeOk = false;
-  }
+  const codeOk = verifyTotp(user.two_factor_secret!, parsed.data.code);
 
   if (!codeOk) {
     return NextResponse.json({ success: false, error: "Code incorrect" }, { status: 400 });

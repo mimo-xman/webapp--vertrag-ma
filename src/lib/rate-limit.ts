@@ -42,8 +42,10 @@ export function rateLimit(
   limit: number,
   windowMs: number
 ): RateLimitResult {
-  // Bypass for automated testing
-  if (process.env.DISABLE_RATE_LIMIT === "true") {
+  // Bypass for automated testing. Accepts both "true" and "test"
+  // (the value documented in DEPLOYMENT.md).
+  const flag = process.env.DISABLE_RATE_LIMIT;
+  if (flag === "true" || flag === "test") {
     return { success: true, remaining: 999, resetAt: Date.now() + windowMs };
   }
 

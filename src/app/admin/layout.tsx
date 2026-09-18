@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getAuthUser } from "@/lib/auth";
 import { AdminSidebar } from "@/components/admin-sidebar";
 import { AppPopupProvider } from "@/components/app-popup";
+import { SessionWatcher } from "@/components/session-watcher";
 import { Toaster } from "@/components/ui/toaster";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -15,6 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <AdminSidebar userEmail={user.email} />
         <div className="min-w-0 flex-1">
           <AppPopupProvider>
+            <SessionWatcher />
             <main className="min-h-dvh bg-[#f4f2ec] lg:rounded-tl-lg">{children}</main>
           </AppPopupProvider>
         </div>

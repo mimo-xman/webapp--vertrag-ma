@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     // Preconditions.
     const user = await User.findById(auth.user._id);
     if (!user) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ success: false, error: "Session expirée", code: "AUTH_REQUIRED" }, { status: 401 });
     }
     if (!user.dossier_pdf_link) {
       return NextResponse.json(

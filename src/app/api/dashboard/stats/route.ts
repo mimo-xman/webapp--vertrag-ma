@@ -20,10 +20,12 @@ export async function GET(request: NextRequest) {
     demandesByStatus,
     upcoming,
     user,
-    pendingAddDemande,
-    pendingCreateDemande,
-    allAddDemandes,
-    allCreateDemandes,
+    activeAddDemande,
+    activeCreateDemande,
+    lastAddDemande,
+    lastCreateDemande,
+    totalAddDemandes,
+    totalCreateDemandes,
   ] = await Promise.all([
     Postulation.aggregate<{ _id: string; count: number }>([
       { $match: { user_id: userId } },
@@ -43,13 +45,12 @@ export async function GET(request: NextRequest) {
       .populate("company_id", "name")
       .lean(),
     User.findById(userId).select("dossier_pdf_link").lean(),
-    DossierDemandeForAdd.findOne({ user_id: userId, status: "en_attente" }).lean(),
-    DossierDemandeForCreate.findOne({
-      user_id: userId,
-      status: { $in: ["en_attente", "payed"] },
-    }).lean(),
-    DossierDemandeForAdd.find({ user_id: userId }).lean(),
-    DossierDemandeForCreate.find({ user_id: userId }).lean(),
+    DossierDemandeForAdd.findOne({ user_id: userId, active: true }).lean(),
+    DossierDemandeForCreate.findOne({ user_id: userId, active: true }).lean(),
+    DossierDemandeForAdd.findOne({ user_id: userId }).sort({ createdAt: -1 }).lean(),
+    DossierDemandeForCreate.findOne({ user_id: userId }).sort({ createdAt: -1 }).lean(),
+    DossierDemandeForAdd.countDocuments({ user_id: userId }),
+    DossierDemandeForCreate.countDocuments({ user_id: userId }),
   ]);
 
   const statusMap: Record<string, number> = {};
@@ -57,6 +58,56 @@ export async function GET(request: NextRequest) {
 
   const demandesMap: Record<string, number> = {};
   for (const entry of demandesByStatus) demandesMap[entry._id] = entry.count;
+
+  // The single active demande (at most one by design: creation XOR add).
+  const activeDemande = activeCreateDemande
+    ? {
+        type: "creation" as const,
+        ref_number: activeCreateDemande.ref_number,
+        status: activeCreateDemande.status,
+        cancelled_by: activeCreateDemande.cancelled_by,
+        price: activeCreateDemande.price,
+        traduction_price: activeCreateDemande.traduction_price || 0,
+        payed_at: activeCreateDemande.payed_at,
+        created_at: activeCreateDemande.createdAt,
+      }
+    : activeAddDemande
+      ? {
+          type: "ajout" as const,
+          ref_number: activeAddDemande.ref_number,
+          status: activeAddDemande.status,
+          cancelled_by: activeAddDemande.cancelled_by,
+          price: activeAddDemande.price,
+          traduction_price: 0,
+          created_at: activeAddDemande.createdAt,
+        }
+      : null;
+
+  // The most recent demande of either type (for the dashboard summary).
+  const lastDemande =
+    lastCreateDemande && (!lastAddDemande ||
+      new Date(lastCreateDemande.createdAt) >= new Date(lastAddDemande.createdAt))
+      ? {
+          type: "creation" as const,
+          ref_number: lastCreateDemande.ref_number,
+          status: lastCreateDemande.status,
+          cancelled_by: lastCreateDemande.cancelled_by,
+          price: lastCreateDemande.price,
+          traduction_price: lastCreateDemande.traduction_price || 0,
+          payed_at: lastCreateDemande.payed_at,
+          created_at: lastCreateDemande.createdAt,
+        }
+      : lastAddDemande
+        ? {
+            type: "ajout" as const,
+            ref_number: lastAddDemande.ref_number,
+            status: lastAddDemande.status,
+            cancelled_by: lastAddDemande.cancelled_by,
+            price: lastAddDemande.price,
+            traduction_price: 0,
+            created_at: lastAddDemande.createdAt,
+          }
+        : null;
 
   return NextResponse.json({
     success: true,
@@ -77,15 +128,10 @@ export async function GET(request: NextRequest) {
       dossier: {
         has_dossier: Boolean(user?.dossier_pdf_link),
         dossier_pdf_link: user?.dossier_pdf_link || null,
-        pending_add_demande: Boolean(pendingAddDemande),
-        pending_create_demande: pendingCreateDemande
-          ? {
-              status: pendingCreateDemande.status,
-              ref_number: pendingCreateDemande.ref_number,
-            }
-          : null,
-        total_add_demandes: allAddDemandes.length,
-        total_create_demandes: allCreateDemandes.length,
+        active_demande: activeDemande,
+        last_demande: lastDemande,
+        total_add_demandes: totalAddDemandes,
+        total_create_demandes: totalCreateDemandes,
       },
     },
     upcoming: upcoming.map((p) => ({

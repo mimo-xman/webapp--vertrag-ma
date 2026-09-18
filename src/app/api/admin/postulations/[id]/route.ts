@@ -31,7 +31,7 @@ export async function PUT(
   if (parsed.data.scheduled_at !== undefined) update.scheduled_at = new Date(parsed.data.scheduled_at);
   if (parsed.data.failed_reason !== undefined) update.failed_reason = parsed.data.failed_reason;
 
-  const postulation = await Postulation.findByIdAndUpdate(id, update, { new: true });
+  const postulation = await Postulation.findByIdAndUpdate(id, update, { returnDocument: "after" });
   if (!postulation) {
     return NextResponse.json({ success: false, error: "Postulation introuvable" }, { status: 404 });
   }

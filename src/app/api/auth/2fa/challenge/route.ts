@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/mongodb";
 import { User } from "@/models/User";
 import { comparePassword, createAuthResponse, signToken } from "@/lib/auth";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
+import { verifyTotp } from "@/lib/totp";
 
 const schema = z.object({
   userId: z.string().min(1),
@@ -32,19 +33,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Code invalide" }, { status: 401 });
     }
 
-    const { authenticator } = await import("otplib");
     let verified = false;
     let usedBackupCode = false;
 
     if (/^\d{6}$/.test(parsed.data.code)) {
-      try {
-        verified = authenticator.verify({
-          token: parsed.data.code,
-          secret: user.two_factor_secret!,
-        });
-      } catch {
-        verified = false;
-      }
+      verified = verifyTotp(user.two_factor_secret!, parsed.data.code);
     }
 
     if (!verified) {

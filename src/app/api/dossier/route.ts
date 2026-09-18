@@ -6,10 +6,57 @@ import { User } from "@/models/User";
 import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
 import { DossierDemandeForCreate } from "@/models/DossierDemandeForCreate";
 import { DossierDeletionHistory } from "@/models/DossierDeletionHistory";
-import { generateRefNumber } from "@/lib/audit";
 
 // GET /api/dossier — current dossier state + demandes history.
+// GET /api/dossier?token=… — email-confirmation link for dossier deletion.
+//   Performs the deletion and redirects to /dossier with a flag.
 export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl;
+  const confirmationToken = searchParams.get("token");
+
+  // ── Email confirmation link: delete the dossier, then redirect ──
+  if (confirmationToken) {
+    await connectDB();
+    const user = await User.findOne({
+      dossier_delete_token: confirmationToken,
+      dossier_delete_expires: { $gt: new Date() },
+      dossier_pdf_link: { $ne: null },
+    })
+      .select(
+        "dossier_pdf_link dossier_source_type dossier_source_demande_id dossier_source_ref_number"
+      )
+      .lean();
+
+    if (!user) {
+      return new NextResponse(invalidTokenPage(), {
+        status: 400,
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+      });
+    }
+
+    await DossierDeletionHistory.create({
+      user_id: user._id,
+      dossier_pdf_link: user.dossier_pdf_link,
+      source_type: user.dossier_source_type,
+      source_demande_id: user.dossier_source_demande_id,
+      source_ref_number: user.dossier_source_ref_number,
+      deleted_at: new Date(),
+    });
+
+    await User.findByIdAndUpdate(user._id, {
+      dossier_pdf_link: null,
+      dossier_source_type: null,
+      dossier_source_demande_id: null,
+      dossier_source_ref_number: null,
+      dossier_delete_token: null,
+      dossier_delete_expires: null,
+    });
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:4000";
+    return NextResponse.redirect(`${appUrl}/dossier?dossier_deleted=1`, { status: 303 });
+  }
+
+  // ── Normal data fetch ──
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
 
@@ -17,7 +64,9 @@ export async function GET(request: NextRequest) {
   const settings = await getSettings();
 
   const user = await User.findById(auth.user._id)
-    .select("dossier_pdf_link full_name email")
+    .select(
+      "dossier_pdf_link dossier_source_type dossier_source_demande_id dossier_source_ref_number"
+    )
     .lean();
 
   const [addDemandes, createDemandes, deletionHistory] = await Promise.all([
@@ -32,7 +81,9 @@ export async function GET(request: NextRequest) {
       pdf_link: user?.dossier_pdf_link || null,
       status: user?.dossier_pdf_link ? "active" : "missing",
       source_type: user?.dossier_source_type || null,
-      source_demande_id: user?.dossier_source_demande_id || null,
+      source_demande_id: user?.dossier_source_demande_id
+        ? String(user.dossier_source_demande_id)
+        : null,
       source_ref_number: user?.dossier_source_ref_number || null,
     },
     creation_price: settings.dossier.creation_price,
@@ -42,6 +93,7 @@ export async function GET(request: NextRequest) {
       _id: String(d._id),
       ref_number: d.ref_number,
       status: d.status,
+      active: d.active,
       message_on_failed: d.message_on_failed,
       confirmed_at: d.confirmed_at,
       createdAt: d.createdAt,
@@ -53,6 +105,7 @@ export async function GET(request: NextRequest) {
       _id: String(d._id),
       ref_number: d.ref_number,
       status: d.status,
+      active: d.active,
       price: d.price,
       traduction_price: d.traduction_price,
       payed_at: d.payed_at,
@@ -73,19 +126,14 @@ export async function GET(request: NextRequest) {
   });
 }
 
-// DELETE /api/dossier — permanently delete the user's dossier.
-// Blocked while postulations are pending (dossier required to send them).
-// Requires email confirmation token sent to user.
+// DELETE /api/dossier — first call sends a confirmation email; the email
+// link (GET ?token=…) performs the actual deletion.
 export async function DELETE(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
 
-  const { searchParams } = request.nextUrl;
-  const confirmationToken = searchParams.get("token");
-
   await connectDB();
   const { Postulation } = await import("@/models/Postulation");
-  const { DossierDeletionHistory } = await import("@/models/DossierDeletionHistory");
   const { sendEmail } = await import("@/lib/email");
 
   const pendingCount = await Postulation.countDocuments({
@@ -104,7 +152,7 @@ export async function DELETE(request: NextRequest) {
   }
 
   const user = await User.findById(auth.user._id).select(
-    "dossier_pdf_link dossier_source_type dossier_source_demande_id dossier_source_ref_number email full_name"
+    "dossier_pdf_link email full_name"
   ).lean();
 
   if (!user?.dossier_pdf_link) {
@@ -114,63 +162,46 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  // If no token provided, send confirmation email
-  if (!confirmationToken) {
-    const token = crypto.randomUUID();
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
-    await User.findByIdAndUpdate(auth.user._id, {
-      delete_account_token: token,
-      delete_account_expires: expires,
-    });
-
-    const confirmUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:4000"}/api/dossier?token=${token}`;
-    
-    await sendEmail({
-      to: user.email,
-      subject: "Confirmation de suppression de votre dossier - Vertrag.ma",
-      html: `
-        <p>Bonjour ${user.full_name},</p>
-        <p>Vous avez demandé la suppression de votre dossier sur Vertrag.ma.</p>
-        <p>Cette action est <strong>irréversible</strong> : votre dossier sera définitivement supprimé et vous ne pourrez plus demander de postulations sans le re-téléverser.</p>
-        <p><a href="${confirmUrl}" style="background: #b3391f; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">Confirmer la suppression</a></p>
-        <p>Ce lien expire dans 24 heures.</p>
-        <p>Si vous n'avez pas demandé cette suppression, ignorez cet email.</p>
-      `,
-    });
-
-    return NextResponse.json({
-      success: true,
-      message: "Un email de confirmation a été envoyé. Vérifiez votre boîte de réception.",
-    });
-  }
-
-  // Verify token
-  if (user.delete_account_token !== confirmationToken || !user.delete_account_expires || new Date() > user.delete_account_expires) {
-    return NextResponse.json(
-      { success: false, error: "Lien de confirmation invalide ou expiré." },
-      { status: 400 }
-    );
-  }
-
-  // Save deletion history
-  await DossierDeletionHistory.create({
-    user_id: auth.user._id,
-    dossier_pdf_link: user.dossier_pdf_link,
-    source_type: user.dossier_source_type,
-    source_demande_id: user.dossier_source_demande_id,
-    source_ref_number: user.dossier_source_ref_number,
-    deleted_at: new Date(),
-  });
-
-  // Clear dossier and source info
+  // Send the confirmation email with a dedicated dossier-deletion token
+  // (separate from the account-deletion token).
+  const token = crypto.randomUUID();
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
   await User.findByIdAndUpdate(auth.user._id, {
-    dossier_pdf_link: null,
-    dossier_source_type: null,
-    dossier_source_demande_id: null,
-    dossier_source_ref_number: null,
-    delete_account_token: null,
-    delete_account_expires: null,
+    dossier_delete_token: token,
+    dossier_delete_expires: expires,
   });
 
-  return NextResponse.json({ success: true, message: "Dossier supprimé" });
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:4000";
+  const confirmUrl = `${appUrl}/api/dossier?token=${token}`;
+
+  await sendEmail({
+    to: user.email,
+    subject: "Confirmation de suppression de votre dossier - Vertrag.ma",
+    htmlContent: `
+      <p>Bonjour ${user.full_name},</p>
+      <p>Vous avez demandé la suppression de votre dossier sur Vertrag.ma.</p>
+      <p>Cette action est <strong>irréversible</strong> : votre dossier sera définitivement supprimé et vous ne pourrez plus demander de postulations sans le re-téléverser.</p>
+      <p><a href="${confirmUrl}" style="background: #b3391f; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">Confirmer la suppression</a></p>
+      <p>Ce lien expire dans 24 heures.</p>
+      <p>Si vous n'avez pas demandé cette suppression, ignorez cet email.</p>
+    `,
+  });
+
+  return NextResponse.json({
+    success: true,
+    requires_confirmation: true,
+    message: "Un email de confirmation a été envoyé. Vérifiez votre boîte de réception.",
+  });
+}
+
+function invalidTokenPage(): string {
+  return `<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><title>Vertrag.ma</title>
+<style>body{font-family:Helvetica,Arial,sans-serif;background:#f4f2ec;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
+.card{max-width:420px;background:#fff;border:1px solid #d8d5cc;padding:32px;text-align:center}
+h1{color:#b3391f;font-size:18px;margin:0 0 8px}p{color:#71757c;font-size:14px;line-height:1.5}
+a{color:#1e4475}</style></head>
+<body><div class="card"><h1>Lien invalide ou expiré</h1>
+<p>Le lien de suppression du dossier est invalide ou a expiré.</p>
+<p><a href="/">Retour à Vertrag.ma</a></p></div></body></html>`;
 }

@@ -18,6 +18,7 @@ import {
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
+import { addStatusKey, statusVariant, addPriceParts } from "@/lib/dossier-status";
 import { CheckCircle2, XCircle, ExternalLink, Eye, Clock } from "lucide-react";
 
 interface DemandeRow {
@@ -25,6 +26,9 @@ interface DemandeRow {
   ref_number: string;
   dossier_pdf_link: string;
   status: string;
+  price: number;
+  cancelled_by: "user" | "admin" | null;
+  cancelled_at: string | null;
   message_on_failed: string | null;
   createdAt: string;
   user: { _id: string; full_name: string; email: string } | null;
@@ -91,6 +95,12 @@ export default function AdminDemandesAjoutDossierPage() {
       ),
     },
     {
+      key: "price",
+      header: t("demandes.price"),
+      sortable: true,
+      render: (row) => <span className="num">{addPriceParts(t, row)}</span>,
+    },
+    {
       key: "createdAt",
       header: t("common.createdAt"),
       sortable: true,
@@ -106,7 +116,7 @@ export default function AdminDemandesAjoutDossierPage() {
       sortable: true,
       render: (row) => (
         <div className="space-y-1">
-          <StatusStamp status={row.status} label={t(`statuses.${row.status}`)} />
+          <StatusStamp status={statusVariant(row)} label={t(addStatusKey(row))} />
           {row.status === "rejected" && row.message_on_failed && (
             <p className="max-w-48 truncate text-[11px] text-[#b3391f]" title={row.message_on_failed}>
               {row.message_on_failed}
@@ -127,49 +137,49 @@ export default function AdminDemandesAjoutDossierPage() {
             </a>
           </Button>
           {row.status === "en_attente" && (
-                      <div className="flex gap-1">
-                        <Button
-                          size="sm"
-                          className="h-7 gap-1 bg-[#1e4475] text-xs hover:bg-[#163358]"
-                          onClick={async () => {
-                            const ok = await confirmApp("Marquer ce dossier comme en cours de révision ? L'utilisateur ne pourra plus l'annuler.", {
-                              title: "En cours de révision",
-                              confirmLabel: "Confirmer",
-                            });
-                            if (!ok) return;
-                            try {
-                              await apiFetch(`/api/admin/demandes-ajout-dossier/${row._id}/mark-in-review`, {
-                                method: "POST",
-                              });
-                              toast({ title: t("common.operationSuccess") });
-                              setRefreshKey((k) => k + 1);
-                            } catch (err) {
-                              await alertApp(err instanceof Error ? err.message : "Erreur");
-                            }
-                          }}
-                        >
-                          <Clock className="h-3.5 w-3.5" />
-                          En cours de révision
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="h-7 gap-1 bg-[#2f6b4a] text-xs hover:bg-[#245540]"
-                          onClick={() => handleConfirm(row)}
-                        >
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                          {t("admin.confirmDossier")}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 gap-1 text-xs text-[#b3391f] hover:bg-[#b3391f]/10"
-                          onClick={() => openReject(row)}
-                        >
-                          <XCircle className="h-3.5 w-3.5" />
-                          {t("admin.rejectDossier")}
-                        </Button>
-                      </div>
-                    )}
+            <div className="flex gap-1">
+              <Button
+                size="sm"
+                className="h-7 gap-1 bg-[#1e4475] text-xs hover:bg-[#163358]"
+                onClick={async () => {
+                  const ok = await confirmApp("Marquer ce dossier comme en cours de révision ? L'utilisateur ne pourra plus l'annuler.", {
+                    title: "En cours de révision",
+                    confirmLabel: "Confirmer",
+                  });
+                  if (!ok) return;
+                  try {
+                    await apiFetch(`/api/admin/demandes-ajout-dossier/${row._id}/mark-in-review`, {
+                      method: "POST",
+                    });
+                    toast({ title: t("common.operationSuccess") });
+                    setRefreshKey((k) => k + 1);
+                  } catch (err) {
+                    await alertApp(err instanceof Error ? err.message : "Erreur");
+                  }
+                }}
+              >
+                <Clock className="h-3.5 w-3.5" />
+                En cours de révision
+              </Button>
+              <Button
+                size="sm"
+                className="h-7 gap-1 bg-[#2f6b4a] text-xs hover:bg-[#245540]"
+                onClick={() => handleConfirm(row)}
+              >
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                {t("admin.confirmDossier")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 gap-1 text-xs text-[#b3391f] hover:bg-[#b3391f]/10"
+                onClick={() => openReject(row)}
+              >
+                <XCircle className="h-3.5 w-3.5" />
+                {t("admin.rejectDossier")}
+              </Button>
+            </div>
+          )}
         </div>
       ),
     },
@@ -190,11 +200,11 @@ export default function AdminDemandesAjoutDossierPage() {
           key: "status",
           label: t("common.status"),
           options: [
-            { value: "en_attente", label: t("statuses.en_attente") },
-            { value: "en_cours_de_revision", label: t("statuses.en_cours_de_revision") },
-            { value: "confirmed", label: t("statuses.confirmed") },
-            { value: "rejected", label: t("statuses.rejected") },
-            { value: "cancelled", label: t("statuses.cancelled") },
+            { value: "en_attente", label: t("dossier.statusAwaitingReview") },
+            { value: "en_cours_de_revision", label: t("dossier.statusUnderReview") },
+            { value: "confirmed", label: t("dossier.statusConfirmed") },
+            { value: "rejected", label: t("dossier.statusRejected") },
+            { value: "cancelled", label: t("dossier.statusCancelledByUser") },
           ],
         }}
       />

@@ -58,25 +58,44 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
   const [inputValue, setInputValue] = useState("");
   const [open, setOpen] = useState(false);
   const resolveRef = useRef<((value: unknown) => void) | null>(null);
+  const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const close = useCallback(
     (value: unknown) => {
       setOpen(false);
       resolveRef.current?.(value);
       resolveRef.current = null;
-      setTimeout(() => setRequest(null), 150);
+      // Clear the request after the close animation — but cancel this timer
+      // if a new popup is opened in the meantime (alert right after confirm).
+      if (clearTimerRef.current) clearTimeout(clearTimerRef.current);
+      clearTimerRef.current = setTimeout(() => {
+        clearTimerRef.current = null;
+        setRequest((current) => {
+          // Only clear if no new popup took over.
+          return current && current.resolve === null ? current : null;
+        });
+      }, 150);
     },
     []
   );
+
+  // Opening a new popup always cancels any pending clear timer.
+  const openPopup = useCallback((req: PopupRequest) => {
+    if (clearTimerRef.current) {
+      clearTimeout(clearTimerRef.current);
+      clearTimerRef.current = null;
+    }
+    setRequest(req);
+    setOpen(true);
+  }, []);
 
   const alertApp = useCallback(
     (message: string, title?: string) =>
       new Promise<void>((resolve) => {
         resolveRef.current = resolve as (value: unknown) => void;
-        setRequest({ kind: "alert", title: title || "Information", message, resolve: resolve as never });
-        setOpen(true);
+        openPopup({ kind: "alert", title: title || "Information", message, resolve: resolve as never });
       }),
-    []
+    [openPopup]
   );
 
   const confirmApp = useCallback(
@@ -91,7 +110,7 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
     ) =>
       new Promise<boolean>((resolve) => {
         resolveRef.current = resolve as (value: unknown) => void;
-        setRequest({
+        openPopup({
           kind: options?.destructive ? "destructive" : "confirm",
           title: options?.title || "Confirmation",
           message,
@@ -99,9 +118,8 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
           cancelLabel: options?.cancelLabel,
           resolve: resolve as never,
         });
-        setOpen(true);
       }),
-    []
+    [openPopup]
   );
 
   const promptApp = useCallback(
@@ -112,7 +130,7 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
       new Promise<string | null>((resolve) => {
         resolveRef.current = resolve as (value: unknown) => void;
         setInputValue(options?.defaultValue || "");
-        setRequest({
+        openPopup({
           kind: "prompt",
           title: options?.title || "Saisie",
           message,
@@ -120,9 +138,8 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
           defaultValue: options?.defaultValue,
           resolve: resolve as never,
         });
-        setOpen(true);
       }),
-    []
+    [openPopup]
   );
 
   const isDestructive = request?.kind === "destructive";

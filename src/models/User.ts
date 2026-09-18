@@ -15,6 +15,8 @@ export interface IUser extends mongoose.Document {
   email_verification_expires: Date | null;
   delete_account_token: string | null;
   delete_account_expires: Date | null;
+  dossier_delete_token: string | null;
+  dossier_delete_expires: Date | null;
   resetToken: string | null;
   resetTokenExpiry: Date | null;
   passwordChangedAt: Date | null;
@@ -50,6 +52,8 @@ const UserSchema = new Schema<IUser>(
     email_verification_expires: { type: Date, default: null },
     delete_account_token: { type: String, default: null },
     delete_account_expires: { type: Date, default: null },
+    dossier_delete_token: { type: String, default: null },
+    dossier_delete_expires: { type: Date, default: null },
     resetToken: { type: String, default: null },
     resetTokenExpiry: { type: Date, default: null },
     passwordChangedAt: { type: Date, default: null },

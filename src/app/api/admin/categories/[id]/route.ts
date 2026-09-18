@@ -23,7 +23,7 @@ export async function PUT(
   }
 
   await connectDB();
-  const category = await Category.findByIdAndUpdate(id, { name: parsed.data.name }, { new: true });
+  const category = await Category.findByIdAndUpdate(id, { name: parsed.data.name }, { returnDocument: "after" });
   if (!category) {
     return NextResponse.json({ success: false, error: "Catégorie introuvable" }, { status: 404 });
   }

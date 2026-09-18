@@ -20,10 +20,20 @@ const protectedRoutes = [
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get(TOKEN_NAME)?.value;
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
+  const hasReason = searchParams.has("reason");
 
-  // Logged-in users are pushed away from auth-only pages
+  // Logged-in users are pushed away from auth-only pages — EXCEPT when the
+  // visit carries a reason flag (session_expired / auth_required). In that
+  // case the cookie is stale or the session was invalidated (password
+  // changed, account deleted): clear it and show the login page instead of
+  // bouncing back, which would cause a redirect loop.
   if (token && authOnlyRoutes.some((route) => pathname.startsWith(route))) {
+    if (hasReason) {
+      const response = NextResponse.next();
+      response.cookies.set(TOKEN_NAME, "", { httpOnly: true, path: "/", maxAge: 0 });
+      return response;
+    }
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

@@ -4,19 +4,40 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api-utils";
 import { useI18n } from "@/components/language-provider";
-import { StatusStamp, Stamp } from "@/components/stamp";
+import { StatusStamp } from "@/components/stamp";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  createStatusKey,
+  addStatusKey,
+  statusVariant,
+  createPriceParts,
+  addPriceParts,
+  type DossierDemandeType,
+  type StatusLike,
+} from "@/lib/dossier-status";
 import {
   Send,
   Clock,
   CheckCircle2,
   XCircle,
-  FileStack,
   FolderOpen,
   CalendarDays,
   FolderX,
+  FilePlus2,
+  FolderUp,
 } from "lucide-react";
+
+interface DemandeInfo {
+  type: DossierDemandeType;
+  ref_number: string;
+  status: string;
+  cancelled_by: "user" | "admin" | null;
+  price: number;
+  traduction_price: number;
+  payed_at: string | null;
+  created_at: string;
+}
 
 interface StatsResponse {
   stats: {
@@ -25,8 +46,8 @@ interface StatsResponse {
     dossier: {
       has_dossier: boolean;
       dossier_pdf_link: string | null;
-      pending_add_demande: boolean;
-      pending_create_demande: { status: string; ref_number: string } | null;
+      active_demande: DemandeInfo | null;
+      last_demande: DemandeInfo | null;
       total_add_demandes: number;
       total_create_demandes: number;
     };
@@ -89,13 +110,31 @@ export default function DashboardPage() {
     },
   ];
 
+  // Unified dossier status — the exact same wording as the dossier page.
+  const activeDemande = stats.dossier.active_demande;
+  const lastDemande = stats.dossier.last_demande;
+
+  const statusKeyOf = (d: DemandeInfo) =>
+    d.type === "creation" ? createStatusKey(d as StatusLike) : addStatusKey(d as StatusLike);
+
+  const priceLabelOf = (d: DemandeInfo) =>
+    d.type === "creation"
+      ? createPriceParts(t, {
+          status: d.status,
+          price: d.price,
+          traduction_price: d.traduction_price,
+          payed_at: d.payed_at,
+        })
+      : addPriceParts(t, { status: d.status, price: d.price });
+
   const dossierState = stats.dossier.has_dossier
     ? { variant: "green" as const, label: t("dashboard.dossierActive") }
-    : stats.dossier.pending_add_demande
-      ? { variant: "ink" as const, label: t("dashboard.dossierPending") }
-      : stats.dossier.pending_create_demande
-        ? { variant: "blue" as const, label: stats.dossier.pending_create_demande.status === "payed" ? t("statuses.payed") : t("dossier.waitingPayment") }
-        : { variant: "red" as const, label: t("dashboard.dossierMissing") };
+    : activeDemande
+      ? {
+          variant: statusVariant(activeDemande) === "red" ? "red" as const : "blue" as const,
+          label: t(statusKeyOf(activeDemande)),
+        }
+      : { variant: "red" as const, label: t("dashboard.dossierMissing") };
 
   return (
     <div className="space-y-6">
@@ -133,7 +172,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Dossier warning banner */}
-      {!stats.dossier.has_dossier && (
+      {!stats.dossier.has_dossier && !activeDemande && (
         <div className="form-sheet flex flex-col gap-3 border-[#d9a441]/50 bg-[#d9a441]/5 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
             <FolderX className="mt-0.5 h-5 w-5 shrink-0 text-[#8a6a1f]" />
@@ -184,7 +223,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Dossier summary - only dossier-related info */}
+        {/* Dossier summary — dossier-related info only */}
         <div className="form-sheet">
           <div className="sheet-band flex items-center justify-between px-5 py-3.5">
             <div className="flex items-center gap-2">
@@ -196,34 +235,56 @@ export default function DashboardPage() {
             </Link>
           </div>
           <div className="space-y-3 p-5">
+            {/* Unified status — same wording as the dossier page */}
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">{t("dashboard.dossierStatus")}</span>
-              <StatusStamp status={dossierState.variant === "green" ? "active" : "en_attente"} label={dossierState.label} />
+              <StatusStamp
+                status={dossierState.variant === "green" ? "active" : "en_attente"}
+                label={dossierState.label}
+              />
             </div>
-            {stats.dossier.has_dossier ? (
+
+            {/* Totals */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">{t("dashboard.totalAddDemandes")}</span>
+              <span className="num text-sm font-semibold">{stats.dossier.total_add_demandes}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">{t("dashboard.totalCreateDemandes")}</span>
+              <span className="num text-sm font-semibold">{stats.dossier.total_create_demandes}</span>
+            </div>
+
+            {/* Latest demande */}
+            {lastDemande && (
               <>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">{t("dashboard.totalAddDemandes")}</span>
-                  <span className="num text-sm font-semibold">{stats.dossier.total_add_demandes}</span>
+                <div className="rule-dashed" />
+                <p className="eyebrow">{t("dossier.lastDemande")}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="flex items-center gap-1.5 text-sm">
+                    {lastDemande.type === "creation" ? (
+                      <FilePlus2 className="h-3.5 w-3.5 text-[#1e4475]" />
+                    ) : (
+                      <FolderUp className="h-3.5 w-3.5 text-[#1e4475]" />
+                    )}
+                    <span className="aktenzeichen">{lastDemande.ref_number}</span>
+                  </span>
+                  <StatusStamp
+                    status={statusVariant(lastDemande)}
+                    label={t(statusKeyOf(lastDemande))}
+                  />
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">{t("dashboard.totalCreateDemandes")}</span>
-                  <span className="num text-sm font-semibold">{stats.dossier.total_create_demandes}</span>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>
+                    {t("dossier.lastDemandeType")} :{" "}
+                    {t(lastDemande.type === "creation" ? "dossier.typeCreate" : "dossier.typeAdd")}
+                    {" · "}
+                    {new Date(lastDemande.created_at).toLocaleDateString("fr-FR")}
+                  </span>
+                  <span className="num">{priceLabelOf(lastDemande)}</span>
                 </div>
               </>
-            ) : stats.dossier.pending_add_demande ? (
-              <div className="text-sm text-muted-foreground">
-                {t("dashboard.dossierPending")}
-              </div>
-            ) : stats.dossier.pending_create_demande ? (
-              <div className="text-sm text-muted-foreground">
-                {t("dossier.waitingPayment")}
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground">
-                {t("dashboard.dossierMissing")}
-              </div>
             )}
+
             <div className="rule-dashed" />
             {stats.dossier.dossier_pdf_link ? (
               <a

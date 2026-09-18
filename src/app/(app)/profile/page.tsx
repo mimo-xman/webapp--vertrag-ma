@@ -10,6 +10,11 @@ import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
 import { StatusStamp } from "@/components/stamp";
+import { DatePicker } from "@/components/date-picker";
+import {
+  PasswordStrengthMeter,
+  PasswordMatchHint,
+} from "@/components/password-strength";
 import {
   KeyRound,
   ShieldCheck,
@@ -239,7 +244,7 @@ export default function ProfilePage() {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="dob">{t("auth.dateOfBirth")}</Label>
-              <Input type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
+              <DatePicker id="dob" value={dateOfBirth} onChange={setDateOfBirth} />
             </div>
             <Button onClick={saveInfo} disabled={savingInfo} className="font-semibold">
               {savingInfo ? t("common.loading") : t("common.save")}
@@ -270,6 +275,8 @@ export default function ProfilePage() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
+              <PasswordStrengthMeter password={newPassword} />
+              <p className="text-xs text-muted-foreground">{t("auth.passwordHint")}</p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="confirm-new">{t("profile.confirmPassword")}</Label>
@@ -278,11 +285,24 @@ export default function ProfilePage() {
                 type="password"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
+                className={
+                  confirmNewPassword
+                    ? newPassword === confirmNewPassword
+                      ? "border-[#2f6b4a]"
+                      : "border-[#b3391f]"
+                    : ""
+                }
               />
+              <PasswordMatchHint password={newPassword} confirmPassword={confirmNewPassword} />
             </div>
             <Button
               onClick={changePassword}
-              disabled={savingPassword || !currentPassword || newPassword.length < 6}
+              disabled={
+                savingPassword ||
+                !currentPassword ||
+                newPassword.length < 6 ||
+                newPassword !== confirmNewPassword
+              }
               className="font-semibold"
             >
               <KeyRound className="mr-1.5 h-4 w-4" />

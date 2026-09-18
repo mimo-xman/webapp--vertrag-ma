@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getAuthUser } from "@/lib/auth";
 import { AppNavbar } from "@/components/app-navbar";
 import { AppPopupProvider } from "@/components/app-popup";
+import { SessionWatcher } from "@/components/session-watcher";
 import { Toaster } from "@/components/ui/toaster";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -12,6 +13,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="min-h-dvh flex flex-col bg-background">
       <AppNavbar isAdmin={user.role === "admin"} />
       <AppPopupProvider>
+        <SessionWatcher />
         <main className="flex-1">
           <div className="mx-auto w-full max-w-7xl px-4 py-8">{children}</div>
         </main>

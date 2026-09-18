@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useI18n } from "@/components/language-provider";
 import { StatusStamp } from "@/components/stamp";
 import { Button } from "@/components/ui/button";
@@ -24,13 +25,50 @@ import {
   MessageCircle,
   Upload,
   CheckCircle2,
-  XCircle,
-  Clock,
-  AlertCircle,
   History,
-  ExternalLink,
+  MailCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  createStatusKey,
+  addStatusKey,
+  statusVariant,
+  isDemandeActive,
+  userCanCancel,
+  createPriceParts,
+  addPriceParts,
+  type DossierDemandeType,
+  type StatusLike,
+} from "@/lib/dossier-status";
+
+interface AddDemande {
+  _id: string;
+  ref_number: string;
+  status: string;
+  active: boolean;
+  message_on_failed: string | null;
+  createdAt: string;
+  confirmed_at: string | null;
+  cancelled_by: "user" | "admin" | null;
+  cancelled_at: string | null;
+  price: number;
+}
+
+interface CreateDemande {
+  _id: string;
+  ref_number: string;
+  status: string;
+  active: boolean;
+  price: number;
+  traduction_price: number;
+  dossier_ready_at: string | null;
+  completed_at: string | null;
+  createdAt: string;
+  payed_at: string | null;
+  cancelled_by: "user" | "admin" | null;
+  cancelled_at: string | null;
+  dossier_pdf_link: string | null;
+}
 
 interface DossierResponse {
   dossier: {
@@ -43,31 +81,8 @@ interface DossierResponse {
   creation_price: number;
   add_price: number;
   whatsapp_url: string;
-  demandes_add: {
-    _id: string;
-    ref_number: string;
-    status: string;
-    message_on_failed: string | null;
-    createdAt: string;
-    confirmed_at: string | null;
-    cancelled_by: "user" | "admin" | null;
-    cancelled_at: string | null;
-    price: number;
-  }[];
-  demandes_create: {
-    _id: string;
-    ref_number: string;
-    status: string;
-    price: number;
-    traduction_price: number;
-    dossier_ready_at: string | null;
-    completed_at: string | null;
-    createdAt: string;
-    payed_at: string | null;
-    cancelled_by: "user" | "admin" | null;
-    cancelled_at: string | null;
-    dossier_pdf_link: string | null;
-  }[];
+  demandes_add: AddDemande[];
+  demandes_create: CreateDemande[];
   deletion_history: {
     _id: string;
     deleted_at: string;
@@ -77,67 +92,11 @@ interface DossierResponse {
   }[];
 }
 
-function getStatusLabel(t: (key: string) => string, d: { status: string; cancelled_by?: "user" | "admin" | null }) {
-  switch (d.status) {
-    case "en_attente":
-      return t("dossier.statusAwaitingPayment");
-    case "en_cours_de_revision":
-      return t("dossier.statusUnderReview");
-    case "confirmed":
-      return t("dossier.statusConfirmed");
-    case "rejected":
-      return t("dossier.statusRejected");
-    case "cancelled":
-      return d.cancelled_by === "admin" ? t("dossier.statusCancelledByAdmin") : t("dossier.statusCancelledByUser");
-    case "payed":
-      return t("dossier.statusPaidAwaitingCreation");
-    case "in_creation":
-      return t("dossier.statusPaidInCreation");
-    case "completed":
-      return t("dossier.statusCompleted");
-    default:
-      return t(`statuses.${d.status}`);
-  }
-}
-
-function getStatusVariant(d: { status: string; cancelled_by?: "user" | "admin" | null }): "green" | "blue" | "ink" | "red" | "gold" {
-  switch (d.status) {
-    case "confirmed":
-    case "completed":
-      return "green";
-    case "en_attente":
-    case "payed":
-    case "in_creation":
-      return "blue";
-    case "en_cours_de_revision":
-      return "ink";
-    case "rejected":
-    case "cancelled":
-      return "red";
-    default:
-      return "ink";
-  }
-}
-
-function getPriceLabel(t: (key: string) => string, d: { status: string; price: number; traduction_price: number }) {
-  const total = d.price + (d.traduction_price || 0);
-  if (d.status === "en_attente") {
-    return `${total} $ ${t("dossier.priceToPay")}`;
-  }
-  return `${total} $ ${t("dossier.pricePaid")}`;
-}
-
-function getAddPriceLabel(t: (key: string) => string, d: { status: string; price: number }) {
-  if (d.status === "en_attente" || d.status === "en_cours_de_revision") {
-    return `${d.price} $ ${t("dossier.priceToPay")}`;
-  }
-  return `${d.price} $ ${t("dossier.pricePaid")}`;
-}
-
 export default function DossierPage() {
   const { t } = useI18n();
   const { confirmApp, alertApp } = useAppPopup();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
 
   const [data, setData] = useState<DossierResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -155,6 +114,38 @@ export default function DossierPage() {
     load();
   }, [load]);
 
+  // Banner after confirming the dossier deletion via the email link.
+  useEffect(() => {
+    if (searchParams.get("dossier_deleted") === "1") {
+      toast({ title: t("dossier.deleteSuccess") });
+    }
+     
+  }, []);
+
+  const cancelDemande = useCallback(
+    async (type: DossierDemandeType, demande: { _id: string; ref_number: string }) => {
+      const ok = await confirmApp(t("demandes.cancelConfirmMessage"), {
+        title: t("demandes.cancelConfirmTitle"),
+        destructive: true,
+        confirmLabel: t("demandes.cancel"),
+      });
+      if (!ok) return;
+      try {
+        await apiFetch(
+          type === "creation"
+            ? `/api/dossier/demandes-creation/${demande._id}/cancel`
+            : `/api/dossier/demandes-ajout/${demande._id}/cancel`,
+          { method: "POST" }
+        );
+        toast({ title: t("common.operationSuccess") });
+        load();
+      } catch (err) {
+        await alertApp(err instanceof Error ? err.message : "Erreur");
+      }
+    },
+    [confirmApp, alertApp, toast, t, load]
+  );
+
   const handleDelete = async () => {
     const ok = await confirmApp(t("dossier.deleteDossierConfirmMessage"), {
       title: t("dossier.deleteDossierConfirmTitle"),
@@ -163,8 +154,16 @@ export default function DossierPage() {
     });
     if (!ok) return;
     try {
-      await apiFetch("/api/dossier", { method: "DELETE" });
-      toast({ title: t("common.deletedSuccess") });
+      const res = await apiFetch<{ requires_confirmation?: boolean; message?: string }>(
+        "/api/dossier",
+        { method: "DELETE" }
+      );
+      // The deletion itself happens through the email confirmation link.
+      if (res.requires_confirmation) {
+        await alertApp(t("dossier.deleteEmailSent"), t("dossier.deleteDossierConfirmTitle"));
+      } else {
+        toast({ title: t("dossier.deleteSuccess") });
+      }
       load();
     } catch (err) {
       await alertApp(err instanceof Error ? err.message : "Erreur");
@@ -177,11 +176,25 @@ export default function DossierPage() {
   if (!data) return null;
 
   const hasDossier = Boolean(data.dossier.pdf_link);
-  const activeAdd = data.demandes_add.find((d) => d.status === "en_attente" || d.status === "en_cours_de_revision");
-  const activeCreate = data.demandes_create.find((d) => d.status === "en_attente" || d.status === "payed" || d.status === "in_creation");
+  const activeAdd = data.demandes_add.find((d) => isDemandeActive(d));
+  const activeCreate = data.demandes_create.find((d) => isDemandeActive(d));
 
-  // Determine active request for the top bar
-  const activeRequest = activeCreate || activeAdd;
+  // The single active request (at most one by design: creation XOR add).
+  const activeRequest:
+    | { type: DossierDemandeType; demande: AddDemande | CreateDemande }
+    | null = activeCreate
+    ? { type: "creation", demande: activeCreate }
+    : activeAdd
+      ? { type: "ajout", demande: activeAdd }
+      : null;
+
+  const statusKeyOf = (type: DossierDemandeType, d: StatusLike) =>
+    type === "creation" ? createStatusKey(d) : addStatusKey(d);
+
+  const priceLabelOf = (type: DossierDemandeType, d: AddDemande | CreateDemande) =>
+    type === "creation"
+      ? createPriceParts(t, d as CreateDemande)
+      : addPriceParts(t, d as AddDemande);
 
   return (
     <div className="space-y-6">
@@ -191,81 +204,56 @@ export default function DossierPage() {
         <p className="mt-0.5 text-sm text-muted-foreground">{t("dossier.subtitle")}</p>
       </div>
 
-      {/* ── Active request bar ────────────────────────────────────────────── */}
+      {/* ── Single active-request bar ────────────────────────────────────── */}
       {activeRequest && (
-        <div className="form-sheet flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-[#1e4475]/30 bg-[#1e4475]/5 p-4">
+        <div className="form-sheet flex flex-col gap-3 border-[#1e4475]/30 bg-[#1e4475]/5 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            {activeCreate ? (
+            {activeRequest.type === "creation" ? (
               <FilePlus2 className="h-5 w-5 shrink-0 text-[#1e4475]" />
             ) : (
               <FolderUp className="h-5 w-5 shrink-0 text-[#1e4475]" />
             )}
             <div>
               <p className="text-sm font-medium">
-                {t("dossier.activeRequestBar")} <span className="aktenzeichen">({activeRequest.ref_number})</span>
+                {activeRequest.type === "creation"
+                  ? t("dossier.activeRequestCreate")
+                  : t("dossier.activeRequestAdd")}{" "}
+                <span className="aktenzeichen">({activeRequest.demande.ref_number})</span>
               </p>
               <p className="text-xs text-muted-foreground">
-                {getStatusLabel(t, activeRequest)}
+                {t(statusKeyOf(activeRequest.type, activeRequest.demande))} —{" "}
+                <span className="num">
+                  {priceLabelOf(activeRequest.type, activeRequest.demande)}
+                </span>
               </p>
+              {activeRequest.type === "creation" &&
+                (activeRequest.demande as CreateDemande).dossier_ready_at &&
+                ["payed", "in_creation"].includes(activeRequest.demande.status) && (
+                  <p className="text-xs text-muted-foreground">
+                    {t("dossier.readyAt")} :{" "}
+                    {new Date(
+                      (activeRequest.demande as CreateDemande).dossier_ready_at!
+                    ).toLocaleDateString("fr-FR")}
+                  </p>
+                )}
             </div>
           </div>
           <div className="flex shrink-0 gap-2">
-            {activeCreate && activeCreate.status === "en_attente" && (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={async () => {
-                    const ok = await confirmApp(t("demandes.cancelConfirmMessage"), {
-                      title: t("demandes.cancelConfirmTitle"),
-                      destructive: true,
-                      confirmLabel: t("demandes.cancel"),
-                    });
-                    if (!ok) return;
-                    try {
-                      await apiFetch(`/api/dossier/demandes-creation/${activeCreate._id}/cancel`, {
-                        method: "POST",
-                      });
-                      toast({ title: t("common.operationSuccess") });
-                      load();
-                    } catch (err) {
-                      await alertApp(err instanceof Error ? err.message : "Erreur");
-                    }
-                  }}
-                >
-                  {t("demandes.cancel")}
-                </Button>
-                <Button asChild size="sm">
-                  <a href={data.whatsapp_url} target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="mr-1.5 h-4 w-4" />
-                    {t("common.whatsapp")}
-                  </a>
-                </Button>
-              </>
-            )}
-            {activeAdd && activeAdd.status === "en_attente" && (
+            {userCanCancel(activeRequest.type, activeRequest.demande) && (
               <Button
                 variant="outline"
                 size="sm"
-                onClick={async () => {
-                  const ok = await confirmApp(t("demandes.cancelConfirmMessage"), {
-                    title: t("demandes.cancelConfirmTitle"),
-                    destructive: true,
-                    confirmLabel: t("demandes.cancel"),
-                  });
-                  if (!ok) return;
-                  try {
-                    await apiFetch(`/api/dossier/demandes-ajout/${activeAdd._id}/cancel`, {
-                      method: "POST",
-                    });
-                    toast({ title: t("common.operationSuccess") });
-                    load();
-                  } catch (err) {
-                    await alertApp(err instanceof Error ? err.message : "Erreur");
-                  }
-                }}
+                onClick={() => cancelDemande(activeRequest.type, activeRequest.demande)}
               >
                 {t("demandes.cancel")}
+              </Button>
+            )}
+            {activeRequest.type === "creation" && activeRequest.demande.status === "en_attente" && (
+              <Button asChild size="sm">
+                <a href={data.whatsapp_url} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="mr-1.5 h-4 w-4" />
+                  {t("common.whatsapp")}
+                </a>
               </Button>
             )}
           </div>
@@ -304,16 +292,23 @@ export default function DossierPage() {
               <p className="mt-1 max-w-xl text-sm text-muted-foreground">
                 {hasDossier
                   ? t("dossier.statusActiveDesc")
-                  : activeAdd
-                    ? t("dossier.statusAwaitingReview")
-                    : activeCreate
-                      ? getStatusLabel(t, activeCreate)
-                      : t("dossier.statusMissingDesc")}
+                  : activeRequest
+                    ? t(statusKeyOf(activeRequest.type, activeRequest.demande))
+                    : t("dossier.statusMissingDesc")}
               </p>
               {hasDossier && data.dossier.source_type && (
-                <p className="mt-1.5 text-xs text-muted-foreground flex items-center gap-1">
-                  {t("dossier.sourceAdd") === "Ajout" ? <FolderUp className="h-3 w-3" /> : <FilePlus2 className="h-3 w-3" />}
-                  {t(data.dossier.source_type === "ajout" ? "dossier.sourceAdd" : "dossier.sourceCreation")} : {data.dossier.source_ref_number}
+                <p className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
+                  {data.dossier.source_type === "ajout" ? (
+                    <FolderUp className="h-3 w-3" />
+                  ) : (
+                    <FilePlus2 className="h-3 w-3" />
+                  )}
+                  {t(
+                    data.dossier.source_type === "ajout"
+                      ? "dossier.sourceAdd"
+                      : "dossier.sourceCreation"
+                  )}{" "}
+                  : <span className="aktenzeichen">{data.dossier.source_ref_number}</span>
                 </p>
               )}
             </div>
@@ -335,142 +330,57 @@ export default function DossierPage() {
         </div>
       </div>
 
-      {/* ── Two options (when no dossier) ───────────────────────────────── */}
-      {!hasDossier && (
+      {/* ── Deletion email-sent banner ──────────────────────────────────── */}
+      {searchParams.get("dossier_deleted") === "1" && (
+        <div className="form-sheet flex items-center gap-3 border-[#2f6b4a]/40 bg-[#2f6b4a]/5 p-4">
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-[#2f6b4a]" />
+          <p className="text-sm text-[#2f6b4a]">{t("dossier.deleteSuccess")}</p>
+        </div>
+      )}
+
+      {/* ── Two options (when no dossier and no active request) ─────────── */}
+      {!hasDossier && !activeRequest && (
         <>
-          {activeAdd && (
-            <div className="form-sheet flex items-center gap-3 border-[#1e4475]/30 bg-[#1e4475]/5 p-4">
-              <FolderUp className="h-5 w-5 shrink-0 text-[#1e4475]" />
-              <div className="flex-1">
-                <p className="text-sm font-medium">
-                  {t("dossier.uploadSuccess")} <span className="aktenzeichen">({activeAdd.ref_number})</span>
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {getStatusLabel(t, activeAdd)} — {getAddPriceLabel(t, activeAdd)}
-                </p>
+          <p className="eyebrow">{t("dossier.optionsTitle")}</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Option 1: upload own dossier */}
+            <div className="form-sheet flex flex-col p-6">
+              <div className="mb-3 flex items-center justify-between">
+                <FolderUp className="h-6 w-6 text-[#1e4475]" />
+                <span className="stamp stamp-green stamp-flat">
+                  {data.add_price > 0 ? `${data.add_price} $` : t("dossier.optionAddPrice")}
+                </span>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={async () => {
-                  const ok = await confirmApp(t("demandes.cancelConfirmMessage"), {
-                    title: t("demandes.cancelConfirmTitle"),
-                    destructive: true,
-                    confirmLabel: t("demandes.cancel"),
-                  });
-                  if (!ok) return;
-                  try {
-                    await apiFetch(`/api/dossier/demandes-ajout/${activeAdd._id}/cancel`, {
-                      method: "POST",
-                    });
-                    toast({ title: t("common.operationSuccess") });
-                    load();
-                  } catch (err) {
-                    await alertApp(err instanceof Error ? err.message : "Erreur");
-                  }
-                }}
-              >
-                {t("demandes.cancel")}
+              <h3 className="font-display text-lg font-bold">{t("dossier.optionAddTitle")}</h3>
+              <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted-foreground">
+                {t("dossier.optionAddDesc")}
+              </p>
+              <Button className="mt-4 font-semibold" onClick={() => setUploadOpen(true)}>
+                <Upload className="mr-1.5 h-4 w-4" />
+                {t("dossier.optionAddCta")}
               </Button>
             </div>
-          )}
 
-          {activeCreate && (
-            <div className="form-sheet flex items-center gap-3 border-[#1e4475]/30 bg-[#1e4475]/5 p-4">
-              <FilePlus2 className="h-5 w-5 shrink-0 text-[#1e4475]" />
-              <div className="flex-1">
-                <p className="text-sm font-medium">
-                  {getStatusLabel(t, activeCreate)} <span className="aktenzeichen">({activeCreate.ref_number})</span>
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {getPriceLabel(t, activeCreate)}
-                </p>
-                {activeCreate.dossier_ready_at && (activeCreate.status === "payed" || activeCreate.status === "in_creation") && (
-                  <p className="text-xs text-muted-foreground">
-                    {t("dossier.readyAt")} : {new Date(activeCreate.dossier_ready_at).toLocaleDateString("fr-FR")}
-                  </p>
-                )}
+            {/* Option 2: request creation */}
+            <div className="form-sheet flex flex-col border-[#1e4475]/40 p-6">
+              <div className="mb-3 flex items-center justify-between">
+                <FilePlus2 className="h-6 w-6 text-[#1e4475]" />
+                <span className="stamp stamp-blue stamp-flat">{data.creation_price} $</span>
               </div>
-              {activeCreate.status === "en_attente" && (
-                <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={async () => {
-                      const ok = await confirmApp(t("demandes.cancelConfirmMessage"), {
-                        title: t("demandes.cancelConfirmTitle"),
-                        destructive: true,
-                        confirmLabel: t("demandes.cancel"),
-                      });
-                      if (!ok) return;
-                      try {
-                        await apiFetch(`/api/dossier/demandes-creation/${activeCreate._id}/cancel`, {
-                          method: "POST",
-                        });
-                        toast({ title: t("common.operationSuccess") });
-                        load();
-                      } catch (err) {
-                        await alertApp(err instanceof Error ? err.message : "Erreur");
-                      }
-                    }}
-                  >
-                    {t("demandes.cancel")}
-                  </Button>
-                  <Button asChild size="sm">
-                    <a href={data.whatsapp_url} target="_blank" rel="noopener noreferrer">
-                      <MessageCircle className="mr-1.5 h-4 w-4" />
-                      {t("common.whatsapp")}
-                    </a>
-                  </Button>
-                </>
-              )}
+              <h3 className="font-display text-lg font-bold">{t("dossier.optionCreateTitle")}</h3>
+              <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted-foreground">
+                {t("dossier.optionCreateDesc")}
+              </p>
+              <Button
+                variant="secondary"
+                className="mt-4 font-semibold"
+                onClick={() => setCreateOpen(true)}
+              >
+                <MessageCircle className="mr-1.5 h-4 w-4" />
+                {t("dossier.optionCreateCta")}
+              </Button>
             </div>
-          )}
-
-          {!activeAdd && !activeCreate && (
-            <>
-              <p className="eyebrow">{t("dossier.optionsTitle")}</p>
-              <div className="grid gap-4 md:grid-cols-2">
-                {/* Option 1: upload own dossier */}
-                <div className="form-sheet flex flex-col p-6">
-                  <div className="mb-3 flex items-center justify-between">
-                    <FolderUp className="h-6 w-6 text-[#1e4475]" />
-                    <span className="stamp stamp-green stamp-flat">{t("dossier.optionAddPrice")}</span>
-                  </div>
-                  <h3 className="font-display text-lg font-bold">{t("dossier.optionAddTitle")}</h3>
-                  <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted-foreground">
-                    {t("dossier.optionAddDesc")}
-                  </p>
-                  <Button className="mt-4 font-semibold" onClick={() => setUploadOpen(true)}>
-                    <Upload className="mr-1.5 h-4 w-4" />
-                    {t("dossier.optionAddCta")}
-                  </Button>
-                </div>
-
-                {/* Option 2: request creation */}
-                <div className="form-sheet flex flex-col border-[#1e4475]/40 p-6">
-                  <div className="mb-3 flex items-center justify-between">
-                    <FilePlus2 className="h-6 w-6 text-[#1e4475]" />
-                    <span className="stamp stamp-blue stamp-flat">
-                      {data.creation_price} $
-                    </span>
-                  </div>
-                  <h3 className="font-display text-lg font-bold">{t("dossier.optionCreateTitle")}</h3>
-                  <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted-foreground">
-                    {t("dossier.optionCreateDesc")}
-                  </p>
-                  <Button
-                    variant="secondary"
-                    className="mt-4 font-semibold"
-                    onClick={() => setCreateOpen(true)}
-                  >
-                    <MessageCircle className="mr-1.5 h-4 w-4" />
-                    {t("dossier.optionCreateCta")}
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
+          </div>
         </>
       )}
 
@@ -490,16 +400,13 @@ export default function DossierPage() {
               <ul className="divide-y divide-border">
                 {data.demandes_add.map((d) => (
                   <li key={d._id} className="space-y-1.5 px-5 py-3">
-                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="aktenzeichen">{d.ref_number}</span>
-                      <StatusStamp
-                        status={getStatusVariant(d)}
-                        label={getStatusLabel(t, d)}
-                      />
+                      <StatusStamp status={statusVariant(d)} label={t(addStatusKey(d))} />
                     </div>
-                    <div className="flex items-center justify-between gap-2 flex-wrap text-xs text-muted-foreground">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
                       <span>{new Date(d.createdAt).toLocaleDateString("fr-FR")}</span>
-                      <span className="num">{getAddPriceLabel(t, d)}</span>
+                      <span className="num">{addPriceParts(t, d)}</span>
                     </div>
                     {d.status === "confirmed" && data.dossier.pdf_link && (
                       <a
@@ -537,18 +444,15 @@ export default function DossierPage() {
               <ul className="divide-y divide-border">
                 {data.demandes_create.map((d) => (
                   <li key={d._id} className="space-y-1.5 px-5 py-3">
-                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="aktenzeichen">{d.ref_number}</span>
-                      <StatusStamp
-                        status={getStatusVariant(d)}
-                        label={getStatusLabel(t, d)}
-                      />
+                      <StatusStamp status={statusVariant(d)} label={t(createStatusKey(d))} />
                     </div>
-                    <div className="flex items-center justify-between gap-2 flex-wrap text-xs text-muted-foreground">
+                    <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
                       <span>{new Date(d.createdAt).toLocaleDateString("fr-FR")}</span>
-                      <span className="num">{getPriceLabel(t, d)}</span>
+                      <span className="num">{createPriceParts(t, d)}</span>
                     </div>
-                    {d.dossier_ready_at && (d.status === "payed" || d.status === "in_creation") && (
+                    {d.dossier_ready_at && ["payed", "in_creation"].includes(d.status) && (
                       <p className="text-xs text-muted-foreground">
                         {t("dossier.readyAt")} : {new Date(d.dossier_ready_at).toLocaleDateString("fr-FR")}
                       </p>
@@ -575,7 +479,7 @@ export default function DossierPage() {
       {data.deletion_history && data.deletion_history.length > 0 && (
         <div className="form-sheet">
           <div className="sheet-band px-5 py-3.5">
-            <h2 className="font-display text-sm font-bold flex items-center gap-2">
+            <h2 className="flex items-center gap-2 font-display text-sm font-bold">
               <History className="h-4 w-4" />
               {t("dossier.historyDeletion")}
             </h2>
@@ -584,9 +488,10 @@ export default function DossierPage() {
             <ul className="divide-y divide-border">
               {data.deletion_history.map((d) => (
                 <li key={d._id} className="space-y-1.5 px-5 py-3">
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-sm font-medium text-[#b3391f]">
-                      {t("dossier.deleteDossier")} — {new Date(d.deleted_at).toLocaleDateString("fr-FR", {
+                      {t("dossier.deleteDossier")} —{" "}
+                      {new Date(d.deleted_at).toLocaleDateString("fr-FR", {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
@@ -595,13 +500,13 @@ export default function DossierPage() {
                       })}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between gap-2 flex-wrap text-xs text-muted-foreground">
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
                     <span>
                       {d.source_type === "ajout"
                         ? `${t("dossier.sourceAdd")} : ${d.source_ref_number || "—"}`
                         : d.source_type === "creation"
-                        ? `${t("dossier.sourceCreation")} : ${d.source_ref_number || "—"}`
-                        : t("common.noData")}
+                          ? `${t("dossier.sourceCreation")} : ${d.source_ref_number || "—"}`
+                          : t("common.noData")}
                     </span>
                   </div>
                 </li>
@@ -623,7 +528,9 @@ export default function DossierPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display text-lg">{t("dossier.createConfirmTitle")}</DialogTitle>
-            <DialogDescription>{t("dossier.createConfirmDesc")}</DialogDescription>
+            <DialogDescription>
+              {t("dossier.createConfirmDesc", { price: String(data.creation_price) })}
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:flex-row">
             <Button variant="outline" onClick={() => setCreateOpen(false)}>
@@ -652,6 +559,11 @@ export default function DossierPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* ── Deletion email-sent info dialog content (inline banner above) ── */}
+      <div className="hidden">
+        <MailCheck className="h-4 w-4" />
+      </div>
     </div>
   );
 }

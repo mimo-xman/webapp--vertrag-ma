@@ -23,7 +23,7 @@ interface SettingsData {
     step_per_day: number;
   };
   postulations: { email_message: string; email_subject: string };
-  dossier: { creation_price: number };
+  dossier: { creation_price: number; add_price: number };
   contact: { whatsapp_url: string };
 }
 
@@ -123,10 +123,34 @@ export default function AdminSettingsPage() {
                 onChange={(e) =>
                   setSettings({
                     ...settings,
-                    dossier: { creation_price: Number(e.target.value) },
+                    dossier: {
+                      ...settings.dossier,
+                      creation_price: Number(e.target.value),
+                    },
                   })
                 }
               />
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t("admin.dossierAddPrice")}</Label>
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                value={settings.dossier.add_price ?? 0}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    dossier: {
+                      ...settings.dossier,
+                      add_price: Number(e.target.value),
+                    },
+                  })
+                }
+              />
+              <p className="text-xs text-muted-foreground">
+                {t("admin.dossierAddPriceHint")}
+              </p>
             </div>
           </div>
         </div>

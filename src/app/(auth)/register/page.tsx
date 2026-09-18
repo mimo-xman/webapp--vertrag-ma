@@ -1,31 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { apiFetch } from "@/lib/api-utils";
 import { useI18n } from "@/components/language-provider";
+import { DatePicker } from "@/components/date-picker";
+import {
+  PasswordStrengthMeter,
+  PasswordMatchHint,
+} from "@/components/password-strength";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
-
-// Password strength: 4 bars. Very Strong = 12+ chars, upper+lower+digit+special.
-function computeStrength(pw: string): 0 | 1 | 2 | 3 | 4 {
-  if (!pw) return 0;
-  let score = 0;
-  if (pw.length >= 8) score += 1;
-  if (pw.length >= 12) score += 1;
-  const hasUpper = /[A-Z]/.test(pw);
-  const hasLower = /[a-z]/.test(pw);
-  const hasDigit = /\d/.test(pw);
-  const hasSpecial = /[^A-Za-z0-9]/.test(pw);
-  const variety = [hasUpper, hasLower, hasDigit, hasSpecial].filter(Boolean).length;
-  if (variety >= 3) score += 1;
-  if (variety === 4 && pw.length >= 12) score += 1;
-  return Math.min(4, score) as 0 | 1 | 2 | 3 | 4;
-}
-
-const STRENGTH_COLORS = ["#d8d5cc", "#b3391f", "#d9a441", "#7ba3d9", "#2f6b4a"];
 
 export default function RegisterPage() {
   const { t } = useI18n();
@@ -71,15 +58,6 @@ export default function RegisterPage() {
     }, 800);
     return () => clearTimeout(timer);
   }, [email]);
-
-  const strength = useMemo(() => computeStrength(password), [password]);
-  const strengthLabel = [
-    "",
-    t("auth.passwordStrength.weak"),
-    t("auth.passwordStrength.medium"),
-    t("auth.passwordStrength.strong"),
-    t("auth.passwordStrength.veryStrong"),
-  ][strength];
 
   const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
   const canSubmit =
@@ -162,13 +140,7 @@ export default function RegisterPage() {
           <Label htmlFor="dob">
             {t("auth.dateOfBirth")} <span className="text-muted-foreground">({t("common.optional")})</span>
           </Label>
-          <Input
-            id="dob"
-            type="date"
-            value={dateOfBirth}
-            onChange={(e) => setDateOfBirth(e.target.value)}
-            max={new Date().toISOString().slice(0, 10)}
-          />
+          <DatePicker id="dob" value={dateOfBirth} onChange={setDateOfBirth} />
         </div>
 
         <div className="space-y-1.5">
@@ -213,20 +185,7 @@ export default function RegisterPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {password && (
-            <div className="flex items-center gap-2 pt-1">
-              <div className="flex flex-1 gap-1">
-                {[1, 2, 3, 4].map((i) => (
-                  <div
-                    key={i}
-                    className="h-1 flex-1 rounded-full transition-colors"
-                    style={{ background: strength >= i ? STRENGTH_COLORS[strength] : "#d8d5cc" }}
-                  />
-                ))}
-              </div>
-              <span className="text-xs font-mono text-muted-foreground">{strengthLabel}</span>
-            </div>
-          )}
+          <PasswordStrengthMeter password={password} />
           <p className="text-xs text-muted-foreground">{t("auth.passwordHint")}</p>
         </div>
 
@@ -241,9 +200,7 @@ export default function RegisterPage() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             className={confirmPassword ? (passwordsMatch ? "border-[#2f6b4a]" : "border-[#b3391f]") : ""}
           />
-          {confirmPassword && !passwordsMatch && (
-            <p className="text-xs text-[#b3391f]">Les mots de passe ne correspondent pas.</p>
-          )}
+          <PasswordMatchHint password={password} confirmPassword={confirmPassword} />
         </div>
 
         <Button type="submit" className="w-full font-semibold" disabled={!canSubmit}>

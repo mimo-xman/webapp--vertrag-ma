@@ -4,6 +4,7 @@ import { requireAuth } from "@/lib/auth";
 import { User } from "@/models/User";
 import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
 import { DossierDemandeForCreate } from "@/models/DossierDemandeForCreate";
+import { getSettings } from "@/models/Setting";
 import { uploadPdfToCloudinary, validatePdfFile } from "@/lib/cloudinary";
 import { generateRefNumber } from "@/lib/audit";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
@@ -37,6 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     await connectDB();
+    const settings = await getSettings();
 
     // Check if user already has an active demande (add or create) or existing dossier
     const [activeAdd, activeCreate, user] = await Promise.all([
@@ -71,7 +73,7 @@ export async function POST(request: NextRequest) {
       ref_number: generateRefNumber("DA"),
       user_id: auth.user._id,
       dossier_pdf_link: url,
-      price: 0,
+      price: settings.dossier.add_price ?? 0,
       status: "en_attente",
       active: true,
     });
@@ -82,10 +84,13 @@ export async function POST(request: NextRequest) {
       demande: { _id: String(demande._id), ref_number: demande.ref_number },
     });
   } catch (error) {
+    // Surface the real cause (e.g. Cloudinary not configured) instead of a
+    // generic message, so the problem can be fixed immediately.
     console.error("[DOSSIER-UPLOAD]", error);
-    return NextResponse.json(
-      { success: false, error: "Erreur lors de l'envoi du dossier" },
-      { status: 500 }
-    );
+    const message =
+      error instanceof Error && error.message.startsWith("Cloudinary")
+        ? "Le service d'hébergement des fichiers n'est pas configuré. Contactez l'équipe Vertrag.ma."
+        : "Erreur lors de l'envoi du dossier";
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

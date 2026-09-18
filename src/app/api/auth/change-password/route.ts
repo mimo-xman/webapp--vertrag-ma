@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { connectDB } from "@/lib/mongodb";
 import { User } from "@/models/User";
-import { comparePassword, hashPassword, requireAuth } from "@/lib/auth";
+import { comparePassword, createAuthResponse, hashPassword, requireAuth, signToken } from "@/lib/auth";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 const schema = z.object({
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     await connectDB();
     const user = await User.findById(auth.user._id);
     if (!user) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ success: false, error: "Session expirée", code: "AUTH_REQUIRED" }, { status: 401 });
     }
 
     const valid = await comparePassword(parsed.data.current_password, user.password);
@@ -50,7 +50,20 @@ export async function POST(request: NextRequest) {
     user.passwordChangedAt = new Date();
     await user.save();
 
-    return NextResponse.json({ success: true, message: "Mot de passe modifié" });
+    // Re-issue a fresh session token: the user stays logged in on THIS
+    // device, while every other session (other tabs/devices) is invalidated
+    // by the passwordChangedAt check and cleanly redirected to /login.
+    const token = signToken(String(user._id));
+    return createAuthResponse({
+      success: true,
+      message: "Mot de passe modifié",
+      user: {
+        id: String(user._id),
+        email: user.email,
+        full_name: user.full_name,
+        role: user.role,
+      },
+    }, token);
   } catch (error) {
     console.error("[CHANGE-PASSWORD]", error);
     return NextResponse.json({ success: false, error: "Erreur" }, { status: 500 });
