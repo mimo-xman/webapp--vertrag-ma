@@ -8,6 +8,7 @@ import { logAdminAction } from "@/lib/audit";
 import { EmailVerifier } from "@el-zazo/email-verifier";
 
 // GET — companies list with category names, search/sort/pagination.
+// ?status=active|inactive filters on the activation state.
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
@@ -18,6 +19,7 @@ export async function GET(request: NextRequest) {
   const limit = Math.min(100, Math.max(5, Number(params.get("limit") || 10)));
   const search = params.get("search")?.trim();
   const categoryFilter = params.get("category");
+  const statusFilter = params.get("status");
   const sortField = params.get("sort") || "createdAt";
   const sortOrder = params.get("order") === "asc" ? 1 : -1;
 
@@ -31,8 +33,10 @@ export async function GET(request: NextRequest) {
   if (categoryFilter && categoryFilter !== "all") {
     filter.categorie_ids = categoryFilter;
   }
+  if (statusFilter === "active") filter.active = true;
+  else if (statusFilter === "inactive") filter.active = false;
 
-  const allowedSorts = ["name", "email", "createdAt", "updatedAt"];
+  const allowedSorts = ["name", "email", "active", "createdAt", "updatedAt"];
   const sort: Record<string, 1 | -1> = {
     [allowedSorts.includes(sortField) ? sortField : "createdAt"]: sortOrder,
   };
@@ -53,6 +57,7 @@ export async function GET(request: NextRequest) {
       _id: String(c._id),
       name: c.name,
       email: c.email,
+      active: c.active !== false,
       categories: (c.categorie_ids as { _id: string; name: string }[]).map((cat) => ({
         _id: cat._id,
         name: cat.name,

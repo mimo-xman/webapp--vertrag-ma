@@ -471,6 +471,24 @@ export default {
     categoryCount: "{count} company(ies)",
     deleteCategoryWarning:
       "Deleting this category will remove {count} company(ies) from it. Continue?",
+    deleteCategoryBlocked:
+      "Cannot delete this category: it contains {count} company(ies). Move or delete them first — or simply deactivate the category: it will no longer be offered to users and its companies will no longer be targeted by new demandes.",
+    activateCompany: "Activate",
+    deactivateCompany: "Deactivate",
+    activateCompanyConfirm:
+      "Re-activate this company? It will be targeted by new demande de postulations again.",
+    deactivateCompanyConfirm:
+      "Deactivate this company? It will no longer be targeted by new demande de postulations (already-scheduled postulations will still be sent). Prefer deactivation over deletion: history is preserved.",
+    companyActivated: "Company activated",
+    companyDeactivated: "Company deactivated",
+    activateCategory: "Activate",
+    deactivateCategory: "Deactivate",
+    activateCategoryConfirm:
+      "Re-activate this category? It becomes selectable again and its companies are targeted by new demandes again.",
+    deactivateCategoryConfirm:
+      "Deactivate this category? It disappears from the users' selector and its companies are no longer targeted by new demandes (already-scheduled postulations will still be sent).",
+    categoryActivated: "Category activated",
+    categoryDeactivated: "Category deactivated",
     companyName: "Company name",
     companyEmail: "Company email",
     companyCategories: "Categories",

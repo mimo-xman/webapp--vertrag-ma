@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
       .lean(),
     Postulation.countDocuments(filter),
     User.find().select("full_name email").sort({ full_name: 1 }).limit(2000).lean(),
-    Company.find().select("name email").sort({ name: 1 }).limit(5000).lean(),
+    Company.find().select("name email active").sort({ name: 1 }).limit(5000).lean(),
   ]);
 
   return NextResponse.json({
@@ -81,7 +81,12 @@ export async function GET(request: NextRequest) {
         : null,
     })),
     users: users.map((u) => ({ _id: String(u._id), label: `${u.full_name} (${u.email})` })),
-    companies: companies.map((c) => ({ _id: String(c._id), label: `${c.name} (${c.email})` })),
+    companies: companies.map((c) => ({
+      _id: String(c._id),
+      // "inactive" marker so the admin knows the company is deactivated —
+      // manual creation stays allowed (deliberate admin action).
+      label: `${c.name} (${c.email})${c.active === false ? " — inactive" : ""}`,
+    })),
     pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) },
   });
 }

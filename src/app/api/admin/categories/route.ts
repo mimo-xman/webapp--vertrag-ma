@@ -7,6 +7,7 @@ import { Company } from "@/models/Company";
 import { logAdminAction } from "@/lib/audit";
 
 // GET — categories with company counts.
+// ?status=active|inactive filters on the activation state.
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
@@ -16,10 +17,16 @@ export async function GET(request: NextRequest) {
   const page = Math.max(1, Number(params.get("page") || 1));
   const limit = Math.min(100, Math.max(5, Number(params.get("limit") || 10)));
   const search = params.get("search")?.trim();
+  const statusFilter = params.get("status");
   const sortField = params.get("sort") || "companies_count";
   const sortOrder = params.get("order") === "desc" ? -1 : 1;
 
-  const match = search ? { name: { $regex: search, $options: "i" } } : {};
+  const match: Record<string, unknown> = search
+    ? { name: { $regex: search, $options: "i" } }
+    : {};
+  if (statusFilter === "active") match.active = true;
+  else if (statusFilter === "inactive") match.active = false;
+
   const sort: Record<string, 1 | -1> = { [sortField === "companies_count" ? "companies_count" : sortField]: sortOrder };
 
   const [items, total] = await Promise.all([
@@ -49,6 +56,7 @@ export async function GET(request: NextRequest) {
     data: items.map((c) => ({
       _id: String(c._id),
       name: c.name,
+      active: c.active !== false,
       companies_count: c.companies_count,
       createdAt: c.createdAt,
     })),

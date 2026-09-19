@@ -1,11 +1,24 @@
 // Postulation creation logic, executed when the admin confirms a paid demande.
-// Takes N eligible companies (selected categories or all), excluding companies
-// the user has already applied to (lifetime), and spreads the postulations
-// across days starting tomorrow, nmbr_per_day per day.
+//
+// SNAPSHOT semantics: when the user created his demande, the exact list of
+// companies was selected and saved on it (PostulationDemande.company_ids).
+// The confirmation creates the postulations from THIS saved list — so a
+// company deactivated (or a category disabled) between the creation and the
+// confirmation cannot reduce what the user paid for. A company deactivated
+// after being snapshotted still receives the postulation: it was selected
+// while it was still active.
+//
+// Legacy demandes created before the snapshot feature have an empty
+// company_ids: for those we fall back to a fresh selection of eligible
+// companies (active only), as before.
+//
+// The postulations are spread across days starting tomorrow,
+// nmbr_per_day per day.
 
 import mongoose from "mongoose";
 import { Postulation } from "@/models/Postulation";
 import { Company } from "@/models/Company";
+import { Category } from "@/models/Category";
 
 export interface CreatePostulationsResult {
   created: number;
@@ -16,31 +29,76 @@ export async function createPostulationsForDemande(params: {
   user_id: mongoose.Types.ObjectId;
   demande_id: mongoose.Types.ObjectId;
   categorie_ids: mongoose.Types.ObjectId[];
+  company_ids?: mongoose.Types.ObjectId[];
   nmbr_total: number;
   nmbr_per_day: number;
 }): Promise<CreatePostulationsResult> {
-  const { user_id, demande_id, categorie_ids, nmbr_total, nmbr_per_day } = params;
+  const {
+    user_id,
+    demande_id,
+    categorie_ids,
+    company_ids = [],
+    nmbr_total,
+    nmbr_per_day,
+  } = params;
 
-  // Companies never used by this user (lifetime anti-duplicate), in the
-  // selected categories (or all companies if no category selected).
+  // Companies never used by this user (lifetime anti-duplicate).
   const usedCompanyIds = await Postulation.find({ user_id }).distinct("company_id");
-  const usedIds = usedCompanyIds.map((id: unknown) => String(id));
+  const usedIds = new Set(usedCompanyIds.map((id: unknown) => String(id)));
 
-  const filter: Record<string, unknown> = { _id: { $nin: usedIds } };
-  if (categorie_ids.length > 0) {
-    filter.categorie_ids = { $in: categorie_ids };
-  }
+  let companies: { _id: mongoose.Types.ObjectId }[];
 
-  const companies = await Company.find(filter)
-    .select("_id")
-    .sort({ createdAt: 1 })
-    .limit(nmbr_total)
-    .lean();
+  if (company_ids.length > 0) {
+    // Snapshot mode — the companies were chosen at demande creation time.
+    // No `active` filter on purpose (snapshot semantics); companies deleted
+    // in the meantime simply drop out and are reported below.
+    const snapshotCompanies = await Company.find({ _id: { $in: company_ids } })
+      .select("_id")
+      .sort({ createdAt: 1 })
+      .lean();
+    companies = snapshotCompanies as { _id: mongoose.Types.ObjectId }[];
 
-  if (companies.length < nmbr_total) {
-    throw new Error(
-      `Entreprises disponibles insuffisantes : ${companies.length} trouvées pour ${nmbr_total} demandées.`
-    );
+    // Guard against a company having become used between the demande
+    // creation and the confirmation (e.g. a postulation manually created by
+    // an admin) — it cannot be duplicated (unique index user+company).
+    companies = companies.filter((c) => !usedIds.has(String(c._id)));
+
+    if (companies.length < nmbr_total) {
+      const missing = nmbr_total - companies.length;
+      throw new Error(
+        `Incohérence sur la demande : ${missing} entreprise(s) de la sélection d'origine ne sont plus disponibles (supprimées ou déjà utilisées). ` +
+          `La demande reste en attente — vérifiez les entreprises concernées puis reconfirmez.`
+      );
+    }
+  } else {
+    // Legacy fallback (demande created before the snapshot feature):
+    // fresh selection of eligible companies — active companies only, in the
+    // selected categories (or all companies belonging to an active category).
+    const filter: Record<string, unknown> = {
+      active: true,
+      _id: { $nin: Array.from(usedIds) },
+    };
+    if (categorie_ids.length > 0) {
+      filter.categorie_ids = { $in: categorie_ids };
+    } else {
+      const activeCategoryIds = await Category.find({ active: true }).distinct("_id");
+      filter.$or = [
+        { categorie_ids: { $size: 0 } },
+        { categorie_ids: { $in: activeCategoryIds } },
+      ];
+    }
+
+    companies = (await Company.find(filter)
+      .select("_id")
+      .sort({ createdAt: 1 })
+      .limit(nmbr_total)
+      .lean()) as { _id: mongoose.Types.ObjectId }[];
+
+    if (companies.length < nmbr_total) {
+      throw new Error(
+        `Entreprises disponibles insuffisantes : ${companies.length} trouvées pour ${nmbr_total} demandées.`
+      );
+    }
   }
 
   // Spread over days starting tomorrow.

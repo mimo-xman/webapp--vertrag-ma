@@ -45,8 +45,9 @@ export async function connectDB(): Promise<typeof mongoose> {
     const dbName = process.env.DB_NAME || "vertrag_ma";
     cache.promise = mongoose
       .connect(uri, { dbName })
-      .then((m) => {
+      .then(async (m) => {
         console.log(`[DB] Connected to ${dbName}`);
+        await runDataMigrations();
         return m;
       })
       .catch(async (err) => {
@@ -58,6 +59,27 @@ export async function connectDB(): Promise<typeof mongoose> {
   cache.conn = await cache.promise;
   await ensureSeeded();
   return cache.conn;
+}
+
+// One-time-per-process data migrations: normalize fields introduced by later
+// features on documents created before they existed. Idempotent — a no-op
+// once every document carries the field. Never throws (best effort).
+async function runDataMigrations(): Promise<void> {
+  try {
+    const { Company } = await import("../models/Company");
+    const { Category } = await import("../models/Category");
+    const [companies, categories] = await Promise.all([
+      Company.updateMany({ active: { $exists: false } }, { $set: { active: true } }),
+      Category.updateMany({ active: { $exists: false } }, { $set: { active: true } }),
+    ]);
+    if (companies.modifiedCount > 0 || categories.modifiedCount > 0) {
+      console.log(
+        `[DB] Migration « active » : ${companies.modifiedCount} entreprise(s) et ${categories.modifiedCount} catégorie(s) normalisées à actif`
+      );
+    }
+  } catch (e) {
+    console.error("[DB] Data migration failed:", e);
+  }
 }
 
 // In dev-preview mode, seeds demo data once per process (idempotent).

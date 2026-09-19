@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useI18n } from "@/components/language-provider";
 import { AdminPageHeader } from "@/components/admin-page-header";
 import { DataTable, type DataTableColumn } from "@/components/data-table";
+import { StatusStamp } from "@/components/stamp";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,13 +20,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Loader2, CheckCircle2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, CheckCircle2, Power, PowerOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CompanyRow {
   _id: string;
   name: string;
   email: string;
+  active: boolean;
   categories: { _id: string; name: string }[];
 }
 
@@ -158,6 +160,32 @@ export default function AdminCompaniesPage() {
     }
   };
 
+  // Activate / deactivate — recommended instead of deletion when the company
+  // is referenced by postulations (data integrity is preserved).
+  const handleToggle = async (row: CompanyRow) => {
+    const ok = await confirmApp(
+      row.active ? t("admin.deactivateCompanyConfirm") : t("admin.activateCompanyConfirm"),
+      {
+        title: row.active ? t("admin.deactivateCompany") : t("admin.activateCompany"),
+        confirmLabel: row.active ? t("admin.deactivateCompany") : t("admin.activateCompany"),
+        destructive: row.active,
+      }
+    );
+    if (!ok) return;
+    try {
+      await apiFetch(`/api/admin/companies/${row._id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ active: !row.active }),
+      });
+      toast({
+        title: row.active ? t("admin.companyDeactivated") : t("admin.companyActivated"),
+      });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      await alertApp(err instanceof Error ? err.message : "Erreur");
+    }
+  };
+
   const columns: DataTableColumn<CompanyRow>[] = [
     {
       key: "name",
@@ -188,10 +216,35 @@ export default function AdminCompaniesPage() {
         ),
     },
     {
+      key: "active",
+      header: t("statuses.active"),
+      sortable: true,
+      render: (row) => (
+        <StatusStamp
+          status={row.active ? "active" : "canceled"}
+          label={row.active ? t("statuses.active") : t("statuses.inactive")}
+        />
+      ),
+    },
+    {
       key: "actions",
       header: t("common.actions"),
       render: (row) => (
-        <div className="flex gap-1">
+        <div className="flex justify-center gap-1">
+          <Button
+            variant="outline"
+            size="icon"
+            className={
+              row.active
+                ? "h-7 w-7 text-[#b3391f] hover:bg-[#b3391f]/10"
+                : "h-7 w-7 text-[#2f6b4a] hover:bg-[#2f6b4a]/10"
+            }
+            title={row.active ? t("admin.deactivateCompany") : t("admin.activateCompany")}
+            aria-label={row.active ? t("admin.deactivateCompany") : t("admin.activateCompany")}
+            onClick={() => handleToggle(row)}
+          >
+            {row.active ? <PowerOff className="h-3.5 w-3.5" /> : <Power className="h-3.5 w-3.5" />}
+          </Button>
           <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => openEdit(row)}>
             <Pencil className="h-3.5 w-3.5" />
           </Button>
@@ -228,7 +281,19 @@ export default function AdminCompaniesPage() {
         }
       />
 
-      <DataTable endpoint="/api/admin/companies" columns={columns} refreshKey={refreshKey} />
+      <DataTable
+        endpoint="/api/admin/companies"
+        columns={columns}
+        refreshKey={refreshKey}
+        statusFilter={{
+          key: "status",
+          label: t("common.status"),
+          options: [
+            { value: "active", label: t("statuses.active") },
+            { value: "inactive", label: t("statuses.inactive") },
+          ],
+        }}
+      />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-md">

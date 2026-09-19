@@ -4,9 +4,11 @@ import { connectDB } from "@/lib/mongodb";
 import { requireAuth } from "@/lib/auth";
 import { getSettings } from "@/models/Setting";
 import { PostulationDemande } from "@/models/PostulationDemande";
+import { Category } from "@/models/Category";
 import { Company } from "@/models/Company";
 import { Postulation } from "@/models/Postulation";
 import { User } from "@/models/User";
+import { buildEligibleCompanyFilter } from "@/lib/company-eligibility";
 import {
   DEFAULT_PRICING,
   computePrice,
@@ -117,12 +119,51 @@ export async function POST(request: NextRequest) {
     const nmbrTotal = Number(body.nmbr_total || 0);
     const nmbrPerDay = Number(body.nmbr_per_day || 0);
 
-    // Validate against real availability (excluding already-used companies).
-    const usedCompanyIds = await Postulation.find({ user_id: user._id }).distinct("company_id");
-    const filter: Record<string, unknown> = { _id: { $nin: usedCompanyIds } };
-    if (categoryIds.length > 0) {
-      filter.categorie_ids = { $in: categoryIds.map((id) => new mongoose.Types.ObjectId(id)) };
+    // Strict category validation: every selected category must exist and be
+    // ACTIVE (a deactivated category is no longer selectable — the user must
+    // refresh his selection, otherwise he would pay for companies that are
+    // no longer offered).
+    if (categoryIds.some((id) => typeof id !== "string" || !mongoose.isValidObjectId(id))) {
+      return NextResponse.json(
+        { success: false, error: "Catégorie invalide. Fermez la fenêtre et réessayez." },
+        { status: 400 }
+      );
     }
+    let selectedCategories: mongoose.Types.ObjectId[] = [];
+    if (categoryIds.length > 0) {
+      const found = await Category.find({
+        _id: { $in: categoryIds.map((id) => new mongoose.Types.ObjectId(id)) },
+      })
+        .select("active")
+        .lean();
+      if (found.length !== categoryIds.length) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Une catégorie sélectionnée n'existe plus. Fermez la fenêtre et réessayez.",
+          },
+          { status: 400 }
+        );
+      }
+      if (found.some((c) => c.active === false)) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Une catégorie sélectionnée vient d'être désactivée. Fermez la fenêtre et réessayez.",
+          },
+          { status: 400 }
+        );
+      }
+      selectedCategories = found.map((c) => c._id as mongoose.Types.ObjectId);
+    }
+
+    // Validate against real availability (eligible companies only:
+    // active + excluding already-used companies).
+    const usedCompanyIds = await Postulation.find({ user_id: user._id }).distinct("company_id");
+    const filter = await buildEligibleCompanyFilter({
+      usedCompanyIds,
+      categoryIds: selectedCategories,
+    });
     const available = await Company.countDocuments(filter);
 
     const validationError = validateDemandeInput(nmbrTotal, nmbrPerDay, available, pricing);
@@ -130,12 +171,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: validationError }, { status: 400 });
     }
 
+    // SNAPSHOT — select NOW the exact companies that will be used when the
+    // admin confirms the payment, and store them on the demande. Later
+    // deactivations can no longer reduce what the user paid for: the
+    // confirmation creates the postulations from this saved list.
+    const snapshotCompanies = await Company.find(filter)
+      .select("_id")
+      .sort({ createdAt: 1 })
+      .limit(nmbrTotal)
+      .lean();
+    if (snapshotCompanies.length < nmbrTotal) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Pas assez d'entreprises disponibles (${snapshotCompanies.length}) — la disponibilité vient de changer. Fermez la fenêtre et réessayez.`,
+        },
+        { status: 400 }
+      );
+    }
+
     const breakdown = computePrice(nmbrTotal, nmbrPerDay, pricing);
 
     const demande = await PostulationDemande.create({
       ref_number: generateRefNumber("P"),
       user_id: user._id,
-      categorie_ids: categoryIds,
+      categorie_ids: selectedCategories,
+      company_ids: snapshotCompanies.map((c) => c._id),
       nmbr_total: nmbrTotal,
       nmbr_per_day: nmbrPerDay,
       price: breakdown.final_price,

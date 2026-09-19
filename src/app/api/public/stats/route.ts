@@ -8,11 +8,13 @@ import { DEFAULT_PRICING } from "@/lib/pricing";
 // Public, non-sensitive counters + live pricing for the home page.
 // The pricing block mirrors the admin settings: when an admin changes the
 // prices, the home page reflects it immediately (no hardcoded values).
+// The companies counter only counts ACTIVE companies — those targetable by
+// a new demande de postulation (deactivated ones are excluded).
 export async function GET() {
   try {
     await connectDB();
     const [companies, sent, settings] = await Promise.all([
-      Company.countDocuments(),
+      Company.countDocuments({ active: true }),
       Postulation.countDocuments({ status: "envoyee" }),
       getSettings(),
     ]);

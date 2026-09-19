@@ -475,6 +475,24 @@ export default {
     categoryCount: "{count} entreprise(s)",
     deleteCategoryWarning:
       "Supprimer cette catégorie retirera {count} entreprise(s) de cette catégorie. Continuer ?",
+    deleteCategoryBlocked:
+      "Impossible de supprimer cette catégorie : elle contient {count} entreprise(s). Déplacez ou supprimez d'abord ses entreprises — ou désactivez simplement la catégorie : elle ne sera plus proposée aux utilisateurs et ses entreprises ne seront plus ciblées par les nouvelles demandes.",
+    activateCompany: "Activer",
+    deactivateCompany: "Désactiver",
+    activateCompanyConfirm:
+      "Ré-activer cette entreprise ? Elle sera à nouveau ciblée par les nouvelles demandes de postulation.",
+    deactivateCompanyConfirm:
+      "Désactiver cette entreprise ? Elle ne sera plus ciblée par les nouvelles demandes de postulation (les postulations déjà planifiées seront envoyées normalement). Préférez la désactivation à la suppression : l'historique est préservé.",
+    companyActivated: "Entreprise activée",
+    companyDeactivated: "Entreprise désactivée",
+    activateCategory: "Activer",
+    deactivateCategory: "Désactiver",
+    activateCategoryConfirm:
+      "Ré-activer cette catégorie ? Elle redeviendra sélectionnable et ses entreprises seront à nouveau ciblées par les nouvelles demandes.",
+    deactivateCategoryConfirm:
+      "Désactiver cette catégorie ? Elle disparaîtra du sélecteur des utilisateurs et ses entreprises ne seront plus ciblées par les nouvelles demandes (les postulations déjà planifiées seront envoyées normalement).",
+    categoryActivated: "Catégorie activée",
+    categoryDeactivated: "Catégorie désactivée",
     companyName: "Nom de l'entreprise",
     companyEmail: "Email de l'entreprise",
     companyCategories: "Catégories",

@@ -4,6 +4,9 @@ export interface ICompany extends mongoose.Document {
   name: string;
   email: string;
   categorie_ids: mongoose.Types.ObjectId[];
+  // An inactive company is excluded from NEW demande targeting (counts,
+  // selection, snapshot) but keeps receiving already-scheduled postulations.
+  active: boolean;
   created_by: mongoose.Types.ObjectId | null;
   createdAt: Date;
   updatedAt: Date;
@@ -21,6 +24,7 @@ const CompanySchema = new Schema<ICompany>(
       index: true,
     },
     categorie_ids: { type: [Schema.Types.ObjectId], ref: "Category", default: [] },
+    active: { type: Boolean, default: true, index: true },
     created_by: { type: Schema.Types.ObjectId, ref: "User", default: null },
   },
   { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }

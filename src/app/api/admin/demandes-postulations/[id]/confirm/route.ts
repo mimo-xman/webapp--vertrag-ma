@@ -35,6 +35,7 @@ export async function POST(
       user_id: demande.user_id as mongoose.Types.ObjectId,
       demande_id: demande._id as mongoose.Types.ObjectId,
       categorie_ids: (demande.categorie_ids as mongoose.Types.ObjectId[]) || [],
+      company_ids: (demande.company_ids as mongoose.Types.ObjectId[]) || [],
       nmbr_total: demande.nmbr_total,
       nmbr_per_day: demande.nmbr_per_day,
     });

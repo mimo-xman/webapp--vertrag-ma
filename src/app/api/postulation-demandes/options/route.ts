@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { connectDB } from "@/lib/mongodb";
 import { requireAuth } from "@/lib/auth";
 import { getSettings } from "@/models/Setting";
@@ -6,6 +7,7 @@ import { Category } from "@/models/Category";
 import { Company } from "@/models/Company";
 import { Postulation } from "@/models/Postulation";
 import { User } from "@/models/User";
+import { buildEligibleCompanyFilter } from "@/lib/company-eligibility";
 import {
   buildTotalOptions,
   buildPerDayOptions,
@@ -15,7 +17,10 @@ import {
 } from "@/lib/pricing";
 
 // GET /api/postulation-demandes/options?categories=id1,id2
-// Dynamic: companies count (minus already-used by this user), total/per-day options, price preview.
+// Dynamic: eligible companies count (active + not already used by this user),
+// total/per-day options, price preview. Deactivated categories are hidden
+// from the selector; deactivated companies (and companies whose categories
+// are ALL deactivated, in "all companies" mode) are excluded from the count.
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
@@ -31,26 +36,39 @@ export async function GET(request: NextRequest) {
   const categoryIds = categoriesParam
     .split(",")
     .map((id) => id.trim())
-    .filter(Boolean);
+    .filter((id) => id && mongoose.isValidObjectId(id));
 
   const user = await User.findById(auth.user._id).select("dossier_pdf_link").lean();
   const hasDossier = Boolean(user?.dossier_pdf_link);
 
-  // Companies eligible = in selected categories (or all), minus companies this
-  // user has ALREADY applied to (lifetime anti-duplicate).
+  // Companies eligible = active, in selected categories (or all), minus
+  // companies this user has ALREADY applied to (lifetime anti-duplicate).
   const usedCompanyIds = await Postulation.find({ user_id: auth.user._id }).distinct("company_id");
 
-  const filter: Record<string, unknown> = { _id: { $nin: usedCompanyIds } };
+  // Defensive: keep only categories that still exist AND are active.
+  let selectedObjectIds: mongoose.Types.ObjectId[] = [];
   if (categoryIds.length > 0) {
-    filter.categorie_ids = { $in: categoryIds };
+    const activeSelected = await Category.find({
+      _id: { $in: categoryIds.map((id) => new mongoose.Types.ObjectId(id)) },
+      active: true,
+    })
+      .select("_id")
+      .lean();
+    selectedObjectIds = activeSelected.map((c) => c._id as mongoose.Types.ObjectId);
   }
+
+  const filter = await buildEligibleCompanyFilter({
+    usedCompanyIds,
+    categoryIds: selectedObjectIds,
+  });
   const available = await Company.countDocuments(filter);
 
-  const categories = await Category.find().sort({ name: 1 }).select("name").lean();
-  // Count available companies per category for display.
+  // Selector: only ACTIVE categories, with their eligible company count.
+  const categories = await Category.find({ active: true }).sort({ name: 1 }).select("_id name").lean();
   const categoriesWithCount = await Promise.all(
     categories.map(async (cat) => {
       const count = await Company.countDocuments({
+        active: true,
         _id: { $nin: usedCompanyIds },
         categorie_ids: cat._id,
       });
@@ -110,8 +128,23 @@ export async function POST(request: NextRequest) {
   const nmbrPerDay = Number(body.nmbr_per_day || 0);
 
   const usedCompanyIds = await Postulation.find({ user_id: auth.user._id }).distinct("company_id");
-  const filter: Record<string, unknown> = { _id: { $nin: usedCompanyIds } };
-  if (categoryIds.length > 0) filter.categorie_ids = { $in: categoryIds };
+
+  // Defensive: keep only categories that still exist AND are active.
+  let selectedObjectIds: mongoose.Types.ObjectId[] = [];
+  if (categoryIds.length > 0) {
+    const activeSelected = await Category.find({
+      _id: { $in: categoryIds.map((id) => new mongoose.Types.ObjectId(id)) },
+      active: true,
+    })
+      .select("_id")
+      .lean();
+    selectedObjectIds = activeSelected.map((c) => c._id as mongoose.Types.ObjectId);
+  }
+
+  const filter = await buildEligibleCompanyFilter({
+    usedCompanyIds,
+    categoryIds: selectedObjectIds,
+  });
   const available = await Company.countDocuments(filter);
 
   const validationError = validateDemandeInput(nmbrTotal, nmbrPerDay, available, pricing);

@@ -223,10 +223,16 @@ function CreateDemandeDialog({
     const params = categories.length ? `?categories=${categories.join(",")}` : "";
     const data = await apiFetch<OptionsResponse>(`/api/postulation-demandes/options${params}`);
     setOptions(data);
+    // A selected category may have been deactivated meanwhile — prune it
+    // so the selection always matches what is actually offered.
+    const visibleIds = new Set(data.categories.map((c) => c._id));
+    setSelectedCategories((prev) => {
+      const pruned = prev.filter((id) => visibleIds.has(id));
+      return pruned.length === prev.length ? prev : pruned;
+    });
     setNmbrTotal(null);
     setNmbrPerDay(null);
     setBreakdown(null);
-     
   }, []);
 
   useEffect(() => {
