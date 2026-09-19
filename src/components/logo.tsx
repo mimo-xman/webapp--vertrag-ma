@@ -16,12 +16,12 @@ export function Logo({
     <Link href={href} className={cn("group inline-flex items-baseline gap-1 select-none", className)}>
       <span
         className={`font-display text-xl font-extrabold tracking-tight ${
-          inverted ? "text-[#f4f2ec]" : "text-[#1a1d21]"
+          inverted ? "text-sidebar-primary" : "text-foreground"
         }`}
       >
         Vertrag
       </span>
-      <span className="font-display text-xl font-extrabold tracking-tight text-[#d9a441] group-hover:text-[#e8b04b] transition-colors">
+      <span className="font-display text-xl font-extrabold tracking-tight text-warning group-hover:text-[#e8b04b] transition-colors">
         .ma
       </span>
     </Link>

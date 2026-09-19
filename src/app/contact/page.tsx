@@ -10,9 +10,9 @@ export default async function ContactPage() {
   const user = await getAuthUser().catch(() => null);
 
   return (
-    <div className="min-h-dvh flex flex-col bg-[#f0eee6]">
+    <div className="min-h-dvh flex flex-col bg-paper">
       {/* Briefkopf — letterhead */}
-      <header className="border-b border-[#d8d5cc] bg-[#fafaf6]/80 backdrop-blur">
+      <header className="border-b border-border bg-paper/80 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
           <Logo />
           <div className="flex items-center gap-2">
@@ -30,8 +30,8 @@ export default async function ContactPage() {
         </div>
       </main>
 
-      <footer className="border-t border-[#d8d5cc] bg-[#fafaf6]/80">
-        <div className="mx-auto flex h-12 max-w-6xl items-center justify-between px-4 text-xs text-[#75797f]">
+      <footer className="border-t border-border bg-paper/80">
+        <div className="mx-auto flex h-12 max-w-6xl items-center justify-between px-4 text-xs text-muted-foreground">
           <span className="font-mono">© {new Date().getFullYear()} Vertrag.ma</span>
         </div>
       </footer>

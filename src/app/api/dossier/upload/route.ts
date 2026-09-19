@@ -69,19 +69,27 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
     const { url } = await uploadPdfToCloudinary(buffer, file.name);
 
+    // The price in effect NOW is snapshotted on the demande (the admin can
+    // change it later — the user pays the price he saw). When the price is
+    // above zero, the demande starts in the payment workflow: the user pays
+    // via WhatsApp, then the admin validates the payment before the review.
+    const addPrice = settings.dossier.add_price ?? 0;
     const demande = await DossierDemandeForAdd.create({
       ref_number: generateRefNumber("DA"),
       user_id: auth.user._id,
       dossier_pdf_link: url,
-      price: settings.dossier.add_price ?? 0,
-      status: "en_attente",
+      price: addPrice,
+      status: addPrice > 0 ? "waiting_payment" : "en_attente",
       active: true,
     });
 
     return NextResponse.json({
       success: true,
-      message: "Dossier envoyé ! En attente de vérification par l'équipe.",
-      demande: { _id: String(demande._id), ref_number: demande.ref_number },
+      message:
+        addPrice > 0
+          ? "Dossier envoyé ! Contactez l'équipe sur WhatsApp pour régler le paiement, puis votre dossier sera vérifié."
+          : "Dossier envoyé ! En attente de vérification par l'équipe.",
+      demande: { _id: String(demande._id), ref_number: demande.ref_number, price: addPrice },
     });
   } catch (error) {
     // Users get a clean message; the detailed Cloudinary cause (with fix

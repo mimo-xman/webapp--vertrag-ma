@@ -54,20 +54,20 @@ export default function AdminDashboardPage() {
   const { stats } = data;
 
   const cards = [
-    { label: t("admin.statUsers"), value: stats.users, icon: Users, href: "/admin/users", color: "#1e4475" },
-    { label: t("admin.statCompanies"), value: stats.companies, icon: Building2, href: "/admin/companies", color: "#1e4475" },
-    { label: t("admin.statCategories"), value: stats.categories, icon: FolderTree, href: "/admin/categories", color: "#1e4475" },
-    { label: t("admin.statPostulations"), value: stats.postulations.total, icon: Send, href: "/admin/postulations", color: "#1a1d21" },
-    { label: t("admin.statDemandes"), value: stats.demandes.total, icon: FileStack, href: "/admin/demandes-postulations", color: "#1a1d21" },
-    { label: t("admin.statDossiers"), value: stats.dossiers, icon: FolderOpen, href: "/admin/users", color: "#2f6b4a" },
-    { label: t("admin.statMailSenders"), value: stats.mail_senders, icon: Mail, href: "/admin/mail-senders", color: "#1e4475" },
+    { label: t("admin.statUsers"), value: stats.users, icon: Users, href: "/admin/users", color: "var(--primary)" },
+    { label: t("admin.statCompanies"), value: stats.companies, icon: Building2, href: "/admin/companies", color: "var(--primary)" },
+    { label: t("admin.statCategories"), value: stats.categories, icon: FolderTree, href: "/admin/categories", color: "var(--primary)" },
+    { label: t("admin.statPostulations"), value: stats.postulations.total, icon: Send, href: "/admin/postulations", color: "var(--foreground)" },
+    { label: t("admin.statDemandes"), value: stats.demandes.total, icon: FileStack, href: "/admin/demandes-postulations", color: "var(--foreground)" },
+    { label: t("admin.statDossiers"), value: stats.dossiers, icon: FolderOpen, href: "/admin/users", color: "var(--success)" },
+    { label: t("admin.statMailSenders"), value: stats.mail_senders, icon: Mail, href: "/admin/mail-senders", color: "var(--primary)" },
   ];
 
   const statusCards = [
-    { label: t("statuses.en_attente"), value: stats.postulations.en_attente, color: "#75797f" },
-    { label: t("statuses.envoyee"), value: stats.postulations.envoyee, color: "#2f6b4a" },
-    { label: t("statuses.echouee"), value: stats.postulations.echouee, color: "#b3391f" },
-    { label: t("statuses.re_execute"), value: stats.postulations.re_execute, color: "#8a6a1f" },
+    { label: t("statuses.en_attente"), value: stats.postulations.en_attente, color: "var(--muted-foreground)" },
+    { label: t("statuses.envoyee"), value: stats.postulations.envoyee, color: "var(--success)" },
+    { label: t("statuses.echouee"), value: stats.postulations.echouee, color: "var(--destructive)" },
+    { label: t("statuses.re_execute"), value: stats.postulations.re_execute, color: "var(--warning)" },
   ];
 
   return (
@@ -126,10 +126,10 @@ export default function AdminDashboardPage() {
         <div className="form-sheet lg:col-span-2">
           <div className="sheet-band flex items-center justify-between px-5 py-3.5">
             <div className="flex items-center gap-2">
-              <ScrollText className="h-4 w-4 text-[#1e4475]" />
+              <ScrollText className="h-4 w-4 text-primary" />
               <h2 className="font-display text-sm font-bold">{t("admin.recentActivity")}</h2>
             </div>
-            <Link href="/admin/audit-logs" className="text-xs font-medium text-[#1e4475] hover:underline">
+            <Link href="/admin/audit-logs" className="text-xs font-medium text-primary hover:underline">
               {t("admin.auditLogs")} →
             </Link>
           </div>

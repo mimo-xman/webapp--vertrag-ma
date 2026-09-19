@@ -96,9 +96,11 @@ export async function GET(request: NextRequest) {
       active: d.active,
       message_on_failed: d.message_on_failed,
       confirmed_at: d.confirmed_at,
+      payed_at: d.payed_at,
       createdAt: d.createdAt,
       cancelled_by: d.cancelled_by,
       cancelled_at: d.cancelled_at,
+      cancel_message: d.cancel_message,
       price: d.price,
     })),
     demandes_create: createDemandes.map((d) => ({

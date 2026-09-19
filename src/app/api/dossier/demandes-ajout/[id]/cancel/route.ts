@@ -3,7 +3,8 @@ import { connectDB } from "@/lib/mongodb";
 import { requireAuth } from "@/lib/auth";
 import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
 
-// Cancel a pending add-demande (only while en_attente).
+// Cancel a pending add-demande — allowed while en_attente (free) OR
+// waiting_payment (priced, before the admin validates the payment).
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -18,9 +19,12 @@ export async function POST(
   if (!demande) {
     return NextResponse.json({ success: false, error: "Demande introuvable" }, { status: 404 });
   }
-  if (demande.status !== "en_attente") {
+  if (demande.status !== "en_attente" && demande.status !== "waiting_payment") {
     return NextResponse.json(
-      { success: false, error: "Cette demande ne peut plus être annulée (seulement en attente)." },
+      {
+        success: false,
+        error: "Cette demande ne peut plus être annulée (paiement déjà validé ou révision en cours).",
+      },
       { status: 400 }
     );
   }

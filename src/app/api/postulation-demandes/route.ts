@@ -10,7 +10,7 @@ import { Postulation } from "@/models/Postulation";
 import { User } from "@/models/User";
 import { buildEligibleCompanyFilter } from "@/lib/company-eligibility";
 import {
-  DEFAULT_PRICING,
+  normalizePricing,
   computePrice,
   validateDemandeInput,
 } from "@/lib/pricing";
@@ -55,6 +55,9 @@ export async function GET(request: NextRequest) {
       nmbr_total: d.nmbr_total,
       nmbr_per_day: d.nmbr_per_day,
       price: d.price,
+      // Pricing parameters in effect when this demande was created —
+      // displayed to the user so he can see how his price was computed.
+      pricing_snapshot: d.pricing_snapshot || null,
       status: d.status,
       confirmed_at: d.confirmed_at,
       createdAt: d.createdAt,
@@ -113,7 +116,7 @@ export async function POST(request: NextRequest) {
     }
 
     const settings = await getSettings();
-    const pricing = { ...DEFAULT_PRICING, ...settings.postulation_demandes };
+    const pricing = normalizePricing(settings.postulation_pricing);
 
     const categoryIds = (body.categorie_ids || []).filter(Boolean);
     const nmbrTotal = Number(body.nmbr_total || 0);
@@ -192,6 +195,21 @@ export async function POST(request: NextRequest) {
 
     const breakdown = computePrice(nmbrTotal, nmbrPerDay, pricing);
 
+    // SNAPSHOT — store the pricing parameters in effect RIGHT NOW with the
+    // demande, so the exact computation stays visible forever (params can
+    // change later, the stored price is never recomputed).
+    const pricing_snapshot = {
+      total: pricing.total,
+      per_day: pricing.per_day,
+      breakdown: {
+        total_price: breakdown.total_price,
+        per_day_price: breakdown.per_day_price,
+        per_day_discount: breakdown.per_day_discount,
+        per_day_price_after_discount: breakdown.per_day_price_after_discount,
+        final_price: breakdown.final_price,
+      },
+    };
+
     const demande = await PostulationDemande.create({
       ref_number: generateRefNumber("P"),
       user_id: user._id,
@@ -200,6 +218,7 @@ export async function POST(request: NextRequest) {
       nmbr_total: nmbrTotal,
       nmbr_per_day: nmbrPerDay,
       price: breakdown.final_price,
+      pricing_snapshot,
       status: "en_attente",
     });
 
@@ -210,6 +229,7 @@ export async function POST(request: NextRequest) {
         ref_number: demande.ref_number,
         price: demande.price,
         breakdown,
+        pricing_snapshot,
       },
       whatsapp_url: settings.contact.whatsapp_url,
     });

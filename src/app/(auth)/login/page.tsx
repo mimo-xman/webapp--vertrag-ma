@@ -94,18 +94,18 @@ export default function LoginPage() {
 
       <div className="p-6">
         {sessionReason === "session_expired" && (
-          <div className="mb-4 rounded-sm border border-[#d9a441]/40 bg-[#d9a441]/10 px-3 py-2.5 text-sm text-[#8a6a1f]">
+          <div className="mb-4 rounded-sm border border-warning/40 bg-warning/10 px-3 py-2.5 text-sm text-warning">
             {t("auth.sessionExpired")}
           </div>
         )}
         {sessionReason === "auth_required" && (
-          <div className="mb-4 rounded-sm border border-[#d9a441]/40 bg-[#d9a441]/10 px-3 py-2.5 text-sm text-[#8a6a1f]">
+          <div className="mb-4 rounded-sm border border-warning/40 bg-warning/10 px-3 py-2.5 text-sm text-warning">
             {t("auth.authRequired")}
           </div>
         )}
 
         {error && (
-          <div className="mb-4 rounded-sm border border-[#b3391f]/40 bg-[#b3391f]/10 px-3 py-2.5 text-sm text-[#b3391f]">
+          <div className="mb-4 rounded-sm border border-destructive/40 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
             {error}
           </div>
         )}
@@ -129,7 +129,7 @@ export default function LoginPage() {
                 <Label htmlFor="password">{t("auth.password")}</Label>
                 <Link
                   href="/forgot-password"
-                  className="text-xs text-[#1e4475] hover:underline"
+                  className="text-xs text-primary hover:underline"
                 >
                   {t("auth.forgotPassword")}
                 </Link>
@@ -149,8 +149,8 @@ export default function LoginPage() {
           </form>
         ) : (
           <form onSubmit={handle2FA} className="space-y-4">
-            <div className="flex items-center gap-3 rounded-sm border border-border bg-[#fafaf6] p-3">
-              <ShieldCheck className="h-5 w-5 text-[#1e4475]" />
+            <div className="flex items-center gap-3 rounded-sm border border-border bg-paper p-3">
+              <ShieldCheck className="h-5 w-5 text-primary" />
               <p className="text-xs text-muted-foreground">{t("auth.twoFAOrBackup")}</p>
             </div>
             <div className="space-y-1.5">
@@ -179,7 +179,7 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-muted-foreground">
           {t("auth.loginNoAccount")}{" "}
-          <Link href="/register" className="font-medium text-[#1e4475] hover:underline">
+          <Link href="/register" className="font-medium text-primary hover:underline">
             {t("auth.registerLink")}
           </Link>
         </p>

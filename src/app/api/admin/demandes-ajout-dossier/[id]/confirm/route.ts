@@ -21,7 +21,7 @@ export async function POST(
   if (!demande) {
     return NextResponse.json({ success: false, error: "Demande introuvable" }, { status: 404 });
   }
-  if (demande.status !== "en_attente" && demande.status !== "en_cours_de_revision") {
+  if (demande.status !== "en_attente" && demande.status !== "en_cours_de_revision" && demande.status !== "payed_waiting_review" && demande.status !== "payed_in_review") {
     return NextResponse.json(
       { success: false, error: "Cette demande a déjà été traitée." },
       { status: 400 }

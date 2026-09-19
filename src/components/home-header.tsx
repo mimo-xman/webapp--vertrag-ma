@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useI18n } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,7 +37,7 @@ export function HomeHeader() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#d8d5cc] bg-[#fafaf6]/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border bg-paper/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Logo />
         <nav className="hidden items-center gap-6 md:flex" aria-label="Navigation principale">
@@ -53,10 +54,11 @@ export function HomeHeader() {
             {t("home.faqTitle")}
           </a>
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          <ThemeToggle />
           <LanguageSwitcher />
           {loading ? (
-            <div className="h-9 w-24 animate-pulse rounded-sm bg-[#e9e6dd]" />
+            <div className="h-9 w-24 animate-pulse rounded-sm bg-secondary" />
           ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -79,7 +81,7 @@ export function HomeHeader() {
                 </DropdownMenuItem>
                 {user.role === "admin" && (
                   <DropdownMenuItem asChild>
-                    <Link href="/admin" className="flex items-center gap-2 w-full text-[#1e4475]">
+                    <Link href="/admin" className="flex items-center gap-2 w-full text-primary">
                       <ShieldCheck className="h-3.5 w-3.5" />
                       {t("nav.admin")}
                     </Link>

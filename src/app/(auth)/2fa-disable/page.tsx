@@ -15,7 +15,7 @@ function TwoFADisableContent() {
     <div className="form-sheet p-8 text-center">
       {status === "success" ? (
         <>
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-[#2f6b4a] text-[#2f6b4a] stamp-anim">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-success text-success stamp-anim">
             <CheckCircle2 className="h-7 w-7" />
           </div>
           <h1 className="font-display text-xl font-bold">2FA désactivé</h1>
@@ -25,7 +25,7 @@ function TwoFADisableContent() {
         </>
       ) : (
         <>
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-[#b3391f] text-[#b3391f]">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-destructive text-destructive">
             {status === "invalid" ? <XCircle className="h-7 w-7" /> : <ShieldOff className="h-7 w-7" />}
           </div>
           <h1 className="font-display text-xl font-bold">

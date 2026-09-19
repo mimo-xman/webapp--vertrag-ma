@@ -20,15 +20,18 @@ interface CloudinaryTestResult {
   testedUrl?: string;
 }
 
+interface PricingAxis {
+  step: number;
+  step_price: number;
+  min: number;
+  max: number;
+  free_amount: number;
+}
+
 interface SettingsData {
-  postulation_demandes: {
-    price_of_hundred_total: number;
-    price_of_hundred_per_day: number;
-    free_per_day_amount: number;
-    min_total: number;
-    min_per_day: number;
-    step_total: number;
-    step_per_day: number;
+  postulation_pricing: {
+    total: PricingAxis;
+    per_day: PricingAxis;
   };
   postulations: { email_message: string; email_subject: string };
   dossier: { creation_price: number; add_price: number };
@@ -96,26 +99,70 @@ export default function AdminSettingsPage() {
     );
   }
 
-  const num = (key: keyof SettingsData["postulation_demandes"], label: string) => (
+  // Update one axis (total / per_day) of the postulation pricing.
+  const setAxis = (axis: "total" | "per_day", key: keyof PricingAxis, value: number) => {
+    setSettings({
+      ...settings,
+      postulation_pricing: {
+        ...settings.postulation_pricing,
+        [axis]: { ...settings.postulation_pricing[axis], [key]: value },
+      },
+    });
+  };
+
+  // One labeled number input bound to a pricing axis field.
+  const axisField = (
+    axis: "total" | "per_day",
+    key: keyof PricingAxis,
+    label: string,
+    hint?: string,
+    step = "1"
+  ) => (
     <div className="space-y-1.5">
       <Label>{label}</Label>
       <Input
         type="number"
         min="0"
-        step="0.5"
-        value={settings.postulation_demandes[key]}
-        onChange={(e) =>
-          setSettings({
-            ...settings,
-            postulation_demandes: {
-              ...settings.postulation_demandes,
-              [key]: Number(e.target.value),
-            },
-          })
-        }
+        step={step}
+        value={settings.postulation_pricing[axis][key]}
+        onChange={(e) => setAxis(axis, key, Number(e.target.value))}
       />
+      {hint && <p className="text-xs leading-snug text-muted-foreground">{hint}</p>}
     </div>
   );
+
+  // ── One pricing sub-section: [Postulations total] or [Postulation/jour] ──
+  const pricingSubSection = (axis: "total" | "per_day") => {
+    const isTotal = axis === "total";
+    const stepValue = settings.postulation_pricing[axis].step;
+    return (
+      <div className="rounded-sm border border-border bg-paper">
+        <div className="border-b border-border px-4 py-2.5">
+          <h3 className="font-display text-sm font-bold">
+            {isTotal ? t("admin.pricingSubTotal") : t("admin.pricingSubPerDay")}
+          </h3>
+        </div>
+        <div className="grid gap-4 p-4 sm:grid-cols-2">
+          {axisField(axis, "step", t("admin.stepOptionsLabel"))}
+          {axisField(
+            axis,
+            "step_price",
+            t("admin.stepPriceLabel"),
+            t("admin.stepPriceHint").replace("{step}", String(stepValue)),
+            "0.5"
+          )}
+          {axisField(axis, "min", t("admin.minLabel"))}
+          {axisField(axis, "max", t("admin.maxLabel"), t("admin.maxLabelHint"))}
+          {axisField(
+            axis,
+            "free_amount",
+            t("admin.freeAmountLabel"),
+            t("admin.freeAmountHint")
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="p-6">
@@ -132,25 +179,39 @@ export default function AdminSettingsPage() {
       />
 
       <div className="grid gap-5 lg:grid-cols-2">
-        {/* Pricing */}
+        {/* ── Section [Postulations] — two independent pricing axes ── */}
+        <div className="form-sheet lg:col-span-2">
+          <div className="sheet-band px-5 py-3.5">
+            <h2 className="font-display text-sm font-bold">
+              {t("admin.pricingSectionPostulations")} — {t("demandes.priceTitle")}
+            </h2>
+            <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
+              {t("admin.pricingSectionPostulationsHint")}
+            </p>
+          </div>
+          <div className="grid gap-4 p-5 lg:grid-cols-2">
+            {pricingSubSection("total")}
+            {pricingSubSection("per_day")}
+          </div>
+        </div>
+
+        {/* ── Section [Dossier] — creation & add prices ── */}
         <div className="form-sheet">
           <div className="sheet-band px-5 py-3.5">
-            <h2 className="font-display text-sm font-bold">{t("demandes.priceTitle")}</h2>
+            <h2 className="font-display text-sm font-bold">
+              {t("admin.pricingSectionDossier")} — {t("demandes.priceTitle")}
+            </h2>
+            <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
+              {t("admin.pricingSectionDossierHint")}
+            </p>
           </div>
           <div className="grid gap-4 p-5 sm:grid-cols-2">
-            {num("price_of_hundred_total", t("admin.priceHundredTotal"))}
-            {num("price_of_hundred_per_day", t("admin.priceHundredPerDay"))}
-            {num("free_per_day_amount", t("admin.freePerDay"))}
-            {num("min_total", "Minimum total")}
-            {num("min_per_day", "Minimum par jour")}
-            {num("step_total", "Pas des options total")}
-            {num("step_per_day", "Pas des options par jour")}
             <div className="space-y-1.5">
               <Label>{t("admin.dossierCreationPrice")}</Label>
               <Input
                 type="number"
                 min="0"
-                step="1"
+                step="0.5"
                 value={settings.dossier.creation_price}
                 onChange={(e) =>
                   setSettings({
@@ -168,7 +229,7 @@ export default function AdminSettingsPage() {
               <Input
                 type="number"
                 min="0"
-                step="1"
+                step="0.5"
                 value={settings.dossier.add_price ?? 0}
                 onChange={(e) =>
                   setSettings({
@@ -180,8 +241,8 @@ export default function AdminSettingsPage() {
                   })
                 }
               />
-              <p className="text-xs text-muted-foreground">
-                {t("admin.dossierAddPriceHint")}
+              <p className="text-xs leading-snug text-muted-foreground">
+                {t("admin.dossierAddPriceHintV2")}
               </p>
             </div>
           </div>
@@ -265,10 +326,10 @@ export default function AdminSettingsPage() {
               <div
                 className={`rounded-sm border p-4 text-sm leading-relaxed ${
                   cloudTest.status === "ok"
-                    ? "border-emerald-600/30 bg-emerald-600/10"
+                    ? "border-success/30 bg-success/10"
                     : cloudTest.status === "not_configured"
-                      ? "border-amber-600/30 bg-amber-600/10"
-                      : "border-[#b3391f]/30 bg-[#b3391f]/10"
+                      ? "border-warning/40 bg-warning/10"
+                      : "border-destructive/30 bg-destructive/10"
                 }`}
               >
                 <p className="mb-1 font-display font-bold">

@@ -27,8 +27,8 @@ export function SuspendedView({ email, reason }: { email: string; reason: string
         GESPERRT
       </div>
 
-      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-sm border border-[#b3391f]/30 bg-[#b3391f]/10">
-        <ShieldAlert className="h-7 w-7 text-[#b3391f]" />
+      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-sm border border-destructive/30 bg-destructive/10">
+        <ShieldAlert className="h-7 w-7 text-destructive" />
       </div>
 
       <h1 className="font-display text-2xl font-extrabold tracking-tight">
@@ -41,9 +41,9 @@ export function SuspendedView({ email, reason }: { email: string; reason: string
       </p>
 
       {reason && (
-        <div className="mt-4 rounded-sm border border-[#d9a441]/40 bg-[#d9a441]/10 px-3 py-2.5">
-          <p className="eyebrow mb-1 !text-[#8a6a1f]">{t("suspended.reasonLabel")}</p>
-          <p className="text-sm leading-relaxed text-[#8a6a1f]">{reason}</p>
+        <div className="mt-4 rounded-sm border border-warning/40 bg-warning/10 px-3 py-2.5">
+          <p className="eyebrow mb-1 !text-warning">{t("suspended.reasonLabel")}</p>
+          <p className="text-sm leading-relaxed text-warning">{reason}</p>
         </div>
       )}
 

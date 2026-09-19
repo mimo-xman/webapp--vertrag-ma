@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { useI18n } from "@/components/language-provider";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -64,14 +65,14 @@ export function AdminSidebar({ userEmail }: { userEmail: string }) {
   const sidebar = (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="border-b border-[#2a2e34] px-4 py-4">
+      <div className="border-b border-sidebar-border px-4 py-4">
         <Logo inverted />
-        <p className="eyebrow mt-1 !text-[#75797f]">Verwaltung</p>
+        <p className="eyebrow mt-1 !text-sidebar-foreground/60">Verwaltung</p>
       </div>
 
       {/* User */}
-      <div className="border-b border-[#2a2e34] px-4 py-3">
-        <p className="truncate font-mono text-xs text-[#9a9ea6]">{userEmail}</p>
+      <div className="border-b border-sidebar-border px-4 py-3">
+        <p className="truncate font-mono text-xs text-sidebar-foreground/80">{userEmail}</p>
       </div>
 
       {/* Nav */}
@@ -86,8 +87,8 @@ export function AdminSidebar({ userEmail }: { userEmail: string }) {
               className={cn(
                 "flex items-center gap-2.5 rounded-sm px-3 py-2 text-sm font-medium transition-colors",
                 active
-                  ? "bg-[#f4f2ec] text-[#1a1d21]"
-                  : "text-[#9a9ea6] hover:bg-[#2a2e34] hover:text-[#f4f2ec]"
+                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
             >
               <item.icon className="h-4 w-4 shrink-0" />
@@ -98,23 +99,24 @@ export function AdminSidebar({ userEmail }: { userEmail: string }) {
       </nav>
 
       {/* Footer */}
-      <div className="space-y-1 border-t border-[#2a2e34] p-3">
+      <div className="space-y-1 border-t border-sidebar-border p-3">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2.5 rounded-sm px-3 py-2 text-sm font-medium text-[#9a9ea6] transition-colors hover:bg-[#2a2e34] hover:text-[#f4f2ec]"
+          className="flex items-center gap-2.5 rounded-sm px-3 py-2 text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
           {t("nav.dashboard")}
         </Link>
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2 text-sm font-medium text-[#9a9ea6] transition-colors hover:bg-[#2a2e34] hover:text-[#f4f2ec]"
+          className="flex w-full items-center gap-2.5 rounded-sm px-3 py-2 text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
           <LogOut className="h-4 w-4" />
           {t("nav.logout")}
         </button>
-        <div className="pt-2">
-          <LanguageSwitcher className="border-[#2a2e34] bg-transparent text-[#9a9ea6] hover:text-[#f4f2ec] hover:border-[#9a9ea6]" />
+        <div className="flex items-center gap-2 pt-2">
+          <LanguageSwitcher className="border-sidebar-border bg-transparent text-sidebar-foreground/80 hover:text-sidebar-accent-foreground hover:border-sidebar-foreground/60" />
+          <ThemeToggle className="text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
         </div>
       </div>
     </div>
@@ -123,16 +125,16 @@ export function AdminSidebar({ userEmail }: { userEmail: string }) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 bg-[#1a1d21] lg:block">
+      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 bg-sidebar lg:block">
         {sidebar}
       </aside>
 
       {/* Mobile top bar + drawer */}
-      <div className="fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-[#2a2e34] bg-[#1a1d21] px-4 lg:hidden">
+      <div className="fixed inset-x-0 top-0 z-50 flex h-12 items-center justify-between border-b border-sidebar-border bg-sidebar px-4 lg:hidden">
         <Logo inverted />
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="rounded-sm p-2 text-[#9a9ea6] hover:text-[#f4f2ec]"
+          className="rounded-sm p-2 text-sidebar-foreground/80 hover:text-sidebar-accent-foreground"
           aria-label="Menu"
         >
           <Menu className="h-5 w-5" />
@@ -144,7 +146,7 @@ export function AdminSidebar({ userEmail }: { userEmail: string }) {
             className="absolute inset-0 bg-black/50"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-64 bg-[#1a1d21] pt-12">{sidebar}</aside>
+          <aside className="absolute left-0 top-0 h-full w-64 bg-sidebar pt-12">{sidebar}</aside>
         </div>
       )}
       <div className="h-12 lg:hidden" />

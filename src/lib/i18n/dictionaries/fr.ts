@@ -39,6 +39,11 @@ export default {
     details: "Détails",
     all: "Tous",
     language: "Langue",
+    theme: "Thème",
+    themeLight: "Clair",
+    themeDark: "Sombre",
+    themeSystem: "Système",
+    toggleTheme: "Changer de thème",
   },
   nav: {
     home: "Accueil",
@@ -100,6 +105,8 @@ export default {
     pricingRow2Label: "Rythme quotidien",
     pricingUnitPerDay: "par jour",
     pricingFreeNote: "Les {count} premières par jour sont offertes",
+    pricingFreeNoteTotal: "Les {count} premières sont offertes",
+    pricingFreeValue: "Gratuit",
     pricingRow3Label: "Création du dossier",
     pricingRow4Label: "Traduction des diplômes",
     pricingRow4Value: "sur devis",
@@ -266,6 +273,22 @@ export default {
     requireDossier: "Un dossier actif est requis pour créer une demande.",
     pendingExists: "Vous avez déjà une demande en attente. Attendez sa confirmation ou annulez-la.",
     allCategories: "Toutes les catégories",
+    // ── Détail du prix figé sur la demande (paramètres à la création) ──
+    viewPriceDetails: "Détail du prix",
+    priceDetailsTitle: "Détail du prix — {ref}",
+    priceDetailsParamsTitle: "Paramètres à la création",
+    priceDetailsAxisTotal: "Postulations totales",
+    priceDetailsAxisPerDay: "Par jour",
+    priceDetailsStep: "Pas des options",
+    priceDetailsStepPrice: "Prix du pas",
+    priceDetailsMin: "Minimum",
+    priceDetailsMax: "Maximum",
+    priceDetailsFree: "Gratuits",
+    priceDetailsBreakdownTitle: "Calcul du prix",
+    priceDetailsPerDayFull: "Prix plein (barré)",
+    priceDetailsDiscount: "Remise",
+    priceDetailsSnapshotNote:
+      "Ces paramètres étaient en vigueur lors de la création de la demande — les réglages actuels peuvent être différents.",
   },
   dossier: {
     title: "Mon dossier",
@@ -323,8 +346,15 @@ export default {
     statusCancelledByAdmin: "Annulée par l'admin",
     statusAwaitingReview: "En attente de révision",
     statusUnderReview: "En cours de révision",
+    statusWaitingPayment: "En attente de paiement",
+    statusPayedAwaitingReview: "Payée et en attente de révision",
+    statusPayedInReview: "Payée et en cours de révision",
     statusConfirmed: "Confirmée",
     statusRejected: "Rejetée",
+    payViaWhatsapp: "Payer via WhatsApp",
+    payViaWhatsappHint:
+      "Contactez l'équipe sur WhatsApp pour régler {price} $. Une fois le paiement validé, la vérification de votre dossier commencera.",
+    cancelMessageTitle: "Motif de l'annulation — {ref}",
     priceToPay: "à payer",
     pricePaid: "payé",
     sourceAdd: "Ajout",
@@ -569,6 +599,26 @@ export default {
     priceHundredTotal: "Prix de 100 postulations totales ($)",
     priceHundredPerDay: "Prix de 100 postulations/jour ($)",
     freePerDay: "Premières postulations/jour gratuites",
+    // ── Pricing v2 : sections organisées (Postulations → total / par jour) ──
+    pricingSectionPostulations: "Postulations",
+    pricingSectionPostulationsHint:
+      "Deux tarifications indépendantes : le total des postulations et le rythme quotidien. Les paramètres s'appliquent immédiatement aux options et aux prix affichés aux utilisateurs.",
+    pricingSubTotal: "Postulations totales",
+    pricingSubPerDay: "Postulation / jour",
+    stepOptionsLabel: "Pas des options",
+    stepPriceLabel: "Prix du pas de postulations ($)",
+    stepPriceHint:
+      "Prix d'UN pas de {step} postulations — le pas est celui défini dans « Pas des options » ci-dessus.",
+    minLabel: "Minimum",
+    maxLabel: "Maximum",
+    maxLabelHint: "Plafond au-delà des entreprises disponibles (les deux limites s'appliquent).",
+    freeAmountLabel: "Premières quantités gratuites",
+    freeAmountHint: "Les premières quantités sont offertes avant de commencer à facturer.",
+    pricingSectionDossier: "Dossier",
+    pricingSectionDossierHint:
+      "Prix appliqués aux demandes de dossier : ils sont figés sur chaque demande au moment de sa création.",
+    dossierAddPriceHintV2:
+      "Prix de vérification d'un dossier téléversé. 0 = vérification gratuite (aucun paiement demandé). Si > 0, la demande passe par le paiement WhatsApp puis la validation de l'admin.",
     emailSubjectLabel: "Objet de l'email aux entreprises",
     emailMessageLabel: "Message de l'email aux entreprises (allemand, texte fixe)",
     emailMessageHint:
@@ -577,6 +627,36 @@ export default {
     dossierCreationPrice: "Prix de création du dossier ($)",
     dossierAddPrice: "Prix d'ajout du dossier ($)",
     dossierAddPriceHint: "0 par défaut : la vérification d'un dossier téléversé est gratuite.",
+    // ── Add-dossier payment workflow ──
+    confirmPaymentAdd: "Valider le paiement",
+    confirmPaymentAddTitle: "Valider le paiement",
+    confirmPaymentAddMessage:
+      "Confirmer que le paiement de {price} $ est reçu pour la demande {ref} ? La vérification du dossier pourra ensuite commencer.",
+    paymentAddConfirmed: "Paiement validé",
+    cancelDemandeAdd: "Annuler",
+    cancelDemandeAddTitle: "Annuler la demande",
+    cancelDemandeAddMessage:
+      "Annuler la demande {ref} ? Cette action est définitive.",
+    cancelMessageLabelAdd: "Motif de l'annulation (visible par l'utilisateur)",
+    cancelMessageRequiredAfterPayment:
+      "Obligatoire après paiement : expliquez l'annulation à l'utilisateur (remboursement, etc.).",
+    cancelMessagePlaceholderAdd: "Ex. : paiement non concordant, remboursement en cours…",
+    viewCancelMessage: "Motif de l'annulation",
+    cancelMessageTitleAdd: "Motif de l'annulation — {ref}",
+    demandeCancelledSuccess: "Demande annulée",
+    markInReview: "En cours de révision",
+    // ── Mail senders activate/deactivate ──
+    activateSender: "Activer",
+    deactivateSender: "Désactiver",
+    activateSenderConfirm:
+      "Ré-activer ce service email ? Il sera à nouveau utilisé par les prochaines exécutions de postulations.",
+    deactivateSenderConfirm:
+      "Désactiver ce service email ? Il ne sera plus utilisé par les exécutions de postulations tant qu'il ne sera pas ré-activé.",
+    senderActivated: "Service email activé",
+    senderDeactivated: "Service email désactivé",
+    // ── Pricing snapshot details (user + admin) ──
+    viewPriceDetails: "Détail du prix",
+    priceDetailsTitle: "Détail du prix — {ref}",
     settingsSaved: "Paramètres enregistrés",
     cloudinaryTitle: "Hébergement des fichiers (Cloudinary)",
     cloudinaryHint:

@@ -15,16 +15,19 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ success: true, settings });
 }
 
+const pricingAxisSchema = z.object({
+  step: z.number().int().min(1).max(10000),
+  step_price: z.number().min(0).max(10000),
+  min: z.number().int().min(0).max(100000),
+  max: z.number().int().min(1).max(1000000),
+  free_amount: z.number().int().min(0).max(1000000),
+});
+
 const schema = z.object({
-  postulation_demandes: z
+  postulation_pricing: z
     .object({
-      price_of_hundred_total: z.number().min(0).max(100),
-      price_of_hundred_per_day: z.number().min(0).max(100),
-      free_per_day_amount: z.number().int().min(0).max(10000),
-      min_total: z.number().int().min(100).max(10000),
-      min_per_day: z.number().int().min(100).max(10000),
-      step_total: z.number().int().min(50).max(5000),
-      step_per_day: z.number().int().min(25).max(5000),
+      total: pricingAxisSchema,
+      per_day: pricingAxisSchema,
     })
     .partial()
     .optional(),
@@ -68,8 +71,13 @@ export async function PUT(request: NextRequest) {
   const settings = await getSettings();
 
   const update = parsed.data;
-  if (update.postulation_demandes) {
-    Object.assign(settings.postulation_demandes, update.postulation_demandes);
+  if (update.postulation_pricing) {
+    if (update.postulation_pricing.total) {
+      Object.assign(settings.postulation_pricing.total, update.postulation_pricing.total);
+    }
+    if (update.postulation_pricing.per_day) {
+      Object.assign(settings.postulation_pricing.per_day, update.postulation_pricing.per_day);
+    }
   }
   if (update.postulations) {
     Object.assign(settings.postulations, update.postulations);

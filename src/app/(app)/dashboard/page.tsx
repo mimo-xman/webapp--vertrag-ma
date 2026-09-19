@@ -88,25 +88,25 @@ export default function DashboardPage() {
       label: t("dashboard.postulationsTotal"),
       value: stats.postulations.total,
       icon: Send,
-      color: "#1e4475",
+      color: "var(--primary)",
     },
     {
       label: t("dashboard.postulationsSent"),
       value: stats.postulations.envoyee,
       icon: CheckCircle2,
-      color: "#2f6b4a",
+      color: "var(--success)",
     },
     {
       label: t("dashboard.postulationsPending"),
       value: stats.postulations.en_attente,
       icon: Clock,
-      color: "#75797f",
+      color: "var(--muted-foreground)",
     },
     {
       label: t("dashboard.postulationsFailed"),
       value: stats.postulations.echouee,
       icon: XCircle,
-      color: "#b3391f",
+      color: "var(--destructive)",
     },
   ];
 
@@ -173,9 +173,9 @@ export default function DashboardPage() {
 
       {/* Dossier warning banner */}
       {!stats.dossier.has_dossier && !activeDemande && (
-        <div className="form-sheet flex flex-col gap-3 border-[#d9a441]/50 bg-[#d9a441]/5 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="form-sheet flex flex-col gap-3 border-warning/50 bg-warning/5 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
-            <FolderX className="mt-0.5 h-5 w-5 shrink-0 text-[#8a6a1f]" />
+            <FolderX className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
             <div>
               <p className="font-display font-bold">{t("dashboard.needDossierTitle")}</p>
               <p className="text-sm text-muted-foreground">{t("dashboard.needDossierDesc")}</p>
@@ -192,10 +192,10 @@ export default function DashboardPage() {
         <div className="form-sheet">
           <div className="sheet-band flex items-center justify-between px-5 py-3.5">
             <div className="flex items-center gap-2">
-              <CalendarDays className="h-4 w-4 text-[#1e4475]" />
+              <CalendarDays className="h-4 w-4 text-primary" />
               <h2 className="font-display text-sm font-bold">{t("dashboard.upcomingTitle")}</h2>
             </div>
-            <Link href="/postulations" className="text-xs font-medium text-[#1e4475] hover:underline">
+            <Link href="/postulations" className="text-xs font-medium text-primary hover:underline">
               {t("nav.postulations")} →
             </Link>
           </div>
@@ -227,10 +227,10 @@ export default function DashboardPage() {
         <div className="form-sheet">
           <div className="sheet-band flex items-center justify-between px-5 py-3.5">
             <div className="flex items-center gap-2">
-              <FolderOpen className="h-4 w-4 text-[#1e4475]" />
+              <FolderOpen className="h-4 w-4 text-primary" />
               <h2 className="font-display text-sm font-bold">{t("dashboard.dossierTitle")}</h2>
             </div>
-            <Link href="/dossier" className="text-xs font-medium text-[#1e4475] hover:underline">
+            <Link href="/dossier" className="text-xs font-medium text-primary hover:underline">
               {t("nav.dossier")} →
             </Link>
           </div>
@@ -262,9 +262,9 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between gap-2">
                   <span className="flex items-center gap-1.5 text-sm">
                     {lastDemande.type === "creation" ? (
-                      <FilePlus2 className="h-3.5 w-3.5 text-[#1e4475]" />
+                      <FilePlus2 className="h-3.5 w-3.5 text-primary" />
                     ) : (
-                      <FolderUp className="h-3.5 w-3.5 text-[#1e4475]" />
+                      <FolderUp className="h-3.5 w-3.5 text-primary" />
                     )}
                     <span className="aktenzeichen">{lastDemande.ref_number}</span>
                   </span>
@@ -291,14 +291,14 @@ export default function DashboardPage() {
                 href={stats.dossier.dossier_pdf_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-[#1e4475] hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
               >
                 {t("dossier.downloadDossier")} →
               </a>
             ) : (
               <Link
                 href="/dossier"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-[#1e4475] hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
               >
                 {t("dossier.optionsTitle")} →
               </Link>

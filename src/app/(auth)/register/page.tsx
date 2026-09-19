@@ -94,7 +94,7 @@ export default function RegisterPage() {
   if (success) {
     return (
       <div className="form-sheet p-8 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-[#2f6b4a] text-[#2f6b4a]">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-success text-success">
           <CheckCircle2 className="h-7 w-7" />
         </div>
         <h1 className="font-display text-xl font-bold">{t("auth.emailSent")}</h1>
@@ -119,7 +119,7 @@ export default function RegisterPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4 p-6">
         {error && (
-          <div className="rounded-sm border border-[#b3391f]/40 bg-[#b3391f]/10 px-3 py-2.5 text-sm text-[#b3391f]">
+          <div className="rounded-sm border border-destructive/40 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
             {error}
           </div>
         )}
@@ -160,17 +160,17 @@ export default function RegisterPage() {
               <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
             )}
             {emailState === "valid" && (
-              <CheckCircle2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#2f6b4a]" />
+              <CheckCircle2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-success" />
             )}
             {emailState === "invalid" && (
-              <XCircle className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#b3391f]" />
+              <XCircle className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-destructive" />
             )}
           </div>
           {emailState === "checking" && (
             <p className="text-xs text-muted-foreground">{t("auth.emailChecking")}</p>
           )}
           {emailState === "invalid" && emailMessage && (
-            <p className="text-xs text-[#b3391f]">{emailMessage}</p>
+            <p className="text-xs text-destructive">{emailMessage}</p>
           )}
         </div>
 
@@ -198,7 +198,7 @@ export default function RegisterPage() {
             autoComplete="new-password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className={confirmPassword ? (passwordsMatch ? "border-[#2f6b4a]" : "border-[#b3391f]") : ""}
+            className={confirmPassword ? (passwordsMatch ? "border-success" : "border-destructive") : ""}
           />
           <PasswordMatchHint password={password} confirmPassword={confirmPassword} />
         </div>
@@ -211,7 +211,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-muted-foreground">
           {t("auth.registerHaveAccount")}{" "}
-          <Link href="/login" className="font-medium text-[#1e4475] hover:underline">
+          <Link href="/login" className="font-medium text-primary hover:underline">
             {t("auth.loginLink")}
           </Link>
         </p>

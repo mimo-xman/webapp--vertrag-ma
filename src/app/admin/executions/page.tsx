@@ -210,10 +210,10 @@ export default function AdminExecutionsPage() {
           <Badge variant="outline" className="num gap-1 bg-card px-3 py-1.5 text-xs">
             {t("admin.execTotalCount", { count: totals.executions })}
           </Badge>
-          <Badge variant="outline" className="num gap-1 bg-card px-3 py-1.5 text-xs text-[#2f6b4a]">
+          <Badge variant="outline" className="num gap-1 bg-card px-3 py-1.5 text-xs text-success">
             {t("admin.execSentTotal", { count: totals.sent })}
           </Badge>
-          <Badge variant="outline" className="num gap-1 bg-card px-3 py-1.5 text-xs text-[#b3391f]">
+          <Badge variant="outline" className="num gap-1 bg-card px-3 py-1.5 text-xs text-destructive">
             {t("admin.execFailedTotal", { count: totals.failed })}
           </Badge>
         </div>
@@ -224,7 +224,7 @@ export default function AdminExecutionsPage() {
         <div className="overflow-x-auto scroll-slim">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#e9e6dd] bg-[#fafaf6]">
+              <tr className="border-b border-secondary bg-paper">
                 <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t("admin.colRef")}</th>
                 <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t("admin.colType")}</th>
                 <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t("admin.colSender")}</th>
@@ -243,7 +243,7 @@ export default function AdminExecutionsPage() {
                 </tr>
               ) : error ? (
                 <tr>
-                  <td colSpan={7} className="py-10 text-center text-[#b3391f]">
+                  <td colSpan={7} className="py-10 text-center text-destructive">
                     {error}
                   </td>
                 </tr>
@@ -257,7 +257,7 @@ export default function AdminExecutionsPage() {
                 rows.map((row) => (
                   <tr
                     key={row._id}
-                    className="cursor-pointer border-b border-[#e9e6dd] last:border-0 hover:bg-[#fafaf6]"
+                    className="cursor-pointer border-b border-secondary last:border-0 hover:bg-paper"
                     onClick={() => openDetail(row)}
                   >
                     <td className="px-4 py-3">
@@ -275,7 +275,7 @@ export default function AdminExecutionsPage() {
                       <div className="space-y-1">
                         <StatusStamp status={row.status} label={t(`statuses.${row.status}`)} animate={row.status === "running"} />
                         {row.fatal_error && (
-                          <p className="flex items-start gap-1 text-[11px] text-[#b3391f]" title={row.fatal_error}>
+                          <p className="flex items-start gap-1 text-[11px] text-destructive" title={row.fatal_error}>
                             <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
                             {row.fatal_error.slice(0, 50)}
                           </p>
@@ -285,11 +285,11 @@ export default function AdminExecutionsPage() {
                     <td className="px-4 py-3 text-right">
                       <span className="num text-xs">
                         <span className="font-semibold">{row.success}</span>
-                        <span className="text-[#2f6b4a]"> ✓</span>
+                        <span className="text-success"> ✓</span>
                         {row.failed > 0 && (
                           <>
                             {" / "}
-                            <span className="font-semibold text-[#b3391f]">{row.failed}</span>
+                            <span className="font-semibold text-destructive">{row.failed}</span>
                             <span> ✗</span>
                           </>
                         )}
@@ -317,7 +317,7 @@ export default function AdminExecutionsPage() {
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between border-t border-border bg-[#fafaf6] px-4 py-2.5">
+        <div className="flex items-center justify-between border-t border-border bg-paper px-4 py-2.5">
           <p className="font-mono text-xs text-muted-foreground">
             {pagination.total === 0 ? 0 : (page - 1) * limit + 1}–{Math.min(page * limit, pagination.total)}{" "}
             {t("common.of")} {pagination.total}
@@ -381,11 +381,11 @@ export default function AdminExecutionsPage() {
                 </div>
                 <div className="form-sheet p-3">
                   <p className="eyebrow">{t("admin.execSentShort")}</p>
-                  <p className="num mt-1 text-lg font-bold text-[#2f6b4a]">{detail.success}</p>
+                  <p className="num mt-1 text-lg font-bold text-success">{detail.success}</p>
                 </div>
                 <div className="form-sheet p-3">
                   <p className="eyebrow">{t("admin.execFailedShort")}</p>
-                  <p className="num mt-1 text-lg font-bold text-[#b3391f]">{detail.failed}</p>
+                  <p className="num mt-1 text-lg font-bold text-destructive">{detail.failed}</p>
                 </div>
                 <div className="form-sheet p-3">
                   <p className="eyebrow">{t("admin.execFinishedAt")}</p>
@@ -398,7 +398,7 @@ export default function AdminExecutionsPage() {
               </div>
 
               {detail.fatal_error && (
-                <p className="rounded-sm border border-[#b3391f]/30 bg-[#b3391f]/10 px-3 py-2 text-sm text-[#b3391f]">
+                <p className="rounded-sm border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
                   <strong>{t("admin.execFatalError")} :</strong> {detail.fatal_error}
                 </p>
               )}
@@ -412,14 +412,14 @@ export default function AdminExecutionsPage() {
                     {detail.postulations_details.map((p) => (
                       <div
                         key={p.postulation_id}
-                        className="flex items-center justify-between gap-2 border-b border-dashed border-[#e9e6dd] pb-1.5"
+                        className="flex items-center justify-between gap-2 border-b border-dashed border-secondary pb-1.5"
                       >
                         <div className="min-w-0">
                           <p className="truncate text-xs font-medium">
                             {p.user?.full_name || "—"} → {p.company?.name || "—"}
                           </p>
                           {p.error && (
-                            <p className="truncate text-[11px] text-[#b3391f]" title={p.error}>
+                            <p className="truncate text-[11px] text-destructive" title={p.error}>
                               {p.error.slice(0, 100)}
                             </p>
                           )}

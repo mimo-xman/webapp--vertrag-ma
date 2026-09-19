@@ -133,7 +133,7 @@ export default function AdminCategoriesPage() {
       header: t("admin.colCompanies"),
       sortable: true,
       render: (row) => (
-        <span className="num rounded-sm bg-[#fafaf6] px-2 py-0.5 text-xs font-semibold">
+        <span className="num rounded-sm bg-paper px-2 py-0.5 text-xs font-semibold">
           {row.companies_count}
         </span>
       ),
@@ -159,8 +159,8 @@ export default function AdminCategoriesPage() {
             size="icon"
             className={
               row.active
-                ? "h-7 w-7 text-[#b3391f] hover:bg-[#b3391f]/10"
-                : "h-7 w-7 text-[#2f6b4a] hover:bg-[#2f6b4a]/10"
+                ? "h-7 w-7 text-destructive hover:bg-destructive/10"
+                : "h-7 w-7 text-success hover:bg-success/10"
             }
             title={row.active ? t("admin.deactivateCategory") : t("admin.activateCategory")}
             aria-label={row.active ? t("admin.deactivateCategory") : t("admin.activateCategory")}
@@ -174,7 +174,7 @@ export default function AdminCategoriesPage() {
           <Button
             variant="outline"
             size="icon"
-            className="h-7 w-7 text-[#b3391f] hover:bg-[#b3391f]/10"
+            className="h-7 w-7 text-destructive hover:bg-destructive/10"
             onClick={() => handleDelete(row)}
           >
             <Trash2 className="h-3.5 w-3.5" />

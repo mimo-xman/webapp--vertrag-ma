@@ -42,6 +42,17 @@
   --color-stamp-red: var(--stempelrot);
   --color-stamp-green: var(--genehmigtgrun);
   --color-behordenblau: var(--behordenblau);
+  /* ── Semantic tokens of the "Das Amt" design system ── */
+  --color-paper: var(--paper);
+  --color-paper-foreground: var(--paper-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-gold: var(--gold);
+  --color-ink-section: var(--ink-section);
+  --color-ink-section-foreground: var(--ink-section-foreground);
+  --color-grid-line: var(--grid-line);
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
@@ -51,6 +62,9 @@
 /*
  * VERTRAG.MA — "Das Amt" design system
  * German official registry aesthetic: paper, ink, rubber stamps, file numbers.
+ * Light — "Papier" : the classic registry desk.
+ * Dark  — "Nachtdienst" : the same office at night — deep ink paper, softer
+ *         stamps, identical layout and hierarchy. All semantic tokens swap.
  * Palette: Papier #F4F2EC · Tinte #1A1D21 · Behördenblau #1E4475 ·
  *          Stempelrot #B3391F · Genehmigtgrün #2F6B4A · Hilfsgrau #75797F
  */
@@ -91,6 +105,19 @@
   --stempelrot: #b3391f;
   --genehmigtgrun: #2f6b4a;
   --behordenblau: #1e4475;
+  /* Semantic extras — alternate "paper" tint for banded sections, success
+     and warning hues, the dark ink CTA band and the graph-paper grid. */
+  --paper: #fafaf6;
+  --paper-foreground: #1a1d21;
+  --success: #2f6b4a;
+  --success-foreground: #f4f2ec;
+  --warning: #8a6a1f;
+  --warning-foreground: #f4f2ec;
+  --gold: #d9a441;
+  --ink-section: #1a1d21;
+  --ink-section-foreground: #f4f2ec;
+  --ink-section-muted: #9a9ea6;
+  --grid-line: #d8d5cc;
 }
 
 .dark {
@@ -110,9 +137,37 @@
   --accent-foreground: #f4f2ec;
   --destructive: #d95c3f;
   --destructive-foreground: #1a1d21;
-  --border: #2a2e34;
-  --input: #2a2e34;
+  --border: #2f343b;
+  --input: #2f343b;
   --ring: #7ba3d9;
+  --chart-1: #7ba3d9;
+  --chart-2: #d95c3f;
+  --chart-3: #58a17c;
+  --chart-4: #9a9ea6;
+  --chart-5: #d9a441;
+  --sidebar: #14171b;
+  --sidebar-foreground: #c9c6bc;
+  --sidebar-primary: #f4f2ec;
+  --sidebar-primary-foreground: #1a1d21;
+  --sidebar-accent: #22262b;
+  --sidebar-accent-foreground: #f4f2ec;
+  --sidebar-border: #22262b;
+  --sidebar-ring: #7ba3d9;
+  --stempelrot: #d95c3f;
+  --genehmigtgrun: #58a17c;
+  --behordenblau: #7ba3d9;
+  /* Semantic extras — darker "paper", luminous success/warning, ink band. */
+  --paper: #1f2226;
+  --paper-foreground: #f4f2ec;
+  --success: #58a17c;
+  --success-foreground: #10130f;
+  --warning: #d9a441;
+  --warning-foreground: #1a1d21;
+  --gold: #d9a441;
+  --ink-section: #14171b;
+  --ink-section-foreground: #f4f2ec;
+  --ink-section-muted: #8a8f96;
+  --grid-line: #2a2e34;
 }
 
 @layer base {
@@ -124,8 +179,31 @@
     font-feature-settings: "ss01";
   }
   ::selection {
-    background: #1e4475;
-    color: #f4f2ec;
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  ::placeholder {
+    color: var(--muted-foreground);
+    opacity: 0.8;
+  }
+}
+
+/* Smooth theme transition — the class is added to <html> right before the
+   theme switch and removed just after, so the very first paint never
+   animates (no flash on load), only explicit user toggles do. */
+@media (prefers-reduced-motion: no-preference) {
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition:
+      background-color 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease,
+      fill 200ms ease,
+      stroke 200ms ease,
+      box-shadow 200ms ease !important;
+    transition-delay: 0ms !important;
   }
 }
 
@@ -140,13 +218,13 @@
     font-weight: 500;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #75797f;
+    color: var(--muted-foreground);
   }
   .aktenzeichen {
     font-family: var(--font-plex-mono), monospace;
     font-size: 0.6875rem;
     letter-spacing: 0.06em;
-    color: #75797f;
+    color: var(--muted-foreground);
   }
 
   /* ─── The Stamp (signature element) ──────────────────────── */
@@ -166,30 +244,30 @@
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0);
     background-image: radial-gradient(
       circle at 30% 40%,
-      rgba(255, 255, 255, 0.16) 0%,
+      color-mix(in srgb, currentColor 8%, transparent) 0%,
       transparent 45%
     );
     white-space: nowrap;
   }
   .stamp-ink {
-    color: #75797f;
-    background-color: rgba(117, 121, 127, 0.06);
+    color: var(--muted-foreground);
+    background-color: color-mix(in srgb, var(--muted-foreground) 7%, transparent);
   }
   .stamp-blue {
-    color: #1e4475;
-    background-color: rgba(30, 68, 117, 0.06);
+    color: var(--behordenblau);
+    background-color: color-mix(in srgb, var(--behordenblau) 7%, transparent);
   }
   .stamp-red {
-    color: #b3391f;
-    background-color: rgba(179, 57, 31, 0.06);
+    color: var(--stempelrot);
+    background-color: color-mix(in srgb, var(--stempelrot) 7%, transparent);
   }
   .stamp-green {
-    color: #2f6b4a;
-    background-color: rgba(47, 107, 74, 0.06);
+    color: var(--genehmigtgrun);
+    background-color: color-mix(in srgb, var(--genehmigtgrun) 7%, transparent);
   }
   .stamp-gold {
-    color: #8a6a1f;
-    background-color: rgba(217, 164, 65, 0.1);
+    color: var(--warning);
+    background-color: color-mix(in srgb, var(--gold) 10%, transparent);
   }
   .stamp-flat {
     transform: none;
@@ -221,15 +299,32 @@
     border-radius: var(--radius);
     box-shadow: 0 1px 2px rgba(26, 29, 33, 0.04);
   }
+  .dark .form-sheet {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
   .sheet-band {
     border-bottom: 1px solid var(--border);
-    background: linear-gradient(to bottom, #fafaf6, #ffffff);
+    background: linear-gradient(to bottom, var(--paper), var(--card));
   }
   .rule-dashed {
     background-image: linear-gradient(to right, var(--border) 55%, transparent 45%);
     background-size: 8px 1px;
     background-repeat: repeat-x;
     height: 1px;
+  }
+
+  /* ─── Graph paper (hero background) ──────────────────────── */
+  .bg-graph-paper {
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+  .bg-graph-paper-ink {
+    background-image:
+      linear-gradient(var(--ink-section-muted) 1px, transparent 1px),
+      linear-gradient(90deg, var(--ink-section-muted) 1px, transparent 1px);
+    background-size: 36px 36px;
   }
 
   /* ─── Page load / scroll reveal ──────────────────────────── */
@@ -256,6 +351,19 @@
     animation-delay: 0.24s;
   }
 
+  /* ─── The paper document (Bewerbung visual) ──────────────── */
+  /* A physical sheet of paper stays white in BOTH themes — it is a scanned
+     document, not a UI surface. Only its shadow adapts to the night office. */
+  .doc-paper {
+    background: #ffffff;
+    border: 1px solid #c9c6bc;
+    box-shadow: 0 8px 24px rgba(26, 29, 33, 0.08);
+  }
+  .dark .doc-paper {
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+    border-color: #3a3f46;
+  }
+
   /* ─── Misc ───────────────────────────────────────────────── */
   .num {
     font-family: var(--font-plex-mono), monospace;
@@ -269,11 +377,11 @@
     background: transparent;
   }
   .scroll-slim::-webkit-scrollbar-thumb {
-    background: #c9c6bc;
+    background: var(--input);
     border-radius: 3px;
   }
   .scroll-slim::-webkit-scrollbar-thumb:hover {
-    background: #75797f;
+    background: var(--muted-foreground);
   }
 }
 

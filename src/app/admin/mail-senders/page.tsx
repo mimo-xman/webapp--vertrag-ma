@@ -28,7 +28,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Send, AlertTriangle } from "lucide-react";
+import { Plus, Pencil, Trash2, Send, AlertTriangle, Power } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface SenderRow {
   _id: string;
@@ -153,6 +154,35 @@ export default function AdminMailSendersPage() {
     }
   };
 
+  // ── Activate / deactivate a sender ───────────────────────────
+  // Disabled senders are skipped by the execution waves; re-activating
+  // clears the last error (the admin fixed the problem).
+  const handleToggleActive = async (row: SenderRow) => {
+    const activating = !row.active;
+    const ok = await confirmApp(
+      activating ? t("admin.activateSenderConfirm") : t("admin.deactivateSenderConfirm"),
+      {
+        title: activating ? t("admin.activateSender") : t("admin.deactivateSender"),
+        confirmLabel: activating ? t("admin.activateSender") : t("admin.deactivateSender"),
+        destructive: !activating,
+      }
+    );
+    if (!ok) return;
+    try {
+      await apiFetch(`/api/admin/mail-senders/${row._id}`, {
+        method: "PUT",
+        body: JSON.stringify({ active: activating }),
+      });
+      toast({
+        title: activating ? t("admin.senderActivated") : t("admin.senderDeactivated"),
+        description: row.name,
+      });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      await alertApp(err instanceof Error ? err.message : "Erreur");
+    }
+  };
+
   const handleTest = async () => {
     if (!testTarget) return;
     setTesting(true);
@@ -217,7 +247,12 @@ export default function AdminMailSendersPage() {
             {rate === null ? (
               <span className="text-muted-foreground">—</span>
             ) : (
-              <span style={{ color: rate >= 90 ? "#2f6b4a" : rate >= 60 ? "#8a6a1f" : "#b3391f" }}>
+              <span
+                style={{
+                  color:
+                    rate >= 90 ? "var(--success)" : rate >= 60 ? "var(--warning)" : "var(--destructive)",
+                }}
+              >
                 {rate}% ({row.success_count}/{total})
               </span>
             )}
@@ -238,7 +273,7 @@ export default function AdminMailSendersPage() {
           {row.in_use && <StatusStamp status="in_use" label={t("statuses.in_use")} />}
           {row.last_error && (
             <p
-              className="flex items-start gap-1 text-[11px] text-[#b3391f]"
+              className="flex items-start gap-1 text-[11px] text-destructive"
               title={row.last_error}
             >
               <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
@@ -265,13 +300,28 @@ export default function AdminMailSendersPage() {
             <Send className="h-3.5 w-3.5" />
             {t("admin.testSender")}
           </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className={cn(
+              "h-7 w-7",
+              row.active
+                ? "text-warning hover:bg-warning/10"
+                : "text-success hover:bg-success/10"
+            )}
+            title={row.active ? t("admin.deactivateSender") : t("admin.activateSender")}
+            aria-label={row.active ? t("admin.deactivateSender") : t("admin.activateSender")}
+            onClick={() => handleToggleActive(row)}
+          >
+            <Power className="h-3.5 w-3.5" />
+          </Button>
           <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => openEdit(row)}>
             <Pencil className="h-3.5 w-3.5" />
           </Button>
           <Button
             variant="outline"
             size="icon"
-            className="h-7 w-7 text-[#b3391f] hover:bg-[#b3391f]/10"
+            className="h-7 w-7 text-destructive hover:bg-destructive/10"
             onClick={() => handleDelete(row)}
           >
             <Trash2 className="h-3.5 w-3.5" />

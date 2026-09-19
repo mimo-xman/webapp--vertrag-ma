@@ -19,7 +19,14 @@ export function computePasswordStrength(pw: string): 0 | 1 | 2 | 3 | 4 {
   return Math.min(4, score) as 0 | 1 | 2 | 3 | 4;
 }
 
-const STRENGTH_COLORS = ["#d8d5cc", "#b3391f", "#d9a441", "#7ba3d9", "#2f6b4a"];
+// CSS-variable colors so the meter adapts to the active theme (light/dark).
+const STRENGTH_COLORS = [
+  "var(--border)",
+  "var(--destructive)",
+  "var(--warning)",
+  "var(--primary)",
+  "var(--success)",
+];
 
 /** 4-bar strength meter + label, identical to the register page. */
 export function PasswordStrengthMeter({ password, className }: { password: string; className?: string }) {
@@ -42,7 +49,7 @@ export function PasswordStrengthMeter({ password, className }: { password: strin
           <div
             key={i}
             className="h-1 flex-1 rounded-full transition-colors"
-            style={{ background: strength >= i ? STRENGTH_COLORS[strength] : "#d8d5cc" }}
+            style={{ background: strength >= i ? STRENGTH_COLORS[strength] : "var(--border)" }}
           />
         ))}
       </div>
@@ -63,7 +70,7 @@ export function PasswordMatchHint({
   if (!confirmPassword) return null;
   if (password === confirmPassword) return null;
   return (
-    <p className="text-xs text-[#b3391f]">
+    <p className="text-xs text-destructive">
       {t("auth.passwordsDoNotMatch")}
     </p>
   );

@@ -185,7 +185,7 @@ export function DataTable<T extends { _id: string }>({
         <div className="overflow-x-auto scroll-slim">
           <Table>
             <TableHeader>
-              <TableRow className="bg-[#fafaf6] hover:bg-[#fafaf6]">
+              <TableRow className="bg-paper hover:bg-paper">
                 {columns.map((col) => (
                   <TableHead
                     key={col.key}
@@ -218,7 +218,7 @@ export function DataTable<T extends { _id: string }>({
                 </TableRow>
               ) : error ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="py-10 text-center text-[#b3391f]">
+                  <TableCell colSpan={columns.length} className="py-10 text-center text-destructive">
                     {error}
                   </TableCell>
                 </TableRow>
@@ -248,7 +248,7 @@ export function DataTable<T extends { _id: string }>({
         </div>
 
         {/* Pagination */}
-        <div className="flex flex-col gap-2 items-center justify-between border-t border-border bg-[#fafaf6] px-4 py-2.5 sm:flex-row">
+        <div className="flex flex-col gap-2 items-center justify-between border-t border-border bg-paper px-4 py-2.5 sm:flex-row">
           <p className="text-xs text-muted-foreground font-mono">
             {from}–{to} {t("common.of")} {total}
           </p>

@@ -137,8 +137,8 @@ export default function AdminMessagesPage() {
           size="icon"
           className={
             row.status === "closed"
-              ? "h-7 w-7 text-[#2f6b4a] hover:bg-[#2f6b4a]/10"
-              : "h-7 w-7 text-[#8a6a1f] hover:bg-[#d9a441]/10"
+              ? "h-7 w-7 text-success hover:bg-success/10"
+              : "h-7 w-7 text-warning hover:bg-warning/10"
           }
           title={row.status === "closed" ? t("admin.messageToggleActive") : t("admin.messageToggleClosed")}
           aria-label={row.status === "closed" ? t("admin.messageToggleActive") : t("admin.messageToggleClosed")}
@@ -162,7 +162,7 @@ export default function AdminMessagesPage() {
         title={t("admin.messages")}
         subtitle={t("admin.messagesSubtitle")}
       />
-      <p className="mb-4 rounded-sm border border-[#d8d5cc] bg-[#fafaf6] px-3 py-2 text-xs text-muted-foreground">
+      <p className="mb-4 rounded-sm border border-border bg-paper px-3 py-2 text-xs text-muted-foreground">
         {t("admin.messageCloseHint")}
       </p>
 

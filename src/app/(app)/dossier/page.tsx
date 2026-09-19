@@ -49,8 +49,10 @@ interface AddDemande {
   message_on_failed: string | null;
   createdAt: string;
   confirmed_at: string | null;
+  payed_at: string | null;
   cancelled_by: "user" | "admin" | null;
   cancelled_at: string | null;
+  cancel_message: string | null;
   price: number;
 }
 
@@ -120,7 +122,7 @@ export default function DossierPage() {
     if (searchParams.get("dossier_deleted") === "1") {
       toast({ title: t("dossier.deleteSuccess") });
     }
-     
+
   }, []);
 
   const cancelDemande = useCallback(
@@ -205,11 +207,11 @@ export default function DossierPage() {
         <p className="mt-0.5 text-sm text-muted-foreground">{t("dossier.subtitle")}</p>
       </div>
 
-      {/* ── Current dossier state (always visible) ─────────────────────── */}
+      {/* ── Current dossier state (always visible) ─────────────────── */}
       <div
         className={cn(
           "form-sheet p-6",
-          hasDossier ? "border-[#2f6b4a]/40" : "border-[#d9a441]/50 bg-[#d9a441]/5"
+          hasDossier ? "border-success/40" : "border-warning/50 bg-warning/5"
         )}
       >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -218,8 +220,8 @@ export default function DossierPage() {
               className={cn(
                 "flex h-12 w-12 shrink-0 items-center justify-center rounded-sm border-2",
                 hasDossier
-                  ? "border-[#2f6b4a]/50 bg-[#2f6b4a]/10 text-[#2f6b4a]"
-                  : "border-[#d9a441]/50 bg-[#d9a441]/10 text-[#8a6a1f]"
+                  ? "border-success/50 bg-success/10 text-success"
+                  : "border-warning/50 bg-warning/10 text-warning"
               )}
             >
               {hasDossier ? <CheckCircle2 className="h-6 w-6" /> : <FolderOpen className="h-6 w-6" />}
@@ -265,15 +267,15 @@ export default function DossierPage() {
         </div>
       </div>
 
-      {/* ── Active request bar (only the real status of the demande) ────── */}
+      {/* ── Active request bar (only the real status of the demande) ── */}
       {activeRequest && (
-        <div className="form-sheet border-[#1e4475]/30 bg-[#1e4475]/5 p-4">
+        <div className="form-sheet border-primary/30 bg-primary/5 p-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex items-center gap-3">
               {activeRequest.type === "creation" ? (
-                <FilePlus2 className="h-5 w-5 shrink-0 text-[#1e4475]" />
+                <FilePlus2 className="h-5 w-5 shrink-0 text-primary" />
               ) : (
-                <FolderUp className="h-5 w-5 shrink-0 text-[#1e4475]" />
+                <FolderUp className="h-5 w-5 shrink-0 text-primary" />
               )}
               <div>
                 <p className="text-sm font-semibold">
@@ -293,6 +295,20 @@ export default function DossierPage() {
                       ).toLocaleDateString("fr-FR")}
                     </p>
                   )}
+                {/* Priced add demande — payment instructions */}
+                {activeRequest.type === "ajout" && activeRequest.demande.status === "waiting_payment" && (
+                  <p className="mt-1 max-w-md text-xs leading-snug text-muted-foreground">
+                    {t("dossier.payViaWhatsappHint", { price: activeRequest.demande.price })}
+                  </p>
+                )}
+                {/* Admin cancellation message */}
+                {activeRequest.demande.status === "cancelled" &&
+                  activeRequest.demande.cancelled_by === "admin" &&
+                  activeRequest.demande.cancel_message && (
+                    <p className="mt-1 max-w-md rounded-sm bg-destructive/5 px-2.5 py-1.5 text-xs text-destructive">
+                      {activeRequest.demande.cancel_message}
+                    </p>
+                  )}
               </div>
             </div>
             <div className="flex shrink-0 gap-2">
@@ -303,6 +319,14 @@ export default function DossierPage() {
                   onClick={() => cancelDemande(activeRequest.type, activeRequest.demande)}
                 >
                   {t("demandes.cancel")}
+                </Button>
+              )}
+              {activeRequest.type === "ajout" && activeRequest.demande.status === "waiting_payment" && (
+                <Button asChild size="sm" className="font-semibold">
+                  <a href={data.whatsapp_url} target="_blank" rel="noopener noreferrer">
+                    <MessageCircle className="mr-1.5 h-4 w-4" />
+                    {t("dossier.payViaWhatsapp")}
+                  </a>
                 </Button>
               )}
               {activeRequest.type === "creation" && activeRequest.demande.status === "en_attente" && (
@@ -318,15 +342,15 @@ export default function DossierPage() {
         </div>
       )}
 
-      {/* ── Deletion email-sent banner ──────────────────────────────────── */}
+      {/* ── Deletion email-sent banner ──────────────────────────────── */}
       {searchParams.get("dossier_deleted") === "1" && (
-        <div className="form-sheet flex items-center gap-3 border-[#2f6b4a]/40 bg-[#2f6b4a]/5 p-4">
-          <CheckCircle2 className="h-5 w-5 shrink-0 text-[#2f6b4a]" />
-          <p className="text-sm text-[#2f6b4a]">{t("dossier.deleteSuccess")}</p>
+        <div className="form-sheet flex items-center gap-3 border-success/40 bg-success/5 p-4">
+          <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
+          <p className="text-sm text-success">{t("dossier.deleteSuccess")}</p>
         </div>
       )}
 
-      {/* ── Two options (when no dossier and no active request) ─────────── */}
+      {/* ── Two options (when no dossier and no active request) ─────── */}
       {!hasDossier && !activeRequest && (
         <>
           <p className="eyebrow">{t("dossier.optionsTitle")}</p>
@@ -334,7 +358,7 @@ export default function DossierPage() {
             {/* Option 1: upload own dossier */}
             <div className="form-sheet flex flex-col p-6">
               <div className="mb-3 flex items-center justify-between">
-                <FolderUp className="h-6 w-6 text-[#1e4475]" />
+                <FolderUp className="h-6 w-6 text-primary" />
                 <span className="stamp stamp-green stamp-flat">
                   {data.add_price > 0 ? `${data.add_price} $` : t("dossier.optionAddPrice")}
                 </span>
@@ -350,9 +374,9 @@ export default function DossierPage() {
             </div>
 
             {/* Option 2: request creation */}
-            <div className="form-sheet flex flex-col border-[#1e4475]/40 p-6">
+            <div className="form-sheet flex flex-col border-primary/40 p-6">
               <div className="mb-3 flex items-center justify-between">
-                <FilePlus2 className="h-6 w-6 text-[#1e4475]" />
+                <FilePlus2 className="h-6 w-6 text-primary" />
                 <span className="stamp stamp-blue stamp-flat">{data.creation_price} $</span>
               </div>
               <h3 className="font-display text-lg font-bold">{t("dossier.optionCreateTitle")}</h3>
@@ -372,7 +396,7 @@ export default function DossierPage() {
         </>
       )}
 
-      {/* ── History ─────────────────────────────────────────────────────── */}
+      {/* ── History ─────────────────────────────────────────────────── */}
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Add requests history */}
         <div className="form-sheet">
@@ -401,14 +425,19 @@ export default function DossierPage() {
                         href={data.dossier.pdf_link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs font-medium text-[#1e4475] hover:underline"
+                        className="text-xs font-medium text-primary hover:underline"
                       >
                         {t("dossier.downloadDossier")} →
                       </a>
                     )}
                     {d.status === "rejected" && d.message_on_failed && (
-                      <p className="rounded-sm bg-[#b3391f]/5 px-2.5 py-1.5 text-xs text-[#b3391f]">
+                      <p className="rounded-sm bg-destructive/5 px-2.5 py-1.5 text-xs text-destructive">
                         {d.message_on_failed}
+                      </p>
+                    )}
+                    {d.status === "cancelled" && d.cancelled_by === "admin" && d.cancel_message && (
+                      <p className="rounded-sm bg-destructive/5 px-2.5 py-1.5 text-xs text-destructive">
+                        {d.cancel_message}
                       </p>
                     )}
                   </li>
@@ -446,7 +475,7 @@ export default function DossierPage() {
                       </p>
                     )}
                     {d.status === "cancelled" && d.cancelled_by === "admin" && d.cancel_message && (
-                      <p className="rounded-sm bg-[#b3391f]/5 px-2.5 py-1.5 text-xs text-[#b3391f]">
+                      <p className="rounded-sm bg-destructive/5 px-2.5 py-1.5 text-xs text-destructive">
                         {d.cancel_message}
                       </p>
                     )}
@@ -455,7 +484,7 @@ export default function DossierPage() {
                         href={d.dossier_pdf_link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs font-medium text-[#1e4475] hover:underline"
+                        className="text-xs font-medium text-primary hover:underline"
                       >
                         {t("dossier.downloadDossier")} →
                       </a>
@@ -468,7 +497,7 @@ export default function DossierPage() {
         </div>
       </div>
 
-      {/* ── Deletion History ───────────────────────────────────────────── */}
+      {/* ── Deletion History ────────────────────────────────────────── */}
       {data.deletion_history && data.deletion_history.length > 0 && (
         <div className="form-sheet">
           <div className="sheet-band px-5 py-3.5">
@@ -482,7 +511,7 @@ export default function DossierPage() {
               {data.deletion_history.map((d) => (
                 <li key={d._id} className="space-y-1.5 px-5 py-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-sm font-medium text-[#b3391f]">
+                    <span className="text-sm font-medium text-destructive">
                       {t("dossier.deleteDossier")} —{" "}
                       {new Date(d.deleted_at).toLocaleDateString("fr-FR", {
                         day: "2-digit",
@@ -509,14 +538,14 @@ export default function DossierPage() {
         </div>
       )}
 
-      {/* ── Upload dialog ───────────────────────────────────────────────── */}
+      {/* ── Upload dialog ───────────────────────────────────────────── */}
       <UploadDossierDialog
         open={uploadOpen}
         onOpenChange={setUploadOpen}
         onUploaded={load}
       />
 
-      {/* ── Create request dialog ───────────────────────────────────────── */}
+      {/* ── Create request dialog ───────────────────────────────────── */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -617,7 +646,7 @@ function UploadDossierDialog({
         <div
           className={cn(
             "flex flex-col items-center justify-center gap-3 rounded-sm border-2 border-dashed p-8 text-center transition-colors",
-            dragActive ? "border-[#1e4475] bg-[#1e4475]/5" : "border-border bg-[#fafaf6]"
+            dragActive ? "border-primary bg-primary/5" : "border-border bg-paper"
           )}
           onDragOver={(e) => {
             e.preventDefault();
@@ -631,7 +660,7 @@ function UploadDossierDialog({
             if (dropped && dropped.type === "application/pdf") setFile(dropped);
           }}
         >
-          <Upload className={cn("h-8 w-8", file ? "text-[#2f6b4a]" : "text-muted-foreground")} />
+          <Upload className={cn("h-8 w-8", file ? "text-success" : "text-muted-foreground")} />
           {file ? (
             <div>
               <p className="text-sm font-medium">{file.name}</p>
@@ -643,7 +672,7 @@ function UploadDossierDialog({
               </p>
             </div>
           ) : (
-            <label className="cursor-pointer text-sm font-medium text-[#1e4475] hover:underline">
+            <label className="cursor-pointer text-sm font-medium text-primary hover:underline">
               {t("dossier.uploadChoose")}
               <input
                 type="file"

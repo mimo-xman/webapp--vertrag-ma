@@ -380,7 +380,7 @@ export default function AdminPostulationsPage() {
             animate={row.status === "executing"}
           />
           {row.failed_reason && (
-            <p className="flex items-start gap-1 text-[11px] text-[#b3391f]">
+            <p className="flex items-start gap-1 text-[11px] text-destructive">
               <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
               {row.failed_reason.slice(0, 60)}
             </p>
@@ -401,7 +401,7 @@ export default function AdminPostulationsPage() {
             <span className="num text-xs font-semibold">
               {row.executions.length}
               {failed > 0 && (
-                <span className="ml-1 text-[#b3391f]">({failed} ✗)</span>
+                <span className="ml-1 text-destructive">({failed} ✗)</span>
               )}
             </span>
             <Button
@@ -427,7 +427,7 @@ export default function AdminPostulationsPage() {
             <Button
               variant="outline"
               size="icon"
-              className="h-7 w-7 text-[#2f6b4a] hover:bg-[#2f6b4a]/10"
+              className="h-7 w-7 text-success hover:bg-success/10"
               title={t("admin.executePostulation")}
               aria-label={t("admin.executePostulation")}
               onClick={() => openExecute(row)}
@@ -506,7 +506,7 @@ export default function AdminPostulationsPage() {
               onClick={() => handleRelance("github")}
               className="form-sheet group flex flex-col items-start gap-2 p-4 text-left transition-shadow hover:shadow-md disabled:opacity-60"
             >
-              <Github className="h-6 w-6 text-[#1a1d21]" />
+              <Github className="h-6 w-6 text-foreground" />
               <span className="font-display text-sm font-bold">{t("admin.relanceGithub")}</span>
               <span className="text-xs leading-relaxed text-muted-foreground">
                 {t("admin.relanceGithubDesc")}
@@ -519,7 +519,7 @@ export default function AdminPostulationsPage() {
               onClick={() => handleRelance("server")}
               className="form-sheet group flex flex-col items-start gap-2 p-4 text-left transition-shadow hover:shadow-md disabled:opacity-60"
             >
-              <Server className="h-6 w-6 text-[#1e4475]" />
+              <Server className="h-6 w-6 text-primary" />
               <span className="font-display text-sm font-bold">{t("admin.relanceServer")}</span>
               <span className="text-xs leading-relaxed text-muted-foreground">
                 {t("admin.relanceServerDesc")}
@@ -551,7 +551,7 @@ export default function AdminPostulationsPage() {
                 {t("common.loading")}
               </p>
             ) : execSenders.length === 0 ? (
-              <p className="rounded-sm border border-[#d9a441]/40 bg-[#d9a441]/10 px-3 py-2.5 text-sm text-[#8a6a1f]">
+              <p className="rounded-sm border border-warning/40 bg-warning/10 px-3 py-2.5 text-sm text-warning">
                 {t("admin.executeNoSenders")}
               </p>
             ) : (
@@ -680,7 +680,7 @@ export default function AdminPostulationsPage() {
                     {new Date(e.started_at).toLocaleString("fr-FR")}
                   </p>
                   {e.outcome?.error && (
-                    <p className="mt-1 flex items-start gap-1 text-[11px] text-[#b3391f]">
+                    <p className="mt-1 flex items-start gap-1 text-[11px] text-destructive">
                       <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
                       {e.outcome.error.slice(0, 120)}
                     </p>

@@ -70,7 +70,7 @@ export default function PostulationsPage() {
           <StatusStamp status={row.status} label={t(`statuses.${row.status}`)} />
           {row.status === "echouee" && (
             <p className="flex items-start gap-1 text-xs text-muted-foreground">
-              <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-[#b3391f]" />
+              <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-destructive" />
               {t("postulations.failedReasonUser")}
             </p>
           )}

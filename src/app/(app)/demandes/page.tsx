@@ -25,8 +25,12 @@ import { Badge } from "@/components/ui/badge";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, MessageCircle, TrendingDown } from "lucide-react";
+import { Plus, MessageCircle, TrendingDown, ReceiptText } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  PriceDetailsDialog,
+  type PricingSnapshotData,
+} from "@/components/price-details-dialog";
 
 interface DemandeRow {
   _id: string;
@@ -34,9 +38,18 @@ interface DemandeRow {
   nmbr_total: number;
   nmbr_per_day: number;
   price: number;
+  pricing_snapshot: PricingSnapshotData | null;
   status: string;
   createdAt: string;
   categories: string[];
+}
+
+interface PricingAxis {
+  step: number;
+  step_price: number;
+  min: number;
+  max: number;
+  free_amount: number;
 }
 
 interface OptionsResponse {
@@ -45,13 +58,7 @@ interface OptionsResponse {
   categories: { _id: string; name: string; companies_available: number }[];
   total_options: number[];
   per_day_options: number[];
-  pricing: {
-    price_of_hundred_total: number;
-    price_of_hundred_per_day: number;
-    free_per_day_amount: number;
-    min_total: number;
-    min_per_day: number;
-  };
+  pricing: { total: PricingAxis; per_day: PricingAxis };
 }
 
 interface PriceBreakdown {
@@ -69,6 +76,7 @@ export default function DemandesPage() {
 
   const [refreshKey, setRefreshKey] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
+  const [detailsTarget, setDetailsTarget] = useState<DemandeRow | null>(null);
 
   // ── History table ─────────────────────────────────────────
   const columns: DataTableColumn<DemandeRow>[] = [
@@ -113,7 +121,21 @@ export default function DemandesPage() {
       key: "price",
       header: t("demandes.price"),
       sortable: true,
-      render: (row) => <span className="num font-semibold">{row.price} $</span>,
+      render: (row) => (
+        <div className="flex items-center gap-1.5">
+          <span className="num font-semibold">{row.price} $</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-muted-foreground hover:text-foreground"
+            title={t("demandes.viewPriceDetails")}
+            aria-label={t("demandes.viewPriceDetails")}
+            onClick={() => setDetailsTarget(row)}
+          >
+            <ReceiptText className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      ),
     },
     {
       key: "status",
@@ -186,6 +208,16 @@ export default function DemandesPage() {
         open={createOpen}
         onOpenChange={setCreateOpen}
         onCreated={() => setRefreshKey((k) => k + 1)}
+      />
+
+      {/* Price details — parameters frozen at creation time */}
+      <PriceDetailsDialog
+        open={detailsTarget !== null}
+        onOpenChange={(o) => !o && setDetailsTarget(null)}
+        refNumber={detailsTarget?.ref_number || ""}
+        nmbrTotal={detailsTarget?.nmbr_total || 0}
+        nmbrPerDay={detailsTarget?.nmbr_per_day || 0}
+        snapshot={detailsTarget?.pricing_snapshot || null}
       />
     </div>
   );
@@ -308,6 +340,8 @@ function CreateDemandeDialog({
     }
   };
 
+  const minTotal = options?.pricing.total.min ?? 100;
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && closeDialog()}>
       <DialogContent className="max-h-[90dvh] max-w-2xl overflow-y-auto scroll-slim">
@@ -319,15 +353,15 @@ function CreateDemandeDialog({
             </DialogHeader>
 
             {options && !options.has_dossier && (
-              <div className="rounded-sm border border-[#b3391f]/40 bg-[#b3391f]/10 px-3 py-2.5 text-sm text-[#b3391f]">
+              <div className="rounded-sm border border-destructive/40 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
                 {t("demandes.requireDossier")}
               </div>
             )}
 
-            {options && options.companies_available < (options.pricing.min_total || 100) && (
-              <div className="rounded-sm border border-[#d9a441]/40 bg-[#d9a441]/10 px-3 py-2.5 text-sm text-[#8a6a1f]">
-                Pas assez d'entreprises disponibles ({options.companies_available}) — le minimum est{" "}
-                {options.pricing.min_total}. Élargissez vos catégories ou n'en sélectionnez aucune
+            {options && options.companies_available < minTotal && (
+              <div className="rounded-sm border border-warning/40 bg-warning/10 px-3 py-2.5 text-sm text-warning">
+                Pas assez d&apos;entreprises disponibles ({options.companies_available}) — le minimum est{" "}
+                {minTotal}. Élargissez vos catégories ou n&apos;en sélectionnez aucune
                 pour cibler toutes les entreprises.
               </div>
             )}
@@ -345,8 +379,8 @@ function CreateDemandeDialog({
                       className={cn(
                         "rounded-sm border px-2.5 py-1 text-xs font-medium transition-colors",
                         selectedCategories.includes(cat._id)
-                          ? "border-[#1e4475] bg-[#1e4475] text-[#f4f2ec]"
-                          : "border-border bg-[#fafaf6] text-muted-foreground hover:border-foreground/30 hover:text-foreground"
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-paper text-muted-foreground hover:border-foreground/30 hover:text-foreground"
                       )}
                     >
                       {cat.name}
@@ -413,7 +447,7 @@ function CreateDemandeDialog({
 
               {/* Price panel */}
               {breakdown && (
-                <div className="form-sheet border-[#1e4475]/30 bg-[#fafaf6] p-4">
+                <div className="form-sheet border-primary/30 bg-paper p-4">
                   <p className="eyebrow mb-3">{t("demandes.priceTitle")}</p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
@@ -426,7 +460,7 @@ function CreateDemandeDialog({
                         {breakdown.per_day_discount > 0 && (
                           <span className="relative text-muted-foreground">
                             {breakdown.per_day_price} $
-                            <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 rotate-[-6deg] bg-[#b3391f]" />
+                            <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 rotate-[-6deg] bg-destructive" />
                           </span>
                         )}
                         <span className="font-medium">
@@ -438,11 +472,11 @@ function CreateDemandeDialog({
                     </div>
                     {breakdown.per_day_discount > 0 && (
                       <div className="flex items-center justify-between text-xs">
-                        <span className="flex items-center gap-1 text-[#2f6b4a]">
+                        <span className="flex items-center gap-1 text-success">
                           <TrendingDown className="h-3 w-3" />
                           {t("admin.freePerDay")}
                         </span>
-                        <span className="num text-[#2f6b4a]">−{breakdown.per_day_discount} $</span>
+                        <span className="num text-success">−{breakdown.per_day_discount} $</span>
                       </div>
                     )}
                     <div className="rule-dashed" />
@@ -450,7 +484,7 @@ function CreateDemandeDialog({
                       <span className="font-display text-sm font-bold">
                         {t("demandes.priceTotal")}
                       </span>
-                      <span className="num font-display text-lg font-extrabold text-[#1e4475]">
+                      <span className="num font-display text-lg font-extrabold text-primary">
                         {breakdown.final_price} $
                       </span>
                     </div>

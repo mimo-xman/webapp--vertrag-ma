@@ -37,18 +37,18 @@ function VerifyEmailContent() {
     <div className="form-sheet p-8 text-center">
       {state === "loading" && (
         <>
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[#1e4475] border-t-transparent" />
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
         </>
       )}
       {state === "success" && (
         <>
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-[#2f6b4a] text-[#2f6b4a] stamp-anim">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-success text-success stamp-anim">
             <CheckCircle2 className="h-7 w-7" />
           </div>
           <h1 className="font-display text-xl font-bold">{t("auth.verifySuccess")}</h1>
           <div className="mt-6 flex items-center justify-center gap-2">
-            <Link href="/login" className="text-sm font-medium text-[#1e4475] hover:underline">
+            <Link href="/login" className="text-sm font-medium text-primary hover:underline">
               {t("auth.loginCta")} →
             </Link>
           </div>
@@ -56,7 +56,7 @@ function VerifyEmailContent() {
       )}
       {state === "error" && (
         <>
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-[#b3391f] text-[#b3391f]">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-destructive text-destructive">
             <XCircle className="h-7 w-7" />
           </div>
           <h1 className="font-display text-xl font-bold">{t("auth.verifyFail")}</h1>

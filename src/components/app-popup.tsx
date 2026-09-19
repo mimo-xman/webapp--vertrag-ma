@@ -155,8 +155,8 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
               <div
                 className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border ${
                   isDestructive
-                    ? "border-[#b3391f]/30 bg-[#b3391f]/10 text-[#b3391f]"
-                    : "border-[#1e4475]/30 bg-[#1e4475]/10 text-[#1e4475]"
+                    ? "border-destructive/30 bg-destructive/10 text-destructive"
+                    : "border-primary/30 bg-primary/10 text-primary"
                 }`}
               >
                 {isDestructive ? (

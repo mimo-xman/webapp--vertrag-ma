@@ -1,14 +1,21 @@
 import mongoose, { Schema } from "mongoose";
 
 export interface ISetting extends mongoose.Document {
-  postulation_demandes: {
-    price_of_hundred_total: number;
-    price_of_hundred_per_day: number;
-    free_per_day_amount: number;
-    min_total: number;
-    min_per_day: number;
-    step_total: number;
-    step_per_day: number;
+  postulation_pricing: {
+    total: {
+      step: number;
+      step_price: number;
+      min: number;
+      max: number;
+      free_amount: number;
+    };
+    per_day: {
+      step: number;
+      step_price: number;
+      min: number;
+      max: number;
+      free_amount: number;
+    };
   };
   postulations: {
     email_message: string;
@@ -26,16 +33,27 @@ export interface ISetting extends mongoose.Document {
   updatedAt: Date;
 }
 
+const pricingAxisDefaults = {
+  step: { type: Number, default: 500 },
+  step_price: { type: Number, default: 5 },
+  min: { type: Number, default: 100 },
+  max: { type: Number, default: 100000 },
+  free_amount: { type: Number, default: 0 },
+};
+
 const SettingSchema = new Schema<ISetting>(
   {
-    postulation_demandes: {
-      price_of_hundred_total: { type: Number, default: 1 },
-      price_of_hundred_per_day: { type: Number, default: 1 },
-      free_per_day_amount: { type: Number, default: 300 },
-      min_total: { type: Number, default: 100 },
-      min_per_day: { type: Number, default: 100 },
-      step_total: { type: Number, default: 500 },
-      step_per_day: { type: Number, default: 100 },
+    // Pricing v2 — two independent axes (total / per day), each configured
+    // with its own step, step price, min, max and free amount.
+    postulation_pricing: {
+      total: { ...pricingAxisDefaults, free_amount: { type: Number, default: 0 } },
+      per_day: {
+        step: { type: Number, default: 100 },
+        step_price: { type: Number, default: 1 },
+        min: { type: Number, default: 100 },
+        max: { type: Number, default: 100000 },
+        free_amount: { type: Number, default: 300 },
+      },
     },
     postulations: {
       email_message: {
@@ -52,7 +70,7 @@ const SettingSchema = new Schema<ISetting>(
     contact: {
       whatsapp_url: { type: String, default: "https://wa.me/212600000000" },
     },
-    schema_version: { type: Number, default: 0 },
+    schema_version: { type: Number, default: 2 },
   },
   { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
 );
@@ -60,42 +78,69 @@ const SettingSchema = new Schema<ISetting>(
 export const Setting = mongoose.models.Setting || mongoose.model<ISetting>("Setting", SettingSchema);
 
 // ── Settings migrations ──────────────────────────────────────────────────
-// One-time migrations for settings documents created with OLD defaults.
-// Guarded by schema_version so each migration runs exactly once per database,
-// and each migration only touches values that still hold an OLD default —
-// a value an admin has deliberately customized is never overwritten.
-const SETTINGS_MIGRATIONS: Array<(doc: ISetting) => string[]> = [
-  // v1 — minimums of demande de postulation lowered (spec change):
-  // min_total 500 → 100, min_per_day 300 → 100.
-  (doc) => {
-    const applied: string[] = [];
-    if (doc.postulation_demandes.min_total === 500) {
-      doc.postulation_demandes.min_total = 100;
-      applied.push("min_total 500 → 100");
-    }
-    if (doc.postulation_demandes.min_per_day === 300) {
-      doc.postulation_demandes.min_per_day = 100;
-      applied.push("min_per_day 300 → 100");
-    }
-    return applied;
-  },
-];
+// Guarded by schema_version so each migration runs exactly once per database.
+// A value an admin has deliberately customized is never overwritten (only
+// exact OLD defaults are upgraded).
+const round2 = (v: number) => Math.round(v * 100) / 100;
+
+// v2 — pricing model restructured into two independent axes.
+// The legacy block `postulation_demandes` is no longer part of the mongoose
+// schema, so the migration reads the RAW document (native driver) to keep
+// the admin's customized values. Conversion:
+//   axis.step       = legacy.step_{axis}
+//   axis.step_price = legacy.price_of_hundred_{axis} * legacy.step_{axis} / 100
+//   axis.min        = legacy.min_{axis} (with the v1 lowering 500→100 / 300→100)
+//   axis.max        = 100000 (new ceiling — availability still applies on top)
+//   axis.free       = per_day: legacy.free_per_day_amount · total: 0
+async function migratePricingV2(doc: ISetting): Promise<string[]> {
+  // Already migrated (idempotent guard).
+  if (doc.postulation_pricing?.total?.step) return [];
+
+  const raw = (await Setting.collection.findOne({ _id: doc._id })) as Record<string, unknown> | null;
+  const legacy = (raw?.postulation_demandes || {}) as Record<string, number>;
+
+  // v1 lowering of the minimums (only exact old defaults are upgraded).
+  const legacyMinTotal = legacy.min_total === 500 ? 100 : (legacy.min_total ?? 100);
+  const legacyMinPerDay = legacy.min_per_day === 300 ? 100 : (legacy.min_per_day ?? 100);
+
+  doc.postulation_pricing = {
+    total: {
+      step: legacy.step_total ?? 500,
+      step_price: round2(((legacy.price_of_hundred_total ?? 1) * (legacy.step_total ?? 500)) / 100),
+      min: legacyMinTotal,
+      max: 100000,
+      free_amount: 0,
+    },
+    per_day: {
+      step: legacy.step_per_day ?? 100,
+      step_price: round2(((legacy.price_of_hundred_per_day ?? 1) * (legacy.step_per_day ?? 100)) / 100),
+      min: legacyMinPerDay,
+      max: 100000,
+      free_amount: legacy.free_per_day_amount ?? 300,
+    },
+  };
+
+  // Remove the legacy block from the raw document (no longer read anywhere).
+  await Setting.collection.updateOne({ _id: doc._id }, { $unset: { postulation_demandes: "" } });
+
+  return ["prix → modèle par axe (total / par jour) : prix du pas, maximum, gratuits par axe"];
+}
 
 // Always return the singleton settings document, creating it with defaults if missing.
 export async function getSettings(): Promise<ISetting> {
   let doc = await Setting.findOne();
-  if (!doc) doc = await Setting.create({ schema_version: SETTINGS_MIGRATIONS.length });
+  if (!doc) doc = await Setting.create({ schema_version: 2 });
 
   const currentVersion = doc.schema_version || 0;
-  if (currentVersion < SETTINGS_MIGRATIONS.length) {
+  if (currentVersion < 2) {
     const applied: string[] = [];
-    for (let v = currentVersion; v < SETTINGS_MIGRATIONS.length; v++) {
-      applied.push(...SETTINGS_MIGRATIONS[v](doc));
-      doc.schema_version = v + 1;
+    for (let v = currentVersion; v < 2; v++) {
+      applied.push(...(await migratePricingV2(doc)));
     }
+    doc.schema_version = 2;
     await doc.save();
     if (applied.length > 0) {
-      console.log(`[SETTINGS] Migration appliquée (v${SETTINGS_MIGRATIONS.length}) : ${applied.join(", ")}`);
+      console.log(`[SETTINGS] Migration appliquée (v2) : ${applied.join(", ")}`);
     }
   }
   return doc;

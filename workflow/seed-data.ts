@@ -107,17 +107,17 @@ async function main() {
 
   // ── Align pricing settings with the new minimum (500 → 100) ──────────
   const settings = await getSettings();
-  const pd = settings.postulation_demandes;
+  const pp = settings.postulation_pricing;
   let changed = false;
-  if (pd.min_total > 100) {
-    console.log(`[SEED] Minimum total : ${pd.min_total} → 100.`);
-    pd.min_total = 100;
+  if (pp.total.min > 100) {
+    console.log(`[SEED] Minimum total : ${pp.total.min} → 100.`);
+    pp.total.min = 100;
     changed = true;
   }
-  if (pd.min_per_day > 100) {
+  if (pp.per_day.min > 100) {
     // Must stay <= min_total, otherwise a 100-total demande has no per-day option.
-    console.log(`[SEED] Minimum par jour : ${pd.min_per_day} → 100.`);
-    pd.min_per_day = 100;
+    console.log(`[SEED] Minimum par jour : ${pp.per_day.min} → 100.`);
+    pp.per_day.min = 100;
     changed = true;
   }
   if (changed) await settings.save();

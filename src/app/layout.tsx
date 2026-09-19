@@ -3,6 +3,7 @@ import { Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { LanguageProvider } from "@/components/language-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 import { getLocaleAndDict } from "@/lib/server-i18n";
 
 const archivo = Archivo({
@@ -52,9 +53,11 @@ export default async function RootLayout({
       <body
         className={`${archivo.variable} ${plexSans.variable} ${plexMono.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
-        <LanguageProvider locale={locale} dictionary={dict}>
-          {children}
-        </LanguageProvider>
+        <ThemeProvider>
+          <LanguageProvider locale={locale} dictionary={dict}>
+            {children}
+          </LanguageProvider>
+        </ThemeProvider>
         <Toaster />
       </body>
     </html>

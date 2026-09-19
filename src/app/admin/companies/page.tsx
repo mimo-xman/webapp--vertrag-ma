@@ -236,8 +236,8 @@ export default function AdminCompaniesPage() {
             size="icon"
             className={
               row.active
-                ? "h-7 w-7 text-[#b3391f] hover:bg-[#b3391f]/10"
-                : "h-7 w-7 text-[#2f6b4a] hover:bg-[#2f6b4a]/10"
+                ? "h-7 w-7 text-destructive hover:bg-destructive/10"
+                : "h-7 w-7 text-success hover:bg-success/10"
             }
             title={row.active ? t("admin.deactivateCompany") : t("admin.activateCompany")}
             aria-label={row.active ? t("admin.deactivateCompany") : t("admin.activateCompany")}
@@ -251,7 +251,7 @@ export default function AdminCompaniesPage() {
           <Button
             variant="outline"
             size="icon"
-            className="h-7 w-7 text-[#b3391f] hover:bg-[#b3391f]/10"
+            className="h-7 w-7 text-destructive hover:bg-destructive/10"
             onClick={() => handleDelete(row)}
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -317,19 +317,19 @@ export default function AdminCompaniesPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   className={cn(
                     "pr-9",
-                    emailValid === false && !forceInvalid && "border-[#b3391f]",
-                    emailValid === true && "border-[#2f6b4a]"
+                    emailValid === false && !forceInvalid && "border-destructive",
+                    emailValid === true && "border-success"
                   )}
                 />
                 {emailChecking && (
                   <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
                 )}
                 {emailValid === true && (
-                  <CheckCircle2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#2f6b4a]" />
+                  <CheckCircle2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-success" />
                 )}
               </div>
               {emailValid === false && !forceInvalid && (
-                <div className="rounded-sm border border-[#b3391f]/40 bg-[#b3391f]/10 p-2 text-xs text-[#b3391f]">
+                <div className="rounded-sm border border-destructive/40 bg-destructive/10 p-2 text-xs text-destructive">
                   <p>{t("admin.emailInvalid")}</p>
                   <label className="mt-1.5 flex cursor-pointer items-center gap-1.5 font-medium">
                     <Checkbox
@@ -343,7 +343,7 @@ export default function AdminCompaniesPage() {
             </div>
             <div className="space-y-1.5">
               <Label>{t("admin.companyCategories")}</Label>
-              <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto scroll-slim rounded-sm border border-border bg-[#fafaf6] p-2.5">
+              <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto scroll-slim rounded-sm border border-border bg-paper p-2.5">
                 {categories.map((cat) => (
                   <button
                     key={cat._id}
@@ -352,7 +352,7 @@ export default function AdminCompaniesPage() {
                     className={cn(
                       "rounded-sm border px-2 py-0.5 text-xs font-medium transition-colors",
                       selectedCategories.includes(cat._id)
-                        ? "border-[#1e4475] bg-[#1e4475] text-[#f4f2ec]"
+                        ? "border-primary bg-primary text-primary-foreground"
                         : "border-border bg-card text-muted-foreground hover:text-foreground"
                     )}
                   >

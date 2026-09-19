@@ -504,7 +504,7 @@ async function main() {
   const { buildTotalOptions, validateDemandeInput, DEFAULT_PRICING } = await import(
     "../src/lib/pricing"
   );
-  check("DEFAULT_PRICING.min_total = 100", DEFAULT_PRICING.min_total === 100);
+  check("DEFAULT_PRICING.total.min = 100", DEFAULT_PRICING.total.min === 100);
   const options = buildTotalOptions(1500, { ...DEFAULT_PRICING });
   check(
     "Options commencent à 100 (100, 600, 1100)",

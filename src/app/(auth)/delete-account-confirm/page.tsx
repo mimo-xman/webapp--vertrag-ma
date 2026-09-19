@@ -72,7 +72,7 @@ function DeleteAccountConfirmContent() {
     <div className="form-sheet">
       <div className="sheet-band px-6 py-5 border-b border-border rounded-t-[var(--radius)]">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-[#b3391f]/30 bg-[#b3391f]/10 text-[#b3391f]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-destructive/30 bg-destructive/10 text-destructive">
             <TriangleAlert className="h-5 w-5" />
           </div>
           <div>

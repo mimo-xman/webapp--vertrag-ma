@@ -71,8 +71,8 @@ export function ContactView({ defaultName, defaultEmail }: { defaultName: string
   if (sentRef) {
     return (
       <div className="form-sheet p-8 text-center">
-        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-sm border border-[#2f6b4a]/30 bg-[#2f6b4a]/10">
-          <CheckCircle2 className="h-7 w-7 text-[#2f6b4a]" />
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-sm border border-success/30 bg-success/10">
+          <CheckCircle2 className="h-7 w-7 text-success" />
         </div>
         <h1 className="font-display text-2xl font-extrabold tracking-tight">
           {t("contact.successTitle")}
@@ -80,7 +80,7 @@ export function ContactView({ defaultName, defaultEmail }: { defaultName: string
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           {t("contact.successDesc")}
         </p>
-        <p className="aktenzeichen mt-4 border border-dashed border-[#d8d5cc] bg-[#fafaf6] px-4 py-2.5">
+        <p className="aktenzeichen mt-4 border border-dashed border-border bg-paper px-4 py-2.5">
           {t("contact.yourRef")}: <span className="num font-semibold">{sentRef}</span>
         </p>
         <Button asChild variant="outline" className="mt-6">
@@ -95,8 +95,8 @@ export function ContactView({ defaultName, defaultEmail }: { defaultName: string
 
   return (
     <div className="form-sheet p-8">
-      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-sm border border-[#1e4475]/30 bg-[#1e4475]/5">
-        <LifeBuoy className="h-7 w-7 text-[#1e4475]" />
+      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-sm border border-primary/30 bg-primary/5">
+        <LifeBuoy className="h-7 w-7 text-primary" />
       </div>
 
       <h1 className="font-display text-2xl font-extrabold tracking-tight">
@@ -157,7 +157,7 @@ export function ContactView({ defaultName, defaultEmail }: { defaultName: string
         </div>
 
         {error && (
-          <p className="rounded-sm border border-[#b3391f]/30 bg-[#b3391f]/10 px-3 py-2 text-sm text-[#b3391f]">
+          <p className="rounded-sm border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
             {error}
           </p>
         )}

@@ -12,13 +12,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (user.role !== "admin") redirect("/dashboard");
 
   return (
-    <div className="min-h-dvh bg-[#1a1d21]">
+    <div className="min-h-dvh bg-sidebar">
       <div className="flex">
         <AdminSidebar userEmail={user.email} />
         <div className="min-w-0 flex-1">
           <AppPopupProvider>
             <SessionWatcher />
-            <main className="min-h-dvh bg-[#f4f2ec] lg:rounded-tl-lg">{children}</main>
+            <main className="min-h-dvh bg-background lg:rounded-tl-lg">{children}</main>
           </AppPopupProvider>
         </div>
       </div>

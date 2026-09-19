@@ -66,7 +66,7 @@ function ResetPasswordContent() {
       <div className="p-6">
         {done ? (
           <div className="text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-[#2f6b4a] text-[#2f6b4a]">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-success text-success">
               <CheckCircle2 className="h-7 w-7" />
             </div>
             <p className="text-sm text-muted-foreground">{t("auth.resetSuccess")}</p>

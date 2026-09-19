@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useI18n } from "@/components/language-provider";
 import { apiFetch } from "@/lib/api-utils";
 import { cn } from "@/lib/utils";
@@ -43,7 +44,7 @@ export function AppNavbar({ isAdmin }: { isAdmin: boolean }) {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#d8d5cc] bg-[#fafaf6]/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border bg-paper/95 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-2 px-4">
         <Logo />
 
@@ -58,8 +59,8 @@ export function AppNavbar({ isAdmin }: { isAdmin: boolean }) {
                 className={cn(
                   "flex items-center gap-1.5 rounded-sm px-3 py-1.5 text-sm font-medium transition-colors",
                   active
-                    ? "bg-[#1e4475] text-[#f4f2ec]"
-                    : "text-muted-foreground hover:bg-[#e9e6dd] hover:text-foreground"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                 )}
               >
                 <item.icon className="h-3.5 w-3.5" />
@@ -71,10 +72,10 @@ export function AppNavbar({ isAdmin }: { isAdmin: boolean }) {
             <Link
               href="/admin"
               className={cn(
-                "ml-1 flex items-center gap-1.5 rounded-sm border border-[#1e4475]/40 px-3 py-1.5 text-sm font-medium transition-colors",
+                "ml-1 flex items-center gap-1.5 rounded-sm border border-primary/40 px-3 py-1.5 text-sm font-medium transition-colors",
                 pathname.startsWith("/admin")
-                  ? "bg-[#1a1d21] text-[#f4f2ec] border-[#1a1d21]"
-                  : "text-[#1e4475] hover:bg-[#1e4475]/10"
+                  ? "bg-foreground text-background border-foreground"
+                  : "text-primary hover:bg-primary/10"
               )}
             >
               <ShieldCheck className="h-3.5 w-3.5" />
@@ -83,7 +84,8 @@ export function AppNavbar({ isAdmin }: { isAdmin: boolean }) {
           )}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1.5">
+          <ThemeToggle />
           <LanguageSwitcher />
           <Button
             variant="outline"
@@ -99,7 +101,7 @@ export function AppNavbar({ isAdmin }: { isAdmin: boolean }) {
 
       {/* Mobile nav */}
       <nav
-        className="flex items-center gap-1 overflow-x-auto scroll-slim border-t border-[#d8d5cc] px-3 py-1.5 lg:hidden"
+        className="flex items-center gap-1 overflow-x-auto scroll-slim border-t border-border px-3 py-1.5 lg:hidden"
         aria-label="Navigation mobile"
       >
         {items.map((item) => {
@@ -111,8 +113,8 @@ export function AppNavbar({ isAdmin }: { isAdmin: boolean }) {
               className={cn(
                 "flex shrink-0 items-center gap-1.5 rounded-sm px-2.5 py-1.5 text-xs font-medium transition-colors",
                 active
-                  ? "bg-[#1e4475] text-[#f4f2ec]"
-                  : "text-muted-foreground hover:bg-[#e9e6dd] hover:text-foreground"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
               )}
             >
               <item.icon className="h-3.5 w-3.5" />
@@ -126,8 +128,8 @@ export function AppNavbar({ isAdmin }: { isAdmin: boolean }) {
             className={cn(
               "flex shrink-0 items-center gap-1.5 rounded-sm px-2.5 py-1.5 text-xs font-medium transition-colors",
               pathname.startsWith("/admin")
-                ? "bg-[#1a1d21] text-[#f4f2ec]"
-                : "text-[#1e4475] hover:bg-[#1e4475]/10"
+                ? "bg-foreground text-background"
+                : "text-primary hover:bg-primary/10"
             )}
           >
             <ShieldCheck className="h-3.5 w-3.5" />

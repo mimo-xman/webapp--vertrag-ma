@@ -10,7 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle, ReceiptText } from "lucide-react";
+import {
+  PriceDetailsDialog,
+  type PricingSnapshotData,
+} from "@/components/price-details-dialog";
 
 interface DemandeRow {
   _id: string;
@@ -18,6 +22,7 @@ interface DemandeRow {
   nmbr_total: number;
   nmbr_per_day: number;
   price: number;
+  pricing_snapshot: PricingSnapshotData | null;
   status: string;
   createdAt: string;
   categories: string[];
@@ -29,6 +34,7 @@ export default function AdminDemandesPostulationsPage() {
   const { confirmApp, alertApp } = useAppPopup();
   const { toast } = useToast();
   const [refreshKey, setRefreshKey] = useState(0);
+  const [detailsTarget, setDetailsTarget] = useState<DemandeRow | null>(null);
 
   const handleConfirm = async (row: DemandeRow) => {
     const ok = await confirmApp(
@@ -124,7 +130,21 @@ export default function AdminDemandesPostulationsPage() {
       key: "price",
       header: t("demandes.price"),
       sortable: true,
-      render: (row) => <span className="num font-semibold">{row.price} $</span>,
+      render: (row) => (
+        <div className="flex items-center gap-1.5">
+          <span className="num font-semibold">{row.price} $</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-muted-foreground hover:text-foreground"
+            title={t("admin.viewPriceDetails")}
+            aria-label={t("admin.viewPriceDetails")}
+            onClick={() => setDetailsTarget(row)}
+          >
+            <ReceiptText className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      ),
     },
     {
       key: "status",
@@ -140,7 +160,7 @@ export default function AdminDemandesPostulationsPage() {
           <div className="flex gap-1">
             <Button
               size="sm"
-              className="h-7 gap-1 bg-[#2f6b4a] text-xs hover:bg-[#245540]"
+              className="h-7 gap-1 bg-success text-xs hover:bg-success/90"
               onClick={() => handleConfirm(row)}
             >
               <CheckCircle2 className="h-3.5 w-3.5" />
@@ -149,7 +169,7 @@ export default function AdminDemandesPostulationsPage() {
             <Button
               variant="outline"
               size="sm"
-              className="h-7 gap-1 text-xs text-[#b3391f] hover:bg-[#b3391f]/10"
+              className="h-7 gap-1 text-xs text-destructive hover:bg-destructive/10"
               onClick={() => handleReject(row)}
             >
               <XCircle className="h-3.5 w-3.5" />
@@ -180,6 +200,16 @@ export default function AdminDemandesPostulationsPage() {
             { value: "canceled", label: t("statuses.canceled") },
           ],
         }}
+      />
+
+      {/* Price details — parameters frozen at creation time (admin view) */}
+      <PriceDetailsDialog
+        open={detailsTarget !== null}
+        onOpenChange={(o) => !o && setDetailsTarget(null)}
+        refNumber={detailsTarget?.ref_number || ""}
+        nmbrTotal={detailsTarget?.nmbr_total || 0}
+        nmbrPerDay={detailsTarget?.nmbr_per_day || 0}
+        snapshot={detailsTarget?.pricing_snapshot || null}
       />
     </div>
   );

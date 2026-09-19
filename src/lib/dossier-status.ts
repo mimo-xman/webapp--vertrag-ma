@@ -4,9 +4,11 @@
 // cancellation rules — used by the user pages (dossier, dashboard) AND the
 // admin pages so the exact same wording appears everywhere in the webapp.
 //
-// DB status values (unchanged, shared enums):
+// DB status values (shared enums):
 //   Creation demande: en_attente | payed | in_creation | completed | cancelled
-//   Add demande:      en_attente | en_cours_de_revision | confirmed | rejected | cancelled
+//   Add demande (price = 0): en_attente | en_cours_de_revision | confirmed | rejected | cancelled
+//   Add demande (price > 0): waiting_payment | payed_waiting_review | payed_in_review
+//                            | confirmed | rejected | cancelled
 
 export type DossierDemandeType = "creation" | "ajout";
 
@@ -42,6 +44,12 @@ export function addStatusKey(d: StatusLike): string {
   switch (d.status) {
     case "en_attente":
       return "dossier.statusAwaitingReview"; // En attente de révision
+    case "waiting_payment":
+      return "dossier.statusWaitingPayment"; // En attente de paiement
+    case "payed_waiting_review":
+      return "dossier.statusPayedAwaitingReview"; // Payée et en attente de révision
+    case "payed_in_review":
+      return "dossier.statusPayedInReview"; // Payée et en cours de révision
     case "en_cours_de_revision":
       return "dossier.statusUnderReview"; // En cours de révision
     case "confirmed":
@@ -66,6 +74,9 @@ export function statusVariant(d: StatusLike): StampVariant {
     case "en_attente":
     case "payed":
     case "in_creation":
+    case "waiting_payment":
+    case "payed_waiting_review":
+    case "payed_in_review":
       return "blue";
     case "en_cours_de_revision":
       return "ink";
@@ -83,25 +94,33 @@ export function isDemandeActive(d: StatusLike): boolean {
 }
 
 /**
- * Can the USER cancel this demande?
+ * Can the USER cancel this demande? Only before the money/review is engaged:
  * - Creation: only before payment (status en_attente).
- * - Add: only before the admin starts reviewing (status en_attente).
+ * - Add: while en_attente (free) or waiting_payment (priced, payment not
+ *   yet validated by the admin).
  */
 export function userCanCancel(type: DossierDemandeType, d: StatusLike): boolean {
-  return type === "creation" ? d.status === "en_attente" : d.status === "en_attente";
+  if (type === "creation") return d.status === "en_attente";
+  return d.status === "en_attente" || d.status === "waiting_payment";
 }
 
 /**
- * Can the ADMIN cancel this demande? Same rule as the user: a creation
- * demande can only be cancelled while it is UNPAID (en_attente). Once the
- * payment is confirmed (payed / in_creation), it cannot be cancelled.
- * Add demandes are rejected (with a message) instead.
+ * Can the ADMIN cancel this demande?
+ * - Creation: only while UNPAID (en_attente) — once the payment is
+ *   confirmed it cannot be cancelled.
+ * - Add: any active status (before confirmation/rejection). When the
+ *   payment has been validated (payed_*), a message is required.
  */
 export function adminCanCancel(type: DossierDemandeType, d: StatusLike): boolean {
   if (type === "creation") {
     return d.status === "en_attente";
   }
-  return false;
+  return isDemandeActive(d);
+}
+
+/** Has the add demande's payment been validated by the admin? */
+export function isAddDemandePayed(d: StatusLike): boolean {
+  return d.status === "payed_waiting_review" || d.status === "payed_in_review";
 }
 
 export interface PriceParts {
@@ -144,19 +163,24 @@ export function createPriceParts(
 }
 
 /**
- * Price wording for an ADD demande (price stored in DB, 0 $ by default):
- *   en_attente / en_cours_de_revision → "0 $ à payer"
- *   confirmed                          → "0 $ payés"
- *   rejected / cancelled               → "0 $ payés"
+ * Price wording for an ADD demande (price snapshotted at creation):
+ *   waiting_payment / en_attente / en_cours_de_revision → "5 $ à payer"
+ *   payed_* (payment validated)                          → "5 $ payés"
+ *   confirmed                                            → "5 $ payés"
+ *   rejected / cancelled (not paid)                      → "0 $ payés"
+ *   cancelled (admin, after payment)                     → "5 $ payés"
  */
 export function addPriceParts(
   t: (key: string) => string,
-  d: { status: string; price: number }
+  d: { status: string; price: number; payed_at?: string | Date | null; cancelled_by?: "user" | "admin" | null }
 ): string {
-  if (d.status === "en_attente" || d.status === "en_cours_de_revision") {
+  if (d.status === "waiting_payment" || d.status === "en_attente" || d.status === "en_cours_de_revision") {
     return `${formatPrice(d.price)} ${t("dossier.priceToPay")}`;
   }
-  if (d.status === "confirmed") {
+  if (d.status === "confirmed" || isAddDemandePayed(d)) {
+    return `${formatPrice(d.price)} ${t("dossier.pricePaid")}`;
+  }
+  if (d.status === "cancelled" && d.payed_at) {
     return `${formatPrice(d.price)} ${t("dossier.pricePaid")}`;
   }
   return `${formatPrice(0)} ${t("dossier.pricePaid")}`;

@@ -58,6 +58,10 @@ export async function GET(request: NextRequest) {
       nmbr_total: d.nmbr_total,
       nmbr_per_day: d.nmbr_per_day,
       price: d.price,
+      // Pricing parameters in effect when this demande was created —
+      // lets the admin see exactly how the price was computed even after
+      // the settings have changed.
+      pricing_snapshot: d.pricing_snapshot || null,
       status: d.status,
       confirmed_at: d.confirmed_at,
       createdAt: d.createdAt,

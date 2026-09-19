@@ -52,6 +52,9 @@ export function statusVariant(status: string): StampVariant {
     case "executing":
     case "running":
     case "in_use":
+    case "waiting_payment":
+    case "payed_waiting_review":
+    case "payed_in_review":
       return "blue";
     case "en_attente":
     case "canceled":

@@ -12,7 +12,7 @@ import {
   buildTotalOptions,
   buildPerDayOptions,
   computePrice,
-  DEFAULT_PRICING,
+  normalizePricing,
   validateDemandeInput,
 } from "@/lib/pricing";
 
@@ -27,10 +27,7 @@ export async function GET(request: NextRequest) {
 
   await connectDB();
   const settings = await getSettings();
-  const pricing = {
-    ...DEFAULT_PRICING,
-    ...settings.postulation_demandes,
-  };
+  const pricing = normalizePricing(settings.postulation_pricing);
 
   const categoriesParam = request.nextUrl.searchParams.get("categories") || "";
   const categoryIds = categoriesParam
@@ -97,13 +94,7 @@ export async function GET(request: NextRequest) {
     categories: categoriesWithCount,
     total_options: totalOptions,
     per_day_options: perDayOptions,
-    pricing: {
-      price_of_hundred_total: pricing.price_of_hundred_total,
-      price_of_hundred_per_day: pricing.price_of_hundred_per_day,
-      free_per_day_amount: pricing.free_per_day_amount,
-      min_total: pricing.min_total,
-      min_per_day: pricing.min_per_day,
-    },
+    pricing,
     preview,
   });
 }
@@ -115,7 +106,7 @@ export async function POST(request: NextRequest) {
 
   await connectDB();
   const settings = await getSettings();
-  const pricing = { ...DEFAULT_PRICING, ...settings.postulation_demandes };
+  const pricing = normalizePricing(settings.postulation_pricing);
 
   const body = (await request.json().catch(() => ({}))) as {
     categorie_ids?: string[];

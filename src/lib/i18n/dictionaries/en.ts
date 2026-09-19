@@ -39,6 +39,11 @@ export default {
     details: "Details",
     all: "All",
     language: "Language",
+    theme: "Theme",
+    themeLight: "Light",
+    themeDark: "Dark",
+    themeSystem: "System",
+    toggleTheme: "Toggle theme",
   },
   nav: {
     home: "Home",
@@ -100,6 +105,8 @@ export default {
     pricingRow2Label: "Daily pace",
     pricingUnitPerDay: "per day",
     pricingFreeNote: "First {count} per day are free",
+    pricingFreeNoteTotal: "First {count} are free",
+    pricingFreeValue: "Free",
     pricingRow3Label: "Dossier creation",
     pricingRow4Label: "Diploma translation",
     pricingRow4Value: "on request",
@@ -263,6 +270,22 @@ export default {
     requireDossier: "An active dossier is required to create a request.",
     pendingExists: "You already have a pending request. Wait for its confirmation or cancel it.",
     allCategories: "All categories",
+    // ── Price details frozen on the demande (parameters at creation) ──
+    viewPriceDetails: "Price details",
+    priceDetailsTitle: "Price details — {ref}",
+    priceDetailsParamsTitle: "Parameters at creation",
+    priceDetailsAxisTotal: "Total applications",
+    priceDetailsAxisPerDay: "Per day",
+    priceDetailsStep: "Options step",
+    priceDetailsStepPrice: "Step price",
+    priceDetailsMin: "Minimum",
+    priceDetailsMax: "Maximum",
+    priceDetailsFree: "Free",
+    priceDetailsBreakdownTitle: "Price computation",
+    priceDetailsPerDayFull: "Full price (strikethrough)",
+    priceDetailsDiscount: "Discount",
+    priceDetailsSnapshotNote:
+      "These parameters were in effect when the request was created — the current settings may differ.",
   },
   dossier: {
     title: "My dossier",
@@ -319,8 +342,15 @@ export default {
     statusCancelledByAdmin: "Cancelled by admin",
     statusAwaitingReview: "Awaiting review",
     statusUnderReview: "Under review",
+    statusWaitingPayment: "Awaiting payment",
+    statusPayedAwaitingReview: "Paid and awaiting review",
+    statusPayedInReview: "Paid and under review",
     statusConfirmed: "Confirmed",
     statusRejected: "Rejected",
+    payViaWhatsapp: "Pay via WhatsApp",
+    payViaWhatsappHint:
+      "Contact the team on WhatsApp to pay {price} $. Once the payment is validated, your dossier verification will start.",
+    cancelMessageTitle: "Cancellation reason — {ref}",
     priceToPay: "to pay",
     pricePaid: "paid",
     sourceAdd: "Add",
@@ -563,6 +593,26 @@ export default {
     priceHundredTotal: "Price of 100 total applications ($)",
     priceHundredPerDay: "Price of 100 applications/day ($)",
     freePerDay: "First applications/day free",
+    // ── Pricing v2: organized sections (Applications → total / per day) ──
+    pricingSectionPostulations: "Applications",
+    pricingSectionPostulationsHint:
+      "Two independent pricings: the total number of applications and the daily pace. Parameters apply immediately to the options and prices shown to users.",
+    pricingSubTotal: "Total applications",
+    pricingSubPerDay: "Application / day",
+    stepOptionsLabel: "Options step",
+    stepPriceLabel: "Price per step ($)",
+    stepPriceHint:
+      "Price of ONE step of {step} applications — the step is the one defined in “Options step” above.",
+    minLabel: "Minimum",
+    maxLabel: "Maximum",
+    maxLabelHint: "Ceiling on top of the available companies (both limits apply).",
+    freeAmountLabel: "First units free",
+    freeAmountHint: "The first units are free before billing starts.",
+    pricingSectionDossier: "Dossier",
+    pricingSectionDossierHint:
+      "Prices applied to dossier requests: they are frozen on each request when it is created.",
+    dossierAddPriceHintV2:
+      "Price for verifying an uploaded dossier. 0 = free verification (no payment requested). If > 0, the request goes through WhatsApp payment then admin validation.",
     emailSubjectLabel: "Email subject to companies",
     emailMessageLabel: "Email message to companies (German, fixed text)",
     emailMessageHint:
@@ -571,6 +621,35 @@ export default {
     dossierCreationPrice: "Dossier creation price ($)",
     dossierAddPrice: "Dossier addition price ($)",
     dossierAddPriceHint: "0 by default: verifying an uploaded dossier is free.",
+    // ── Add-dossier payment workflow ──
+    confirmPaymentAdd: "Validate payment",
+    confirmPaymentAddTitle: "Validate payment",
+    confirmPaymentAddMessage:
+      "Confirm that the payment of {price} $ is received for request {ref}? The dossier review can then start.",
+    paymentAddConfirmed: "Payment validated",
+    cancelDemandeAdd: "Cancel",
+    cancelDemandeAddTitle: "Cancel the request",
+    cancelDemandeAddMessage: "Cancel request {ref}? This action is final.",
+    cancelMessageLabelAdd: "Cancellation reason (visible to the user)",
+    cancelMessageRequiredAfterPayment:
+      "Required after payment: explain the cancellation to the user (refund, etc.).",
+    cancelMessagePlaceholderAdd: "E.g.: payment mismatch, refund in progress…",
+    viewCancelMessage: "Cancellation reason",
+    cancelMessageTitleAdd: "Cancellation reason — {ref}",
+    demandeCancelledSuccess: "Request cancelled",
+    markInReview: "Under review",
+    // ── Mail senders activate/deactivate ──
+    activateSender: "Activate",
+    deactivateSender: "Deactivate",
+    activateSenderConfirm:
+      "Re-activate this email sender? It will be used again by the next postulation executions.",
+    deactivateSenderConfirm:
+      "Deactivate this email sender? It will no longer be used by postulation executions until it is re-activated.",
+    senderActivated: "Email sender activated",
+    senderDeactivated: "Email sender deactivated",
+    // ── Pricing snapshot details (user + admin) ──
+    viewPriceDetails: "Price details",
+    priceDetailsTitle: "Price details — {ref}",
     settingsSaved: "Settings saved",
     cloudinaryTitle: "File hosting (Cloudinary)",
     cloudinaryHint:

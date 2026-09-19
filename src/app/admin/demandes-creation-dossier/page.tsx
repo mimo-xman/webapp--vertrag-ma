@@ -217,7 +217,7 @@ export default function AdminDemandesCreationDossierPage() {
               <Button
                 variant="outline"
                 size="icon"
-                className="h-6 w-6 text-[#b3391f] hover:bg-[#b3391f]/10"
+                className="h-6 w-6 text-destructive hover:bg-destructive/10"
                 title={t("admin.viewMessage")}
                 aria-label={t("admin.viewMessage")}
                 onClick={() =>
@@ -250,7 +250,7 @@ export default function AdminDemandesCreationDossierPage() {
             <>
               <Button
                 size="sm"
-                className="h-7 gap-1 bg-[#1e4475] text-xs hover:bg-[#163358]"
+                className="h-7 gap-1 bg-primary text-xs hover:bg-primary/90"
                 onClick={async () => {
                   const ok = await confirmApp("Marquer cette demande comme en cours de création ?", {
                     title: "En cours de création",
@@ -273,7 +273,7 @@ export default function AdminDemandesCreationDossierPage() {
               </Button>
               <Button
                 size="sm"
-                className="h-7 gap-1 bg-[#2f6b4a] text-xs hover:bg-[#245540]"
+                className="h-7 gap-1 bg-success text-xs hover:bg-success/90"
                 onClick={() => openComplete(row)}
               >
                 <Upload className="h-3.5 w-3.5" />
@@ -284,7 +284,7 @@ export default function AdminDemandesCreationDossierPage() {
           {row.status === "in_creation" && (
             <Button
               size="sm"
-              className="h-7 gap-1 bg-[#2f6b4a] text-xs hover:bg-[#245540]"
+              className="h-7 gap-1 bg-success text-xs hover:bg-success/90"
               onClick={() => openComplete(row)}
             >
               <Upload className="h-3.5 w-3.5" />
@@ -301,7 +301,7 @@ export default function AdminDemandesCreationDossierPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="h-7 gap-1 text-xs text-[#1e4475]"
+                className="h-7 gap-1 text-xs text-primary"
                 onClick={() => openComplete(row)}
               >
                 <FileUp className="h-3.5 w-3.5" />
@@ -313,7 +313,7 @@ export default function AdminDemandesCreationDossierPage() {
             <Button
               size="sm"
               variant="outline"
-              className="h-7 gap-1 text-xs text-[#b3391f] hover:bg-[#b3391f]/10"
+              className="h-7 gap-1 text-xs text-destructive hover:bg-destructive/10"
               onClick={() => openCancel(row)}
             >
               <XCircle className="h-3.5 w-3.5" />

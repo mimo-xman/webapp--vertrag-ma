@@ -288,8 +288,8 @@ export default function ProfilePage() {
                 className={
                   confirmNewPassword
                     ? newPassword === confirmNewPassword
-                      ? "border-[#2f6b4a]"
-                      : "border-[#b3391f]"
+                      ? "border-success"
+                      : "border-destructive"
                     : ""
                 }
               />
@@ -384,10 +384,10 @@ export default function ProfilePage() {
         </div>
 
         {/* ── Danger zone ───────────────────────────────────── */}
-        <div className="form-sheet border-[#b3391f]/40">
+        <div className="form-sheet border-destructive/40">
           <div className="sheet-band flex items-center gap-2 px-5 py-3.5">
-            <TriangleAlert className="h-4 w-4 text-[#b3391f]" />
-            <h2 className="font-display text-sm font-bold text-[#b3391f]">
+            <TriangleAlert className="h-4 w-4 text-destructive" />
+            <h2 className="font-display text-sm font-bold text-destructive">
               {t("profile.dangerZone")}
             </h2>
           </div>
@@ -430,7 +430,7 @@ export default function ProfilePage() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="font-display flex items-center gap-2 text-lg">
-              <QrCode className="h-5 w-5 text-[#1e4475]" />
+              <QrCode className="h-5 w-5 text-primary" />
               {t("profile.twoFAEnable")}
             </DialogTitle>
             <DialogDescription>{t("profile.twoFAScan")}</DialogDescription>
@@ -441,7 +441,7 @@ export default function ProfilePage() {
                 { }
                 <img src={setupData.qrDataUrl} alt="QR Code 2FA" className="h-44 w-44" />
               </div>
-              <div className="rounded-sm bg-[#fafaf6] p-2.5 text-center">
+              <div className="rounded-sm bg-paper p-2.5 text-center">
                 <p className="eyebrow mb-1">SECRET</p>
                 <p className="font-mono text-xs break-all">{setupData.secret}</p>
               </div>
@@ -478,7 +478,7 @@ export default function ProfilePage() {
             {backupCodes?.map((code) => (
               <div
                 key={code}
-                className="rounded-sm border border-border bg-[#fafaf6] px-3 py-2 text-center font-mono text-sm font-semibold tracking-wider"
+                className="rounded-sm border border-border bg-paper px-3 py-2 text-center font-mono text-sm font-semibold tracking-wider"
               >
                 {code}
               </div>

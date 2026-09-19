@@ -124,7 +124,7 @@ export default function AdminUsersPage() {
           variant="outline"
           className={
             row.role === "admin"
-              ? "border-[#1a1d21] bg-[#1a1d21] text-[#f4f2ec]"
+              ? "border-foreground bg-foreground text-background"
               : "font-normal"
           }
         >
@@ -154,7 +154,7 @@ export default function AdminUsersPage() {
       render: (row) => (
         <span className="text-xs">
           {row.has_dossier ? "✓" : "—"}
-          {row.two_factor_enabled && <span className="ml-2 text-[#1e4475]">2FA</span>}
+          {row.two_factor_enabled && <span className="ml-2 text-primary">2FA</span>}
         </span>
       ),
     },
@@ -179,8 +179,8 @@ export default function AdminUsersPage() {
               size="icon"
               className={
                 row.suspended
-                  ? "h-7 w-7 text-[#2f6b4a] hover:bg-[#2f6b4a]/10"
-                  : "h-7 w-7 text-[#b3391f] hover:bg-[#b3391f]/10"
+                  ? "h-7 w-7 text-success hover:bg-success/10"
+                  : "h-7 w-7 text-destructive hover:bg-destructive/10"
               }
               title={row.suspended ? t("admin.unsuspend") : t("admin.suspend")}
               aria-label={row.suspended ? t("admin.unsuspend") : t("admin.suspend")}
@@ -215,7 +215,7 @@ export default function AdminUsersPage() {
           <Button
             variant="outline"
             size="icon"
-            className="h-7 w-7 text-[#b3391f] hover:bg-[#b3391f]/10"
+            className="h-7 w-7 text-destructive hover:bg-destructive/10"
             onClick={() => handleDelete(row)}
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -232,7 +232,7 @@ export default function AdminUsersPage() {
         title={t("admin.users")}
         subtitle={t("admin.usersSubtitle")}
       />
-      <p className="mb-4 rounded-sm border border-[#d9a441]/40 bg-[#d9a441]/10 px-3 py-2 text-xs text-[#8a6a1f]">
+      <p className="mb-4 rounded-sm border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning">
         {t("admin.excludedSelf")}
       </p>
 
