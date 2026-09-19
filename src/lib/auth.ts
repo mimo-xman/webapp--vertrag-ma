@@ -22,6 +22,8 @@ export interface AuthUser {
   full_name: string;
   role: "user" | "admin";
   active: boolean;
+  suspended: boolean;
+  suspended_reason: string | null;
   passwordChangedAt: Date | null;
 }
 
@@ -75,7 +77,7 @@ export async function getAuthUser(): Promise<AuthUser | null> {
     if (!decoded?.userId) return null;
     await connectDB();
     const user = await User.findById(decoded.userId)
-      .select("_id email full_name role active passwordChangedAt")
+      .select("_id email full_name role active suspended suspended_reason passwordChangedAt")
       .lean();
     if (!user || !user.active) return null;
     if (isTokenOutdated(decoded, user.passwordChangedAt)) return null;
@@ -85,6 +87,8 @@ export async function getAuthUser(): Promise<AuthUser | null> {
       full_name: user.full_name,
       role: user.role,
       active: user.active,
+      suspended: Boolean(user.suspended),
+      suspended_reason: user.suspended_reason ?? null,
       passwordChangedAt: user.passwordChangedAt,
     };
   } catch {
@@ -100,7 +104,7 @@ export async function getAuthUserFromRequest(request: NextRequest): Promise<Auth
     if (!decoded?.userId) return null;
     await connectDB();
     const user = await User.findById(decoded.userId)
-      .select("_id email full_name role active passwordChangedAt")
+      .select("_id email full_name role active suspended suspended_reason passwordChangedAt")
       .lean();
     if (!user || !user.active) return null;
     if (isTokenOutdated(decoded, user.passwordChangedAt)) return null;
@@ -110,6 +114,8 @@ export async function getAuthUserFromRequest(request: NextRequest): Promise<Auth
       full_name: user.full_name,
       role: user.role,
       active: user.active,
+      suspended: Boolean(user.suspended),
+      suspended_reason: user.suspended_reason ?? null,
       passwordChangedAt: user.passwordChangedAt,
     };
   } catch {
@@ -126,6 +132,20 @@ export async function requireAuth(
       error: NextResponse.json(
         { success: false, error: "Unauthorized", code: "AUTH_REQUIRED" },
         { status: 401 }
+      ),
+    };
+  }
+  // Suspended accounts keep their session (so they can log out and see the
+  // suspended page) but are blocked from every auth-required API.
+  if (user.suspended) {
+    return {
+      error: NextResponse.json(
+        {
+          success: false,
+          error: "Votre compte est suspendu. Contactez le support pour plus d'informations.",
+          code: "ACCOUNT_SUSPENDED",
+        },
+        { status: 403 }
       ),
     };
   }

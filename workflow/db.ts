@@ -10,6 +10,8 @@ import "../src/models/Postulation";
 import "../src/models/PostulationDemande";
 import "../src/models/MailSender";
 import "../src/models/Setting";
+import "../src/models/Execution";
+import "../src/models/SupportMessage";
 
 let connected = false;
 

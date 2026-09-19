@@ -76,3 +76,16 @@ sudo iptables -L INPUT -n --line-numbers
 - **Jamais `pm2 kill` ni `pm2 stop all`** — tue les autres apps sur le serveur
 - **Les cookies sont en `secure: false`** via `ALLOW_HTTP_COOKIES=true`
 - **Le rate limit est désactivé** via `DISABLE_RATE_LIMIT=test`
+
+---
+
+## Workflows de postulations
+
+L'envoi des postulations peut tourner de **trois façons** : en ligne de
+commande sur cette VM, via GitHub Actions, ou directement depuis le panneau
+admin (bouton « Lancer la relance » → mode serveur, exécutions visibles en
+direct dans Admin → Exécutions).
+
+👉 **Guide complet : [WORKFLOWS.md](./WORKFLOWS.md)** (architecture,
+commandes CLI, cron VM, secrets GitHub Actions, exécutions parallèles par
+mail sender, données de test et tests du moteur).

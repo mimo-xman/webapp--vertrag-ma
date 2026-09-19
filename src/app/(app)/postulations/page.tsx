@@ -24,7 +24,7 @@ export default function PostulationsPage() {
       render: (row) => (
         <div>
           <p className="font-medium">{row.company?.name || "—"}</p>
-          {row.company?.categories?.length > 0 && (
+          {row.company && row.company.categories && row.company.categories.length > 0 && (
             <p className="text-xs text-muted-foreground">{row.company.categories.join(", ")}</p>
           )}
         </div>

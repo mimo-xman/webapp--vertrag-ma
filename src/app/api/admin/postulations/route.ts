@@ -54,8 +54,8 @@ export async function GET(request: NextRequest) {
       .populate("company_id", "name email")
       .lean(),
     Postulation.countDocuments(filter),
-    User.find().select("full_name email").sort({ full_name: 1 }).lean(),
-    Company.find().select("name email").sort({ name: 1 }).lean(),
+    User.find().select("full_name email").sort({ full_name: 1 }).limit(2000).lean(),
+    Company.find().select("name email").sort({ name: 1 }).limit(5000).lean(),
   ]);
 
   return NextResponse.json({
@@ -66,6 +66,13 @@ export async function GET(request: NextRequest) {
       scheduled_at: p.scheduled_at,
       posted_at: p.posted_at,
       failed_reason: p.failed_reason,
+      mail_sender_id: p.mail_sender_id ? String(p.mail_sender_id) : null,
+      executions: (p.executions || []).map((e) => ({
+        execution_id: String(e.execution_id),
+        status: e.status,
+        error: e.error,
+        executed_at: e.executed_at,
+      })),
       user: p.user_id
         ? { _id: String((p.user_id as { _id: unknown })._id), full_name: (p.user_id as { full_name?: string }).full_name, email: (p.user_id as { email?: string }).email }
         : null,

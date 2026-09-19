@@ -1,0 +1,6002 @@
+[
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000000"
+    },
+    "name": "Automobilbau — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000001"
+    },
+    "name": "Automobilbau — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000002"
+    },
+    "name": "Automobilbau — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000003"
+    },
+    "name": "Automobilbau — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000004"
+    },
+    "name": "Automobilbau — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000005"
+    },
+    "name": "Automobilbau — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000006"
+    },
+    "name": "Automobilbau — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000007"
+    },
+    "name": "Automobilbau — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000008"
+    },
+    "name": "Automobilbau — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000009"
+    },
+    "name": "Automobilbau — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000000a"
+    },
+    "name": "Automobilbau — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000000b"
+    },
+    "name": "Automobilbau — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000000c"
+    },
+    "name": "Automobilbau — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000000d"
+    },
+    "name": "Automobilbau — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000000e"
+    },
+    "name": "Automobilbau — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000000f"
+    },
+    "name": "Automobilbau — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000010"
+    },
+    "name": "Automobilbau — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000011"
+    },
+    "name": "Automobilbau — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000012"
+    },
+    "name": "Automobilbau — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000013"
+    },
+    "name": "Automobilbau — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000014"
+    },
+    "name": "Automobilbau — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000015"
+    },
+    "name": "Automobilbau — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000016"
+    },
+    "name": "Automobilbau — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000017"
+    },
+    "name": "Automobilbau — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000018"
+    },
+    "name": "Automobilbau — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000019"
+    },
+    "name": "Maschinenbau — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000001a"
+    },
+    "name": "Maschinenbau — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000001b"
+    },
+    "name": "Maschinenbau — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000001c"
+    },
+    "name": "Maschinenbau — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000001d"
+    },
+    "name": "Maschinenbau — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000001e"
+    },
+    "name": "Maschinenbau — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000001f"
+    },
+    "name": "Maschinenbau — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000020"
+    },
+    "name": "Maschinenbau — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000021"
+    },
+    "name": "Maschinenbau — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000022"
+    },
+    "name": "Maschinenbau — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000023"
+    },
+    "name": "Maschinenbau — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000024"
+    },
+    "name": "Maschinenbau — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000025"
+    },
+    "name": "Maschinenbau — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000026"
+    },
+    "name": "Maschinenbau — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000027"
+    },
+    "name": "Maschinenbau — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000028"
+    },
+    "name": "Maschinenbau — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000029"
+    },
+    "name": "Maschinenbau — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000002a"
+    },
+    "name": "Maschinenbau — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000002b"
+    },
+    "name": "Maschinenbau — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000002c"
+    },
+    "name": "Maschinenbau — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000002d"
+    },
+    "name": "Maschinenbau — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000002e"
+    },
+    "name": "Maschinenbau — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000002f"
+    },
+    "name": "Maschinenbau — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000030"
+    },
+    "name": "Maschinenbau — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000031"
+    },
+    "name": "Maschinenbau — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000032"
+    },
+    "name": "Elektrotechnik — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000033"
+    },
+    "name": "Elektrotechnik — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000034"
+    },
+    "name": "Elektrotechnik — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000035"
+    },
+    "name": "Elektrotechnik — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000036"
+    },
+    "name": "Elektrotechnik — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000037"
+    },
+    "name": "Elektrotechnik — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000038"
+    },
+    "name": "Elektrotechnik — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000039"
+    },
+    "name": "Elektrotechnik — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000003a"
+    },
+    "name": "Elektrotechnik — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000003b"
+    },
+    "name": "Elektrotechnik — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000003c"
+    },
+    "name": "Elektrotechnik — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000003d"
+    },
+    "name": "Elektrotechnik — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000003e"
+    },
+    "name": "Elektrotechnik — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000003f"
+    },
+    "name": "Elektrotechnik — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000040"
+    },
+    "name": "Elektrotechnik — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000041"
+    },
+    "name": "Elektrotechnik — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000042"
+    },
+    "name": "Elektrotechnik — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000043"
+    },
+    "name": "Elektrotechnik — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000044"
+    },
+    "name": "Elektrotechnik — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000045"
+    },
+    "name": "Elektrotechnik — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000046"
+    },
+    "name": "Elektrotechnik — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000047"
+    },
+    "name": "Elektrotechnik — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000048"
+    },
+    "name": "Elektrotechnik — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000049"
+    },
+    "name": "Elektrotechnik — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000004a"
+    },
+    "name": "Elektrotechnik — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000004b"
+    },
+    "name": "Informationstechnik — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000004c"
+    },
+    "name": "Informationstechnik — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000004d"
+    },
+    "name": "Informationstechnik — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000004e"
+    },
+    "name": "Informationstechnik — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000004f"
+    },
+    "name": "Informationstechnik — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000050"
+    },
+    "name": "Informationstechnik — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000051"
+    },
+    "name": "Informationstechnik — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000052"
+    },
+    "name": "Informationstechnik — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000053"
+    },
+    "name": "Informationstechnik — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000054"
+    },
+    "name": "Informationstechnik — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000055"
+    },
+    "name": "Informationstechnik — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000056"
+    },
+    "name": "Informationstechnik — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000057"
+    },
+    "name": "Informationstechnik — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000058"
+    },
+    "name": "Informationstechnik — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000059"
+    },
+    "name": "Informationstechnik — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000005a"
+    },
+    "name": "Informationstechnik — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000005b"
+    },
+    "name": "Informationstechnik — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000005c"
+    },
+    "name": "Informationstechnik — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000005d"
+    },
+    "name": "Informationstechnik — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000005e"
+    },
+    "name": "Informationstechnik — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000005f"
+    },
+    "name": "Informationstechnik — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000060"
+    },
+    "name": "Informationstechnik — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000061"
+    },
+    "name": "Informationstechnik — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000062"
+    },
+    "name": "Informationstechnik — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000063"
+    },
+    "name": "Informationstechnik — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000064"
+    },
+    "name": "Telekommunikation — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000065"
+    },
+    "name": "Telekommunikation — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000066"
+    },
+    "name": "Telekommunikation — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000067"
+    },
+    "name": "Telekommunikation — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000068"
+    },
+    "name": "Telekommunikation — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000069"
+    },
+    "name": "Telekommunikation — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000006a"
+    },
+    "name": "Telekommunikation — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000006b"
+    },
+    "name": "Telekommunikation — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000006c"
+    },
+    "name": "Telekommunikation — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000006d"
+    },
+    "name": "Telekommunikation — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000006e"
+    },
+    "name": "Telekommunikation — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000006f"
+    },
+    "name": "Telekommunikation — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000070"
+    },
+    "name": "Telekommunikation — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000071"
+    },
+    "name": "Telekommunikation — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000072"
+    },
+    "name": "Telekommunikation — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000073"
+    },
+    "name": "Telekommunikation — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000074"
+    },
+    "name": "Telekommunikation — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000075"
+    },
+    "name": "Telekommunikation — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000076"
+    },
+    "name": "Telekommunikation — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000077"
+    },
+    "name": "Telekommunikation — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000078"
+    },
+    "name": "Telekommunikation — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000079"
+    },
+    "name": "Telekommunikation — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000007a"
+    },
+    "name": "Telekommunikation — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000007b"
+    },
+    "name": "Telekommunikation — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000007c"
+    },
+    "name": "Telekommunikation — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000007d"
+    },
+    "name": "Gesundheitswesen — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000007e"
+    },
+    "name": "Gesundheitswesen — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000007f"
+    },
+    "name": "Gesundheitswesen — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000080"
+    },
+    "name": "Gesundheitswesen — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000081"
+    },
+    "name": "Gesundheitswesen — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000082"
+    },
+    "name": "Gesundheitswesen — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000083"
+    },
+    "name": "Gesundheitswesen — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000084"
+    },
+    "name": "Gesundheitswesen — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000085"
+    },
+    "name": "Gesundheitswesen — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000086"
+    },
+    "name": "Gesundheitswesen — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000087"
+    },
+    "name": "Gesundheitswesen — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000088"
+    },
+    "name": "Gesundheitswesen — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000089"
+    },
+    "name": "Gesundheitswesen — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000008a"
+    },
+    "name": "Gesundheitswesen — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000008b"
+    },
+    "name": "Gesundheitswesen — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000008c"
+    },
+    "name": "Gesundheitswesen — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000008d"
+    },
+    "name": "Gesundheitswesen — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000008e"
+    },
+    "name": "Gesundheitswesen — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000008f"
+    },
+    "name": "Gesundheitswesen — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000090"
+    },
+    "name": "Gesundheitswesen — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000091"
+    },
+    "name": "Gesundheitswesen — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000092"
+    },
+    "name": "Gesundheitswesen — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000093"
+    },
+    "name": "Gesundheitswesen — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000094"
+    },
+    "name": "Gesundheitswesen — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000095"
+    },
+    "name": "Gesundheitswesen — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000096"
+    },
+    "name": "Pharmaindustrie — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000097"
+    },
+    "name": "Pharmaindustrie — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000098"
+    },
+    "name": "Pharmaindustrie — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000099"
+    },
+    "name": "Pharmaindustrie — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000009a"
+    },
+    "name": "Pharmaindustrie — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000009b"
+    },
+    "name": "Pharmaindustrie — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000009c"
+    },
+    "name": "Pharmaindustrie — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000009d"
+    },
+    "name": "Pharmaindustrie — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000009e"
+    },
+    "name": "Pharmaindustrie — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000009f"
+    },
+    "name": "Pharmaindustrie — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000a0"
+    },
+    "name": "Pharmaindustrie — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000a1"
+    },
+    "name": "Pharmaindustrie — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000a2"
+    },
+    "name": "Pharmaindustrie — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000a3"
+    },
+    "name": "Pharmaindustrie — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000a4"
+    },
+    "name": "Pharmaindustrie — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000a5"
+    },
+    "name": "Pharmaindustrie — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000a6"
+    },
+    "name": "Pharmaindustrie — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000a7"
+    },
+    "name": "Pharmaindustrie — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000a8"
+    },
+    "name": "Pharmaindustrie — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000a9"
+    },
+    "name": "Pharmaindustrie — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000aa"
+    },
+    "name": "Pharmaindustrie — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ab"
+    },
+    "name": "Pharmaindustrie — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ac"
+    },
+    "name": "Pharmaindustrie — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ad"
+    },
+    "name": "Pharmaindustrie — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ae"
+    },
+    "name": "Pharmaindustrie — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000af"
+    },
+    "name": "Chemie — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000b0"
+    },
+    "name": "Chemie — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000b1"
+    },
+    "name": "Chemie — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000b2"
+    },
+    "name": "Chemie — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000b3"
+    },
+    "name": "Chemie — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000b4"
+    },
+    "name": "Chemie — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000b5"
+    },
+    "name": "Chemie — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000b6"
+    },
+    "name": "Chemie — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000b7"
+    },
+    "name": "Chemie — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000b8"
+    },
+    "name": "Chemie — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000b9"
+    },
+    "name": "Chemie — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ba"
+    },
+    "name": "Chemie — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000bb"
+    },
+    "name": "Chemie — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000bc"
+    },
+    "name": "Chemie — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000bd"
+    },
+    "name": "Chemie — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000be"
+    },
+    "name": "Chemie — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000bf"
+    },
+    "name": "Chemie — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000c0"
+    },
+    "name": "Chemie — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000c1"
+    },
+    "name": "Chemie — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000c2"
+    },
+    "name": "Chemie — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000c3"
+    },
+    "name": "Chemie — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000c4"
+    },
+    "name": "Chemie — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000c5"
+    },
+    "name": "Chemie — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000c6"
+    },
+    "name": "Chemie — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000c7"
+    },
+    "name": "Chemie — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000c8"
+    },
+    "name": "Baugewerbe — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000c9"
+    },
+    "name": "Baugewerbe — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ca"
+    },
+    "name": "Baugewerbe — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000cb"
+    },
+    "name": "Baugewerbe — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000cc"
+    },
+    "name": "Baugewerbe — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000cd"
+    },
+    "name": "Baugewerbe — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ce"
+    },
+    "name": "Baugewerbe — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000cf"
+    },
+    "name": "Baugewerbe — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000d0"
+    },
+    "name": "Baugewerbe — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000d1"
+    },
+    "name": "Baugewerbe — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000d2"
+    },
+    "name": "Baugewerbe — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000d3"
+    },
+    "name": "Baugewerbe — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000d4"
+    },
+    "name": "Baugewerbe — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000d5"
+    },
+    "name": "Baugewerbe — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000d6"
+    },
+    "name": "Baugewerbe — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000d7"
+    },
+    "name": "Baugewerbe — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000d8"
+    },
+    "name": "Baugewerbe — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000d9"
+    },
+    "name": "Baugewerbe — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000da"
+    },
+    "name": "Baugewerbe — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000db"
+    },
+    "name": "Baugewerbe — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000dc"
+    },
+    "name": "Baugewerbe — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000dd"
+    },
+    "name": "Baugewerbe — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000de"
+    },
+    "name": "Baugewerbe — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000df"
+    },
+    "name": "Baugewerbe — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000e0"
+    },
+    "name": "Baugewerbe — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000e1"
+    },
+    "name": "Tiefbau — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000e2"
+    },
+    "name": "Tiefbau — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000e3"
+    },
+    "name": "Tiefbau — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000e4"
+    },
+    "name": "Tiefbau — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000e5"
+    },
+    "name": "Tiefbau — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000e6"
+    },
+    "name": "Tiefbau — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000e7"
+    },
+    "name": "Tiefbau — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000e8"
+    },
+    "name": "Tiefbau — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000e9"
+    },
+    "name": "Tiefbau — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ea"
+    },
+    "name": "Tiefbau — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000eb"
+    },
+    "name": "Tiefbau — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ec"
+    },
+    "name": "Tiefbau — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ed"
+    },
+    "name": "Tiefbau — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ee"
+    },
+    "name": "Tiefbau — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ef"
+    },
+    "name": "Tiefbau — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000f0"
+    },
+    "name": "Tiefbau — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000f1"
+    },
+    "name": "Tiefbau — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000f2"
+    },
+    "name": "Tiefbau — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000f3"
+    },
+    "name": "Tiefbau — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000f4"
+    },
+    "name": "Tiefbau — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000f5"
+    },
+    "name": "Tiefbau — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000f6"
+    },
+    "name": "Tiefbau — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000f7"
+    },
+    "name": "Tiefbau — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000f8"
+    },
+    "name": "Tiefbau — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000f9"
+    },
+    "name": "Tiefbau — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000fa"
+    },
+    "name": "Hochbau — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000fb"
+    },
+    "name": "Hochbau — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000fc"
+    },
+    "name": "Hochbau — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000fd"
+    },
+    "name": "Hochbau — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000fe"
+    },
+    "name": "Hochbau — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000000ff"
+    },
+    "name": "Hochbau — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000100"
+    },
+    "name": "Hochbau — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000101"
+    },
+    "name": "Hochbau — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000102"
+    },
+    "name": "Hochbau — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000103"
+    },
+    "name": "Hochbau — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000104"
+    },
+    "name": "Hochbau — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000105"
+    },
+    "name": "Hochbau — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000106"
+    },
+    "name": "Hochbau — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000107"
+    },
+    "name": "Hochbau — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000108"
+    },
+    "name": "Hochbau — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000109"
+    },
+    "name": "Hochbau — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000010a"
+    },
+    "name": "Hochbau — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000010b"
+    },
+    "name": "Hochbau — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000010c"
+    },
+    "name": "Hochbau — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000010d"
+    },
+    "name": "Hochbau — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000010e"
+    },
+    "name": "Hochbau — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000010f"
+    },
+    "name": "Hochbau — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000110"
+    },
+    "name": "Hochbau — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000111"
+    },
+    "name": "Hochbau — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000112"
+    },
+    "name": "Hochbau — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000113"
+    },
+    "name": "Architektur — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000114"
+    },
+    "name": "Architektur — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000115"
+    },
+    "name": "Architektur — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000116"
+    },
+    "name": "Architektur — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000117"
+    },
+    "name": "Architektur — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000118"
+    },
+    "name": "Architektur — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000119"
+    },
+    "name": "Architektur — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000011a"
+    },
+    "name": "Architektur — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000011b"
+    },
+    "name": "Architektur — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000011c"
+    },
+    "name": "Architektur — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000011d"
+    },
+    "name": "Architektur — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000011e"
+    },
+    "name": "Architektur — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000011f"
+    },
+    "name": "Architektur — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000120"
+    },
+    "name": "Architektur — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000121"
+    },
+    "name": "Architektur — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000122"
+    },
+    "name": "Architektur — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000123"
+    },
+    "name": "Architektur — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000124"
+    },
+    "name": "Architektur — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000125"
+    },
+    "name": "Architektur — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000126"
+    },
+    "name": "Architektur — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000127"
+    },
+    "name": "Architektur — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000128"
+    },
+    "name": "Architektur — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000129"
+    },
+    "name": "Architektur — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000012a"
+    },
+    "name": "Architektur — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000012b"
+    },
+    "name": "Architektur — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000012c"
+    },
+    "name": "Immobilien — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000012d"
+    },
+    "name": "Immobilien — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000012e"
+    },
+    "name": "Immobilien — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000012f"
+    },
+    "name": "Immobilien — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000130"
+    },
+    "name": "Immobilien — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000131"
+    },
+    "name": "Immobilien — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000132"
+    },
+    "name": "Immobilien — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000133"
+    },
+    "name": "Immobilien — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000134"
+    },
+    "name": "Immobilien — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000135"
+    },
+    "name": "Immobilien — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000136"
+    },
+    "name": "Immobilien — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000137"
+    },
+    "name": "Immobilien — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000138"
+    },
+    "name": "Immobilien — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000139"
+    },
+    "name": "Immobilien — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000013a"
+    },
+    "name": "Immobilien — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000013b"
+    },
+    "name": "Immobilien — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000013c"
+    },
+    "name": "Immobilien — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000013d"
+    },
+    "name": "Immobilien — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000013e"
+    },
+    "name": "Immobilien — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000013f"
+    },
+    "name": "Immobilien — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000140"
+    },
+    "name": "Immobilien — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000141"
+    },
+    "name": "Immobilien — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000142"
+    },
+    "name": "Immobilien — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000143"
+    },
+    "name": "Immobilien — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000144"
+    },
+    "name": "Immobilien — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000145"
+    },
+    "name": "Handel — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000146"
+    },
+    "name": "Handel — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000147"
+    },
+    "name": "Handel — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000148"
+    },
+    "name": "Handel — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000149"
+    },
+    "name": "Handel — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000014a"
+    },
+    "name": "Handel — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000014b"
+    },
+    "name": "Handel — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000014c"
+    },
+    "name": "Handel — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000014d"
+    },
+    "name": "Handel — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000014e"
+    },
+    "name": "Handel — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000014f"
+    },
+    "name": "Handel — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000150"
+    },
+    "name": "Handel — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000151"
+    },
+    "name": "Handel — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000152"
+    },
+    "name": "Handel — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000153"
+    },
+    "name": "Handel — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000154"
+    },
+    "name": "Handel — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000155"
+    },
+    "name": "Handel — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000156"
+    },
+    "name": "Handel — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000157"
+    },
+    "name": "Handel — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000158"
+    },
+    "name": "Handel — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000159"
+    },
+    "name": "Handel — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000015a"
+    },
+    "name": "Handel — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000015b"
+    },
+    "name": "Handel — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000015c"
+    },
+    "name": "Handel — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000015d"
+    },
+    "name": "Handel — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000015e"
+    },
+    "name": "Einzelhandel — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000015f"
+    },
+    "name": "Einzelhandel — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000160"
+    },
+    "name": "Einzelhandel — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000161"
+    },
+    "name": "Einzelhandel — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000162"
+    },
+    "name": "Einzelhandel — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000163"
+    },
+    "name": "Einzelhandel — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000164"
+    },
+    "name": "Einzelhandel — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000165"
+    },
+    "name": "Einzelhandel — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000166"
+    },
+    "name": "Einzelhandel — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000167"
+    },
+    "name": "Einzelhandel — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000168"
+    },
+    "name": "Einzelhandel — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000169"
+    },
+    "name": "Einzelhandel — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000016a"
+    },
+    "name": "Einzelhandel — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000016b"
+    },
+    "name": "Einzelhandel — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000016c"
+    },
+    "name": "Einzelhandel — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000016d"
+    },
+    "name": "Einzelhandel — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000016e"
+    },
+    "name": "Einzelhandel — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000016f"
+    },
+    "name": "Einzelhandel — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000170"
+    },
+    "name": "Einzelhandel — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000171"
+    },
+    "name": "Einzelhandel — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000172"
+    },
+    "name": "Einzelhandel — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000173"
+    },
+    "name": "Einzelhandel — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000174"
+    },
+    "name": "Einzelhandel — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000175"
+    },
+    "name": "Einzelhandel — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000176"
+    },
+    "name": "Einzelhandel — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000177"
+    },
+    "name": "Großhandel — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000178"
+    },
+    "name": "Großhandel — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000179"
+    },
+    "name": "Großhandel — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000017a"
+    },
+    "name": "Großhandel — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000017b"
+    },
+    "name": "Großhandel — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000017c"
+    },
+    "name": "Großhandel — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000017d"
+    },
+    "name": "Großhandel — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000017e"
+    },
+    "name": "Großhandel — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000017f"
+    },
+    "name": "Großhandel — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000180"
+    },
+    "name": "Großhandel — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000181"
+    },
+    "name": "Großhandel — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000182"
+    },
+    "name": "Großhandel — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000183"
+    },
+    "name": "Großhandel — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000184"
+    },
+    "name": "Großhandel — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000185"
+    },
+    "name": "Großhandel — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000186"
+    },
+    "name": "Großhandel — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000187"
+    },
+    "name": "Großhandel — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000188"
+    },
+    "name": "Großhandel — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000189"
+    },
+    "name": "Großhandel — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000018a"
+    },
+    "name": "Großhandel — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000018b"
+    },
+    "name": "Großhandel — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000018c"
+    },
+    "name": "Großhandel — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000018d"
+    },
+    "name": "Großhandel — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000018e"
+    },
+    "name": "Großhandel — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000018f"
+    },
+    "name": "Großhandel — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000190"
+    },
+    "name": "Logistik — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000191"
+    },
+    "name": "Logistik — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000192"
+    },
+    "name": "Logistik — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000193"
+    },
+    "name": "Logistik — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000194"
+    },
+    "name": "Logistik — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000195"
+    },
+    "name": "Logistik — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000196"
+    },
+    "name": "Logistik — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000197"
+    },
+    "name": "Logistik — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000198"
+    },
+    "name": "Logistik — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000199"
+    },
+    "name": "Logistik — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000019a"
+    },
+    "name": "Logistik — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000019b"
+    },
+    "name": "Logistik — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000019c"
+    },
+    "name": "Logistik — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000019d"
+    },
+    "name": "Logistik — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000019e"
+    },
+    "name": "Logistik — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000019f"
+    },
+    "name": "Logistik — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001a0"
+    },
+    "name": "Logistik — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001a1"
+    },
+    "name": "Logistik — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001a2"
+    },
+    "name": "Logistik — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001a3"
+    },
+    "name": "Logistik — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001a4"
+    },
+    "name": "Logistik — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001a5"
+    },
+    "name": "Logistik — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001a6"
+    },
+    "name": "Logistik — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001a7"
+    },
+    "name": "Logistik — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001a8"
+    },
+    "name": "Logistik — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001a9"
+    },
+    "name": "Transport — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001aa"
+    },
+    "name": "Transport — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ab"
+    },
+    "name": "Transport — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ac"
+    },
+    "name": "Transport — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ad"
+    },
+    "name": "Transport — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ae"
+    },
+    "name": "Transport — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001af"
+    },
+    "name": "Transport — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001b0"
+    },
+    "name": "Transport — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001b1"
+    },
+    "name": "Transport — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001b2"
+    },
+    "name": "Transport — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001b3"
+    },
+    "name": "Transport — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001b4"
+    },
+    "name": "Transport — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001b5"
+    },
+    "name": "Transport — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001b6"
+    },
+    "name": "Transport — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001b7"
+    },
+    "name": "Transport — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001b8"
+    },
+    "name": "Transport — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001b9"
+    },
+    "name": "Transport — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ba"
+    },
+    "name": "Transport — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001bb"
+    },
+    "name": "Transport — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001bc"
+    },
+    "name": "Transport — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001bd"
+    },
+    "name": "Transport — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001be"
+    },
+    "name": "Transport — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001bf"
+    },
+    "name": "Transport — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001c0"
+    },
+    "name": "Transport — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001c1"
+    },
+    "name": "Transport — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001c2"
+    },
+    "name": "Luftfahrt — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001c3"
+    },
+    "name": "Luftfahrt — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001c4"
+    },
+    "name": "Luftfahrt — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001c5"
+    },
+    "name": "Luftfahrt — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001c6"
+    },
+    "name": "Luftfahrt — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001c7"
+    },
+    "name": "Luftfahrt — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001c8"
+    },
+    "name": "Luftfahrt — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001c9"
+    },
+    "name": "Luftfahrt — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ca"
+    },
+    "name": "Luftfahrt — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001cb"
+    },
+    "name": "Luftfahrt — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001cc"
+    },
+    "name": "Luftfahrt — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001cd"
+    },
+    "name": "Luftfahrt — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ce"
+    },
+    "name": "Luftfahrt — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001cf"
+    },
+    "name": "Luftfahrt — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001d0"
+    },
+    "name": "Luftfahrt — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001d1"
+    },
+    "name": "Luftfahrt — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001d2"
+    },
+    "name": "Luftfahrt — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001d3"
+    },
+    "name": "Luftfahrt — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001d4"
+    },
+    "name": "Luftfahrt — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001d5"
+    },
+    "name": "Luftfahrt — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001d6"
+    },
+    "name": "Luftfahrt — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001d7"
+    },
+    "name": "Luftfahrt — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001d8"
+    },
+    "name": "Luftfahrt — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001d9"
+    },
+    "name": "Luftfahrt — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001da"
+    },
+    "name": "Luftfahrt — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001db"
+    },
+    "name": "Schifffahrt — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001dc"
+    },
+    "name": "Schifffahrt — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001dd"
+    },
+    "name": "Schifffahrt — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001de"
+    },
+    "name": "Schifffahrt — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001df"
+    },
+    "name": "Schifffahrt — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001e0"
+    },
+    "name": "Schifffahrt — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001e1"
+    },
+    "name": "Schifffahrt — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001e2"
+    },
+    "name": "Schifffahrt — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001e3"
+    },
+    "name": "Schifffahrt — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001e4"
+    },
+    "name": "Schifffahrt — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001e5"
+    },
+    "name": "Schifffahrt — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001e6"
+    },
+    "name": "Schifffahrt — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001e7"
+    },
+    "name": "Schifffahrt — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001e8"
+    },
+    "name": "Schifffahrt — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001e9"
+    },
+    "name": "Schifffahrt — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ea"
+    },
+    "name": "Schifffahrt — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001eb"
+    },
+    "name": "Schifffahrt — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ec"
+    },
+    "name": "Schifffahrt — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ed"
+    },
+    "name": "Schifffahrt — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ee"
+    },
+    "name": "Schifffahrt — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ef"
+    },
+    "name": "Schifffahrt — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001f0"
+    },
+    "name": "Schifffahrt — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001f1"
+    },
+    "name": "Schifffahrt — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001f2"
+    },
+    "name": "Schifffahrt — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001f3"
+    },
+    "name": "Schifffahrt — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001f4"
+    },
+    "name": "Bahntechnik — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001f5"
+    },
+    "name": "Bahntechnik — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001f6"
+    },
+    "name": "Bahntechnik — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001f7"
+    },
+    "name": "Bahntechnik — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001f8"
+    },
+    "name": "Bahntechnik — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001f9"
+    },
+    "name": "Bahntechnik — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001fa"
+    },
+    "name": "Bahntechnik — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001fb"
+    },
+    "name": "Bahntechnik — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001fc"
+    },
+    "name": "Bahntechnik — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001fd"
+    },
+    "name": "Bahntechnik — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001fe"
+    },
+    "name": "Bahntechnik — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000001ff"
+    },
+    "name": "Bahntechnik — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000200"
+    },
+    "name": "Bahntechnik — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000201"
+    },
+    "name": "Bahntechnik — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000202"
+    },
+    "name": "Bahntechnik — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000203"
+    },
+    "name": "Bahntechnik — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000204"
+    },
+    "name": "Bahntechnik — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000205"
+    },
+    "name": "Bahntechnik — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000206"
+    },
+    "name": "Bahntechnik — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000207"
+    },
+    "name": "Bahntechnik — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000208"
+    },
+    "name": "Bahntechnik — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000209"
+    },
+    "name": "Bahntechnik — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000020a"
+    },
+    "name": "Bahntechnik — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000020b"
+    },
+    "name": "Bahntechnik — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000020c"
+    },
+    "name": "Bahntechnik — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000020d"
+    },
+    "name": "Landwirtschaft — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000020e"
+    },
+    "name": "Landwirtschaft — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000020f"
+    },
+    "name": "Landwirtschaft — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000210"
+    },
+    "name": "Landwirtschaft — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000211"
+    },
+    "name": "Landwirtschaft — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000212"
+    },
+    "name": "Landwirtschaft — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000213"
+    },
+    "name": "Landwirtschaft — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000214"
+    },
+    "name": "Landwirtschaft — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000215"
+    },
+    "name": "Landwirtschaft — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000216"
+    },
+    "name": "Landwirtschaft — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000217"
+    },
+    "name": "Landwirtschaft — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000218"
+    },
+    "name": "Landwirtschaft — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000219"
+    },
+    "name": "Landwirtschaft — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000021a"
+    },
+    "name": "Landwirtschaft — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000021b"
+    },
+    "name": "Landwirtschaft — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000021c"
+    },
+    "name": "Landwirtschaft — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000021d"
+    },
+    "name": "Landwirtschaft — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000021e"
+    },
+    "name": "Landwirtschaft — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000021f"
+    },
+    "name": "Landwirtschaft — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000220"
+    },
+    "name": "Landwirtschaft — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000221"
+    },
+    "name": "Landwirtschaft — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000222"
+    },
+    "name": "Landwirtschaft — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000223"
+    },
+    "name": "Landwirtschaft — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000224"
+    },
+    "name": "Landwirtschaft — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000225"
+    },
+    "name": "Landwirtschaft — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000226"
+    },
+    "name": "Lebensmittelindustrie — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000227"
+    },
+    "name": "Lebensmittelindustrie — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000228"
+    },
+    "name": "Lebensmittelindustrie — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000229"
+    },
+    "name": "Lebensmittelindustrie — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000022a"
+    },
+    "name": "Lebensmittelindustrie — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000022b"
+    },
+    "name": "Lebensmittelindustrie — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000022c"
+    },
+    "name": "Lebensmittelindustrie — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000022d"
+    },
+    "name": "Lebensmittelindustrie — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000022e"
+    },
+    "name": "Lebensmittelindustrie — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000022f"
+    },
+    "name": "Lebensmittelindustrie — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000230"
+    },
+    "name": "Lebensmittelindustrie — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000231"
+    },
+    "name": "Lebensmittelindustrie — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000232"
+    },
+    "name": "Lebensmittelindustrie — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000233"
+    },
+    "name": "Lebensmittelindustrie — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000234"
+    },
+    "name": "Lebensmittelindustrie — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000235"
+    },
+    "name": "Lebensmittelindustrie — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000236"
+    },
+    "name": "Lebensmittelindustrie — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000237"
+    },
+    "name": "Lebensmittelindustrie — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000238"
+    },
+    "name": "Lebensmittelindustrie — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000239"
+    },
+    "name": "Lebensmittelindustrie — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000023a"
+    },
+    "name": "Lebensmittelindustrie — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000023b"
+    },
+    "name": "Lebensmittelindustrie — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000023c"
+    },
+    "name": "Lebensmittelindustrie — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000023d"
+    },
+    "name": "Lebensmittelindustrie — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000023e"
+    },
+    "name": "Lebensmittelindustrie — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000023f"
+    },
+    "name": "Getränkeindustrie — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000240"
+    },
+    "name": "Getränkeindustrie — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000241"
+    },
+    "name": "Getränkeindustrie — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000242"
+    },
+    "name": "Getränkeindustrie — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000243"
+    },
+    "name": "Getränkeindustrie — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000244"
+    },
+    "name": "Getränkeindustrie — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000245"
+    },
+    "name": "Getränkeindustrie — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000246"
+    },
+    "name": "Getränkeindustrie — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000247"
+    },
+    "name": "Getränkeindustrie — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000248"
+    },
+    "name": "Getränkeindustrie — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000249"
+    },
+    "name": "Getränkeindustrie — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000024a"
+    },
+    "name": "Getränkeindustrie — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000024b"
+    },
+    "name": "Getränkeindustrie — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000024c"
+    },
+    "name": "Getränkeindustrie — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000024d"
+    },
+    "name": "Getränkeindustrie — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000024e"
+    },
+    "name": "Getränkeindustrie — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000024f"
+    },
+    "name": "Getränkeindustrie — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000250"
+    },
+    "name": "Getränkeindustrie — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000251"
+    },
+    "name": "Getränkeindustrie — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000252"
+    },
+    "name": "Getränkeindustrie — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000253"
+    },
+    "name": "Getränkeindustrie — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000254"
+    },
+    "name": "Getränkeindustrie — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000255"
+    },
+    "name": "Getränkeindustrie — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000256"
+    },
+    "name": "Getränkeindustrie — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000257"
+    },
+    "name": "Getränkeindustrie — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000258"
+    },
+    "name": "Textilindustrie — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000259"
+    },
+    "name": "Textilindustrie — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000025a"
+    },
+    "name": "Textilindustrie — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000025b"
+    },
+    "name": "Textilindustrie — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000025c"
+    },
+    "name": "Textilindustrie — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000025d"
+    },
+    "name": "Textilindustrie — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000025e"
+    },
+    "name": "Textilindustrie — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000025f"
+    },
+    "name": "Textilindustrie — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000260"
+    },
+    "name": "Textilindustrie — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000261"
+    },
+    "name": "Textilindustrie — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000262"
+    },
+    "name": "Textilindustrie — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000263"
+    },
+    "name": "Textilindustrie — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000264"
+    },
+    "name": "Textilindustrie — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000265"
+    },
+    "name": "Textilindustrie — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000266"
+    },
+    "name": "Textilindustrie — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000267"
+    },
+    "name": "Textilindustrie — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000268"
+    },
+    "name": "Textilindustrie — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000269"
+    },
+    "name": "Textilindustrie — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000026a"
+    },
+    "name": "Textilindustrie — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000026b"
+    },
+    "name": "Textilindustrie — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000026c"
+    },
+    "name": "Textilindustrie — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000026d"
+    },
+    "name": "Textilindustrie — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000026e"
+    },
+    "name": "Textilindustrie — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000026f"
+    },
+    "name": "Textilindustrie — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000270"
+    },
+    "name": "Textilindustrie — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000271"
+    },
+    "name": "Mode — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000272"
+    },
+    "name": "Mode — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000273"
+    },
+    "name": "Mode — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000274"
+    },
+    "name": "Mode — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000275"
+    },
+    "name": "Mode — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000276"
+    },
+    "name": "Mode — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000277"
+    },
+    "name": "Mode — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000278"
+    },
+    "name": "Mode — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000279"
+    },
+    "name": "Mode — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000027a"
+    },
+    "name": "Mode — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000027b"
+    },
+    "name": "Mode — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000027c"
+    },
+    "name": "Mode — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000027d"
+    },
+    "name": "Mode — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000027e"
+    },
+    "name": "Mode — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000027f"
+    },
+    "name": "Mode — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000280"
+    },
+    "name": "Mode — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000281"
+    },
+    "name": "Mode — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000282"
+    },
+    "name": "Mode — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000283"
+    },
+    "name": "Mode — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000284"
+    },
+    "name": "Mode — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000285"
+    },
+    "name": "Mode — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000286"
+    },
+    "name": "Mode — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000287"
+    },
+    "name": "Mode — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000288"
+    },
+    "name": "Mode — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000289"
+    },
+    "name": "Mode — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000028a"
+    },
+    "name": "Möbelindustrie — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000028b"
+    },
+    "name": "Möbelindustrie — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000028c"
+    },
+    "name": "Möbelindustrie — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000028d"
+    },
+    "name": "Möbelindustrie — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000028e"
+    },
+    "name": "Möbelindustrie — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000028f"
+    },
+    "name": "Möbelindustrie — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000290"
+    },
+    "name": "Möbelindustrie — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000291"
+    },
+    "name": "Möbelindustrie — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000292"
+    },
+    "name": "Möbelindustrie — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000293"
+    },
+    "name": "Möbelindustrie — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000294"
+    },
+    "name": "Möbelindustrie — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000295"
+    },
+    "name": "Möbelindustrie — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000296"
+    },
+    "name": "Möbelindustrie — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000297"
+    },
+    "name": "Möbelindustrie — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000298"
+    },
+    "name": "Möbelindustrie — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000299"
+    },
+    "name": "Möbelindustrie — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000029a"
+    },
+    "name": "Möbelindustrie — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000029b"
+    },
+    "name": "Möbelindustrie — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000029c"
+    },
+    "name": "Möbelindustrie — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000029d"
+    },
+    "name": "Möbelindustrie — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000029e"
+    },
+    "name": "Möbelindustrie — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000029f"
+    },
+    "name": "Möbelindustrie — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002a0"
+    },
+    "name": "Möbelindustrie — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002a1"
+    },
+    "name": "Möbelindustrie — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002a2"
+    },
+    "name": "Möbelindustrie — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002a3"
+    },
+    "name": "Papierindustrie — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002a4"
+    },
+    "name": "Papierindustrie — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002a5"
+    },
+    "name": "Papierindustrie — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002a6"
+    },
+    "name": "Papierindustrie — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002a7"
+    },
+    "name": "Papierindustrie — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002a8"
+    },
+    "name": "Papierindustrie — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002a9"
+    },
+    "name": "Papierindustrie — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002aa"
+    },
+    "name": "Papierindustrie — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ab"
+    },
+    "name": "Papierindustrie — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ac"
+    },
+    "name": "Papierindustrie — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ad"
+    },
+    "name": "Papierindustrie — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ae"
+    },
+    "name": "Papierindustrie — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002af"
+    },
+    "name": "Papierindustrie — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002b0"
+    },
+    "name": "Papierindustrie — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002b1"
+    },
+    "name": "Papierindustrie — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002b2"
+    },
+    "name": "Papierindustrie — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002b3"
+    },
+    "name": "Papierindustrie — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002b4"
+    },
+    "name": "Papierindustrie — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002b5"
+    },
+    "name": "Papierindustrie — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002b6"
+    },
+    "name": "Papierindustrie — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002b7"
+    },
+    "name": "Papierindustrie — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002b8"
+    },
+    "name": "Papierindustrie — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002b9"
+    },
+    "name": "Papierindustrie — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ba"
+    },
+    "name": "Papierindustrie — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002bb"
+    },
+    "name": "Papierindustrie — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002bc"
+    },
+    "name": "Druckwesen — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002bd"
+    },
+    "name": "Druckwesen — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002be"
+    },
+    "name": "Druckwesen — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002bf"
+    },
+    "name": "Druckwesen — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002c0"
+    },
+    "name": "Druckwesen — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002c1"
+    },
+    "name": "Druckwesen — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002c2"
+    },
+    "name": "Druckwesen — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002c3"
+    },
+    "name": "Druckwesen — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002c4"
+    },
+    "name": "Druckwesen — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002c5"
+    },
+    "name": "Druckwesen — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002c6"
+    },
+    "name": "Druckwesen — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002c7"
+    },
+    "name": "Druckwesen — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002c8"
+    },
+    "name": "Druckwesen — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002c9"
+    },
+    "name": "Druckwesen — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ca"
+    },
+    "name": "Druckwesen — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002cb"
+    },
+    "name": "Druckwesen — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002cc"
+    },
+    "name": "Druckwesen — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002cd"
+    },
+    "name": "Druckwesen — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ce"
+    },
+    "name": "Druckwesen — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002cf"
+    },
+    "name": "Druckwesen — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002d0"
+    },
+    "name": "Druckwesen — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002d1"
+    },
+    "name": "Druckwesen — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002d2"
+    },
+    "name": "Druckwesen — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002d3"
+    },
+    "name": "Druckwesen — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002d4"
+    },
+    "name": "Druckwesen — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002d5"
+    },
+    "name": "Verlagswesen — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002d6"
+    },
+    "name": "Verlagswesen — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002d7"
+    },
+    "name": "Verlagswesen — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002d8"
+    },
+    "name": "Verlagswesen — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002d9"
+    },
+    "name": "Verlagswesen — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002da"
+    },
+    "name": "Verlagswesen — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002db"
+    },
+    "name": "Verlagswesen — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002dc"
+    },
+    "name": "Verlagswesen — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002dd"
+    },
+    "name": "Verlagswesen — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002de"
+    },
+    "name": "Verlagswesen — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002df"
+    },
+    "name": "Verlagswesen — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002e0"
+    },
+    "name": "Verlagswesen — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002e1"
+    },
+    "name": "Verlagswesen — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002e2"
+    },
+    "name": "Verlagswesen — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002e3"
+    },
+    "name": "Verlagswesen — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002e4"
+    },
+    "name": "Verlagswesen — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002e5"
+    },
+    "name": "Verlagswesen — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002e6"
+    },
+    "name": "Verlagswesen — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002e7"
+    },
+    "name": "Verlagswesen — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002e8"
+    },
+    "name": "Verlagswesen — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002e9"
+    },
+    "name": "Verlagswesen — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ea"
+    },
+    "name": "Verlagswesen — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002eb"
+    },
+    "name": "Verlagswesen — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ec"
+    },
+    "name": "Verlagswesen — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ed"
+    },
+    "name": "Verlagswesen — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ee"
+    },
+    "name": "Medien — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ef"
+    },
+    "name": "Medien — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002f0"
+    },
+    "name": "Medien — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002f1"
+    },
+    "name": "Medien — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002f2"
+    },
+    "name": "Medien — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002f3"
+    },
+    "name": "Medien — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002f4"
+    },
+    "name": "Medien — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002f5"
+    },
+    "name": "Medien — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002f6"
+    },
+    "name": "Medien — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002f7"
+    },
+    "name": "Medien — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002f8"
+    },
+    "name": "Medien — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002f9"
+    },
+    "name": "Medien — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002fa"
+    },
+    "name": "Medien — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002fb"
+    },
+    "name": "Medien — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002fc"
+    },
+    "name": "Medien — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002fd"
+    },
+    "name": "Medien — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002fe"
+    },
+    "name": "Medien — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000002ff"
+    },
+    "name": "Medien — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000300"
+    },
+    "name": "Medien — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000301"
+    },
+    "name": "Medien — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000302"
+    },
+    "name": "Medien — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000303"
+    },
+    "name": "Medien — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000304"
+    },
+    "name": "Medien — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000305"
+    },
+    "name": "Medien — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000306"
+    },
+    "name": "Medien — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000307"
+    },
+    "name": "Werbung — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000308"
+    },
+    "name": "Werbung — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000309"
+    },
+    "name": "Werbung — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000030a"
+    },
+    "name": "Werbung — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000030b"
+    },
+    "name": "Werbung — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000030c"
+    },
+    "name": "Werbung — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000030d"
+    },
+    "name": "Werbung — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000030e"
+    },
+    "name": "Werbung — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000030f"
+    },
+    "name": "Werbung — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000310"
+    },
+    "name": "Werbung — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000311"
+    },
+    "name": "Werbung — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000312"
+    },
+    "name": "Werbung — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000313"
+    },
+    "name": "Werbung — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000314"
+    },
+    "name": "Werbung — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000315"
+    },
+    "name": "Werbung — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000316"
+    },
+    "name": "Werbung — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000317"
+    },
+    "name": "Werbung — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000318"
+    },
+    "name": "Werbung — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000319"
+    },
+    "name": "Werbung — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000031a"
+    },
+    "name": "Werbung — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000031b"
+    },
+    "name": "Werbung — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000031c"
+    },
+    "name": "Werbung — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000031d"
+    },
+    "name": "Werbung — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000031e"
+    },
+    "name": "Werbung — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000031f"
+    },
+    "name": "Werbung — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000320"
+    },
+    "name": "Marketing — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000321"
+    },
+    "name": "Marketing — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000322"
+    },
+    "name": "Marketing — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000323"
+    },
+    "name": "Marketing — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000324"
+    },
+    "name": "Marketing — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000325"
+    },
+    "name": "Marketing — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000326"
+    },
+    "name": "Marketing — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000327"
+    },
+    "name": "Marketing — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000328"
+    },
+    "name": "Marketing — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000329"
+    },
+    "name": "Marketing — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000032a"
+    },
+    "name": "Marketing — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000032b"
+    },
+    "name": "Marketing — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000032c"
+    },
+    "name": "Marketing — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000032d"
+    },
+    "name": "Marketing — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000032e"
+    },
+    "name": "Marketing — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000032f"
+    },
+    "name": "Marketing — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000330"
+    },
+    "name": "Marketing — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000331"
+    },
+    "name": "Marketing — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000332"
+    },
+    "name": "Marketing — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000333"
+    },
+    "name": "Marketing — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000334"
+    },
+    "name": "Marketing — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000335"
+    },
+    "name": "Marketing — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000336"
+    },
+    "name": "Marketing — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000337"
+    },
+    "name": "Marketing — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000338"
+    },
+    "name": "Marketing — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000339"
+    },
+    "name": "Banken — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000033a"
+    },
+    "name": "Banken — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000033b"
+    },
+    "name": "Banken — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000033c"
+    },
+    "name": "Banken — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000033d"
+    },
+    "name": "Banken — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000033e"
+    },
+    "name": "Banken — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000033f"
+    },
+    "name": "Banken — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000340"
+    },
+    "name": "Banken — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000341"
+    },
+    "name": "Banken — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000342"
+    },
+    "name": "Banken — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000343"
+    },
+    "name": "Banken — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000344"
+    },
+    "name": "Banken — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000345"
+    },
+    "name": "Banken — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000346"
+    },
+    "name": "Banken — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000347"
+    },
+    "name": "Banken — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000348"
+    },
+    "name": "Banken — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000349"
+    },
+    "name": "Banken — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000034a"
+    },
+    "name": "Banken — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000034b"
+    },
+    "name": "Banken — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000034c"
+    },
+    "name": "Banken — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000034d"
+    },
+    "name": "Banken — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000034e"
+    },
+    "name": "Banken — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000034f"
+    },
+    "name": "Banken — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000350"
+    },
+    "name": "Banken — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000351"
+    },
+    "name": "Banken — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000352"
+    },
+    "name": "Versicherungen — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000353"
+    },
+    "name": "Versicherungen — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000354"
+    },
+    "name": "Versicherungen — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000355"
+    },
+    "name": "Versicherungen — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000356"
+    },
+    "name": "Versicherungen — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000357"
+    },
+    "name": "Versicherungen — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000358"
+    },
+    "name": "Versicherungen — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000359"
+    },
+    "name": "Versicherungen — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000035a"
+    },
+    "name": "Versicherungen — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000035b"
+    },
+    "name": "Versicherungen — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000035c"
+    },
+    "name": "Versicherungen — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000035d"
+    },
+    "name": "Versicherungen — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000035e"
+    },
+    "name": "Versicherungen — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000035f"
+    },
+    "name": "Versicherungen — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000360"
+    },
+    "name": "Versicherungen — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000361"
+    },
+    "name": "Versicherungen — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000362"
+    },
+    "name": "Versicherungen — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000363"
+    },
+    "name": "Versicherungen — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000364"
+    },
+    "name": "Versicherungen — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000365"
+    },
+    "name": "Versicherungen — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000366"
+    },
+    "name": "Versicherungen — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000367"
+    },
+    "name": "Versicherungen — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000368"
+    },
+    "name": "Versicherungen — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000369"
+    },
+    "name": "Versicherungen — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000036a"
+    },
+    "name": "Versicherungen — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000036b"
+    },
+    "name": "Unternehmensberatung — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000036c"
+    },
+    "name": "Unternehmensberatung — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000036d"
+    },
+    "name": "Unternehmensberatung — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000036e"
+    },
+    "name": "Unternehmensberatung — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000036f"
+    },
+    "name": "Unternehmensberatung — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000370"
+    },
+    "name": "Unternehmensberatung — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000371"
+    },
+    "name": "Unternehmensberatung — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000372"
+    },
+    "name": "Unternehmensberatung — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000373"
+    },
+    "name": "Unternehmensberatung — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000374"
+    },
+    "name": "Unternehmensberatung — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000375"
+    },
+    "name": "Unternehmensberatung — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000376"
+    },
+    "name": "Unternehmensberatung — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000377"
+    },
+    "name": "Unternehmensberatung — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000378"
+    },
+    "name": "Unternehmensberatung — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000379"
+    },
+    "name": "Unternehmensberatung — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000037a"
+    },
+    "name": "Unternehmensberatung — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000037b"
+    },
+    "name": "Unternehmensberatung — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000037c"
+    },
+    "name": "Unternehmensberatung — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000037d"
+    },
+    "name": "Unternehmensberatung — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000037e"
+    },
+    "name": "Unternehmensberatung — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000037f"
+    },
+    "name": "Unternehmensberatung — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000380"
+    },
+    "name": "Unternehmensberatung — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000381"
+    },
+    "name": "Unternehmensberatung — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000382"
+    },
+    "name": "Unternehmensberatung — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000383"
+    },
+    "name": "Unternehmensberatung — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000384"
+    },
+    "name": "Recht — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000385"
+    },
+    "name": "Recht — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000386"
+    },
+    "name": "Recht — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000387"
+    },
+    "name": "Recht — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000388"
+    },
+    "name": "Recht — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000389"
+    },
+    "name": "Recht — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000038a"
+    },
+    "name": "Recht — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000038b"
+    },
+    "name": "Recht — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000038c"
+    },
+    "name": "Recht — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000038d"
+    },
+    "name": "Recht — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000038e"
+    },
+    "name": "Recht — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000038f"
+    },
+    "name": "Recht — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000390"
+    },
+    "name": "Recht — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000391"
+    },
+    "name": "Recht — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000392"
+    },
+    "name": "Recht — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000393"
+    },
+    "name": "Recht — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000394"
+    },
+    "name": "Recht — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000395"
+    },
+    "name": "Recht — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000396"
+    },
+    "name": "Recht — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000397"
+    },
+    "name": "Recht — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000398"
+    },
+    "name": "Recht — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa00000399"
+    },
+    "name": "Recht — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000039a"
+    },
+    "name": "Recht — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000039b"
+    },
+    "name": "Recht — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000039c"
+    },
+    "name": "Recht — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000039d"
+    },
+    "name": "Steuerberatung — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000039e"
+    },
+    "name": "Steuerberatung — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa0000039f"
+    },
+    "name": "Steuerberatung — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003a0"
+    },
+    "name": "Steuerberatung — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003a1"
+    },
+    "name": "Steuerberatung — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003a2"
+    },
+    "name": "Steuerberatung — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003a3"
+    },
+    "name": "Steuerberatung — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003a4"
+    },
+    "name": "Steuerberatung — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003a5"
+    },
+    "name": "Steuerberatung — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003a6"
+    },
+    "name": "Steuerberatung — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003a7"
+    },
+    "name": "Steuerberatung — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003a8"
+    },
+    "name": "Steuerberatung — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003a9"
+    },
+    "name": "Steuerberatung — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003aa"
+    },
+    "name": "Steuerberatung — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003ab"
+    },
+    "name": "Steuerberatung — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003ac"
+    },
+    "name": "Steuerberatung — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003ad"
+    },
+    "name": "Steuerberatung — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003ae"
+    },
+    "name": "Steuerberatung — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003af"
+    },
+    "name": "Steuerberatung — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003b0"
+    },
+    "name": "Steuerberatung — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003b1"
+    },
+    "name": "Steuerberatung — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003b2"
+    },
+    "name": "Steuerberatung — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003b3"
+    },
+    "name": "Steuerberatung — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003b4"
+    },
+    "name": "Steuerberatung — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003b5"
+    },
+    "name": "Steuerberatung — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003b6"
+    },
+    "name": "Bildung — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003b7"
+    },
+    "name": "Bildung — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003b8"
+    },
+    "name": "Bildung — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003b9"
+    },
+    "name": "Bildung — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003ba"
+    },
+    "name": "Bildung — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003bb"
+    },
+    "name": "Bildung — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003bc"
+    },
+    "name": "Bildung — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003bd"
+    },
+    "name": "Bildung — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003be"
+    },
+    "name": "Bildung — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003bf"
+    },
+    "name": "Bildung — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003c0"
+    },
+    "name": "Bildung — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003c1"
+    },
+    "name": "Bildung — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003c2"
+    },
+    "name": "Bildung — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003c3"
+    },
+    "name": "Bildung — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003c4"
+    },
+    "name": "Bildung — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003c5"
+    },
+    "name": "Bildung — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003c6"
+    },
+    "name": "Bildung — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003c7"
+    },
+    "name": "Bildung — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003c8"
+    },
+    "name": "Bildung — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003c9"
+    },
+    "name": "Bildung — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003ca"
+    },
+    "name": "Bildung — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003cb"
+    },
+    "name": "Bildung — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003cc"
+    },
+    "name": "Bildung — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003cd"
+    },
+    "name": "Bildung — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003ce"
+    },
+    "name": "Bildung — Digital"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003cf"
+    },
+    "name": "Forschung — Produktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003d0"
+    },
+    "name": "Forschung — Handel"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003d1"
+    },
+    "name": "Forschung — Dienstleistungen"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003d2"
+    },
+    "name": "Forschung — Engineering"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003d3"
+    },
+    "name": "Forschung — Beratung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003d4"
+    },
+    "name": "Forschung — Vertrieb"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003d5"
+    },
+    "name": "Forschung — Logistik"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003d6"
+    },
+    "name": "Forschung — Instandhaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003d7"
+    },
+    "name": "Forschung — Qualitätssicherung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003d8"
+    },
+    "name": "Forschung — Entwicklung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003d9"
+    },
+    "name": "Forschung — Konstruktion"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003da"
+    },
+    "name": "Forschung — Planung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003db"
+    },
+    "name": "Forschung — Verwaltung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003dc"
+    },
+    "name": "Forschung — Support"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003dd"
+    },
+    "name": "Forschung — Schulung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003de"
+    },
+    "name": "Forschung — Vertrieb & Marketing"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003df"
+    },
+    "name": "Forschung — Service"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003e0"
+    },
+    "name": "Forschung — Herstellung"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003e1"
+    },
+    "name": "Forschung — Montage"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003e2"
+    },
+    "name": "Forschung — Vertrieb Nord"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003e3"
+    },
+    "name": "Forschung — Vertrieb Süd"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003e4"
+    },
+    "name": "Forschung — Vertrieb Ost"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003e5"
+    },
+    "name": "Forschung — Vertrieb West"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003e6"
+    },
+    "name": "Forschung — International"
+  },
+  {
+    "_id": {
+      "$oid": "6aa9c627d566c8aa000003e7"
+    },
+    "name": "Forschung — Digital"
+  }
+]

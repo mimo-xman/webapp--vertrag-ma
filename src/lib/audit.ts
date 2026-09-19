@@ -25,11 +25,6 @@ export async function logAdminAction(params: {
   }
 }
 
-// Aktenzeichen-style reference numbers: VT-P-000123, VT-DA-000045, VT-DC-000067
-export function generateRefNumber(prefix: "P" | "DA" | "DC"): string {
-  const year = new Date().getFullYear();
-  const random = Math.floor(Math.random() * 1000000)
-    .toString()
-    .padStart(6, "0");
-  return `VT-${prefix}-${year}-${random}`;
-}
+// Aktenzeichen-style reference numbers — shared implementation in ref-number.ts
+// (kept alias-free so the workflow scripts can use it too).
+export { generateRefNumber } from "./ref-number";

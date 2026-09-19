@@ -8,6 +8,8 @@ import { Toaster } from "@/components/ui/toaster";
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getAuthUser();
   if (!user) redirect("/login?reason=auth_required");
+  // Suspended accounts see the dedicated suspended page instead of the app.
+  if (user.suspended) redirect("/suspended");
 
   return (
     <div className="min-h-dvh flex flex-col bg-background">

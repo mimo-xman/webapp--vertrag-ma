@@ -1,7 +1,7 @@
 // Pricing engine — shared by the dynamic options endpoint, demandes creation,
 // and admin settings. Mirrors the specification:
 //   - price of 100 posts total (default 1$) + price of 100 posts/day (default 1$)
-//   - minimum 500 total / 300 per day
+//   - minimum 100 total / 100 per day
 //   - steps: total +500 each time, per day +100 each time
 //   - max = number of existing companies in the selected categories (or all)
 //   - the first 300/day are free (shown strikethrough as a discount)
@@ -20,13 +20,13 @@ export const DEFAULT_PRICING: PricingSettings = {
   price_of_hundred_total: 1,
   price_of_hundred_per_day: 1,
   free_per_day_amount: 300,
-  min_total: 500,
-  min_per_day: 300,
+  min_total: 100,
+  min_per_day: 100,
   step_total: 500,
   step_per_day: 100,
 };
 
-// Options for "nmbr Total des posts souhaité": 500, 1000, 1500, 2000...
+// Options for "nmbr Total des posts souhaité": 100, 600, 1100, 1600...
 // stops before exceeding the total available companies.
 // If fewer than the minimum are available → no options (no demande possible).
 export function buildTotalOptions(companiesCount: number, s: PricingSettings): number[] {

@@ -3,6 +3,8 @@
 //   code "AUTH_REQUIRED" (returned by requireAuth for invalid/expired
 //   sessions). Plain 401s from public endpoints (login, 2FA challenge…)
 //   surface their real error message instead of "Session expirée".
+// - Auto-redirect to /suspended when the account has been suspended by an
+//   admin (403 with code "ACCOUNT_SUSPENDED").
 
 const TOKEN_NAME = "vertrag_token";
 
@@ -36,6 +38,18 @@ export async function apiFetch<T = unknown>(
 
     // Business 401 (wrong credentials, bad 2FA code, …): show the real error.
     throw new Error(data?.error || "Une erreur est survenue");
+  }
+
+  if (response.status === 403) {
+    const body = await response.json().catch(() => ({}));
+    const data = body as { error?: string; code?: string };
+    // Account suspended by an admin → send the user to the suspended page.
+    if (data?.code === "ACCOUNT_SUSPENDED") {
+      if (!window.location.pathname.startsWith("/suspended")) {
+        window.location.href = "/suspended";
+      }
+      throw new Error(data.error || "Compte suspendu");
+    }
   }
 
   const data = await response.json().catch(() => ({}));

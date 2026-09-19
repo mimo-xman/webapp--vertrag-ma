@@ -6,6 +6,7 @@ import { useI18n } from "@/components/language-provider";
 import { HomeHeader } from "@/components/home-header";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
+import { computePrice, DEFAULT_PRICING, type PricingSettings } from "@/lib/pricing";
 import {
   Accordion,
   AccordionContent,
@@ -17,6 +18,7 @@ import {
   FolderOpen,
   Languages,
   MessageCircle,
+  MessageSquare,
   TrendingDown,
   ShieldCheck,
   Building2,
@@ -28,11 +30,23 @@ import {
 export default function HomePage() {
   const { t } = useI18n();
   const [stats, setStats] = useState<{ companies: number; sent: number }>({ companies: 0, sent: 0 });
+  // Live pricing — mirrors the admin settings (prices, free amount, dossier price).
+  const [pricing, setPricing] = useState<PricingSettings>(DEFAULT_PRICING);
+  const [dossierPrices, setDossierPrices] = useState<{ creation: number; add: number }>({
+    creation: 20,
+    add: 0,
+  });
 
   useEffect(() => {
     fetch("/api/public/stats")
       .then((r) => r.json())
-      .then((d) => setStats({ companies: d.companies || 0, sent: d.sent || 0 }))
+      .then((d) => {
+        setStats({ companies: d.companies || 0, sent: d.sent || 0 });
+        if (d.pricing) setPricing(d.pricing);
+        if (d.dossier) {
+          setDossierPrices({ creation: d.dossier.creation_price ?? 20, add: d.dossier.add_price ?? 0 });
+        }
+      })
       .catch(() => {});
   }, []);
 
@@ -242,14 +256,14 @@ export default function HomePage() {
             </p>
 
             <div className="mt-10 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-              {/* Price table — official form style */}
+              {/* Price table — official form style (values are LIVE from the admin settings) */}
               <div className="form-sheet overflow-hidden">
                 <table className="w-full text-sm">
                   <tbody>
                     {[
-                      [t("home.pricingRow1Label"), t("home.pricingRow1Value"), null],
-                      [t("home.pricingRow2Label"), t("home.pricingRow2Value"), t("home.pricingRow2Note")],
-                      [t("home.pricingRow3Label"), t("home.pricingRow3Value"), null],
+                      [t("home.pricingRow1Label"), `${pricing.price_of_hundred_total} $ / 100 ${t("home.pricingUnitPostulations")}`, null],
+                      [t("home.pricingRow2Label"), `${pricing.price_of_hundred_per_day} $ / 100 ${t("home.pricingUnitPerDay")}`, t("home.pricingFreeNote", { count: pricing.free_per_day_amount })],
+                      [t("home.pricingRow3Label"), `${dossierPrices.creation} $`, null],
                       [t("home.pricingRow4Label"), t("home.pricingRow4Value"), null],
                     ].map(([label, value, note]) => (
                       <tr key={label as string} className="border-b border-[#e9e6dd] last:border-0">
@@ -269,43 +283,58 @@ export default function HomePage() {
                 </table>
               </div>
 
-              {/* Example calculation with strikethrough discount */}
-              <div className="form-sheet border-[#1e4475]/40 bg-[#fafaf6] p-6">
-                <p className="eyebrow mb-4">{t("home.pricingExampleTitle")}</p>
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-muted-foreground">1 600 postulations</span>
-                    <span className="num font-medium">16 $</span>
+              {/* Example calculation — computed with the LIVE pricing engine */}
+              {(() => {
+                const exampleTotal = 1600;
+                const examplePerDay = 500;
+                const b = computePrice(exampleTotal, examplePerDay, pricing);
+                return (
+                  <div className="form-sheet border-[#1e4475]/40 bg-[#fafaf6] p-6">
+                    <p className="eyebrow mb-4">{t("home.pricingExampleTitle")}</p>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-muted-foreground">
+                          {t("home.pricingExampleTotal", { count: exampleTotal.toLocaleString("fr-FR") })}
+                        </span>
+                        <span className="num font-medium">{b.total_price} $</span>
+                      </div>
+                      <div className="flex items-baseline justify-between">
+                        <span className="text-muted-foreground">
+                          {t("home.pricingExamplePerDay", { count: examplePerDay })}
+                        </span>
+                        <span className="num flex items-center gap-2">
+                          {b.per_day_discount > 0 && (
+                            <span className="relative text-muted-foreground">
+                              {b.per_day_price} $
+                              <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 rotate-[-6deg] bg-[#b3391f]" />
+                            </span>
+                          )}
+                          <span className="font-medium">{b.per_day_price_after_discount} $</span>
+                        </span>
+                      </div>
+                      {b.per_day_discount > 0 && (
+                        <div className="flex items-center justify-between text-xs text-[#2f6b4a]">
+                          <span className="flex items-center gap-1">
+                            <TrendingDown className="h-3 w-3" />
+                            {t("home.pricingFreeNote", { count: pricing.free_per_day_amount })}
+                          </span>
+                          <span className="num">−{b.per_day_discount} $</span>
+                        </div>
+                      )}
+                      <div className="rule-dashed" />
+                      <div className="flex items-baseline justify-between">
+                        <span className="font-display font-bold">{t("demandes.priceTotal")}</span>
+                        <span className="num font-display text-2xl font-extrabold text-[#1e4475]">
+                          {b.final_price} $
+                        </span>
+                      </div>
+                      <p className="pt-1 text-xs leading-relaxed text-muted-foreground">
+                        {t("home.pricingExampleDesc")}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-muted-foreground">500 / jour</span>
-                    <span className="num flex items-center gap-2">
-                      <span className="relative text-muted-foreground">
-                        5 $
-                        <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 rotate-[-6deg] bg-[#b3391f]" />
-                      </span>
-                      <span className="font-medium">2 $</span>
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-[#2f6b4a]">
-                    <span className="flex items-center gap-1">
-                      <TrendingDown className="h-3 w-3" />
-                      {t("home.pricingRow2Note")}
-                    </span>
-                    <span className="num">−3 $</span>
-                  </div>
-                  <div className="rule-dashed" />
-                  <div className="flex items-baseline justify-between">
-                    <span className="font-display font-bold">{t("demandes.priceTotal")}</span>
-                    <span className="num font-display text-2xl font-extrabold text-[#1e4475]">
-                      18 $
-                    </span>
-                  </div>
-                  <p className="pt-1 text-xs leading-relaxed text-muted-foreground">
-                    {t("home.pricingExampleDesc")}
-                  </p>
-                </div>
-              </div>
+                );
+              })()}
             </div>
           </div>
         </section>
@@ -423,15 +452,23 @@ export default function HomePage() {
             </div>
             <div>
               <p className="eyebrow mb-3">{t("home.footerContact")}</p>
-              <a
-                href="https://wa.me/212600000000"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-[#1e4475] hover:underline"
-              >
-                <MessageCircle className="h-4 w-4" />
-                WhatsApp
-              </a>
+              <div className="space-y-2">
+                <a
+                  href="https://wa.me/212600000000"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-[#1e4475] hover:underline"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  WhatsApp
+                </a>
+                <div>
+                  <Link href="/contact" className="inline-flex items-center gap-1.5 text-sm font-medium text-[#1e4475] hover:underline">
+                    <MessageSquare className="h-4 w-4" />
+                    {t("home.footerContactSupport")}
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
           <div className="rule-dashed my-6" />

@@ -1,8 +1,10 @@
 name: Send Postulations
 
-# Daily sending of due postulations (status en_attente, scheduled today or overdue).
-# 3 parallel instances × 60 postulations per batch, with self re-trigger to
-# drain the queue (sidesteps the 6-hour GitHub Actions job limit).
+# Daily sending of due postulations (status en_attente/re_execute, scheduled
+# today or overdue). One wave per run: every available mail sender gets its
+# own parallel Execution. Postulations are claimed atomically (status →
+# "executing") so nothing is ever sent twice. The self re-trigger pattern
+# drains the queue (sidesteps the 6-hour GitHub Actions job limit).
 
 on:
   workflow_dispatch:
@@ -11,12 +13,8 @@ on:
 
 jobs:
   send:
-    name: Send batch (Instance ${{ matrix.instance }})
+    name: Send wave
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        instance: [1, 2, 3]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,7 +28,7 @@ jobs:
         working-directory: workflow
         run: npm install
 
-      - name: Run sender
+      - name: Run sender wave
         working-directory: workflow
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}

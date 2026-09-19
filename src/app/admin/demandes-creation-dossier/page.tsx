@@ -110,7 +110,13 @@ export default function AdminDemandesCreationDossierPage() {
     try {
       const formData = new FormData();
       formData.append("file", finalFile);
-      if (finalTraduction && Number(finalTraduction) > 0) {
+      // Traduction price is only submitted on FIRST completion — when
+      // replacing the PDF the price stays untouched (field not shown).
+      if (
+        completeTarget.status !== "completed" &&
+        finalTraduction &&
+        Number(finalTraduction) > 0
+      ) {
         formData.append("traduction_price", finalTraduction);
       }
       const response = await fetch(
@@ -207,17 +213,20 @@ export default function AdminDemandesCreationDossierPage() {
         <div className="space-y-1">
           <StatusStamp status={statusVariant(row)} label={t(createStatusKey(row))} />
           {row.status === "cancelled" && row.cancelled_by === "admin" && row.cancel_message && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-6 gap-1 px-2 text-[11px] text-[#b3391f]"
-              onClick={() =>
-                alertApp(row.cancel_message!, t("admin.cancelMessageTitle", { ref: row.ref_number }))
-              }
-            >
-              <MessageSquare className="h-3 w-3" />
-              {t("admin.viewMessage")}
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-6 w-6 text-[#b3391f] hover:bg-[#b3391f]/10"
+                title={t("admin.viewMessage")}
+                aria-label={t("admin.viewMessage")}
+                onClick={() =>
+                  alertApp(row.cancel_message!, t("admin.cancelMessageTitle", { ref: row.ref_number }))
+                }
+              >
+                <MessageSquare className="h-3 w-3" />
+              </Button>
+            </div>
           )}
         </div>
       ),
@@ -439,16 +448,21 @@ export default function AdminDemandesCreationDossierPage() {
                 onChange={(e) => setFinalFile(e.target.files?.[0] || null)}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label>{t("admin.traductionPriceLabel")}</Label>
-              <Input
-                type="number"
-                min="0"
-                step="0.5"
-                value={finalTraduction}
-                onChange={(e) => setFinalTraduction(e.target.value)}
-              />
-            </div>
+            {/* Prix de traduction : uniquement à la première finalisation.
+                Lors du REMPLACEMENT du PDF, le prix reste inchangé — on ne
+                modifie que le fichier. */}
+            {completeTarget?.status !== "completed" && (
+              <div className="space-y-1.5">
+                <Label>{t("admin.traductionPriceLabel")}</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  value={finalTraduction}
+                  onChange={(e) => setFinalTraduction(e.target.value)}
+                />
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCompleteOpen(false)}>

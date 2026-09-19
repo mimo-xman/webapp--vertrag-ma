@@ -1,130 +1,75 @@
-// Daily postulation sender — one batch per workflow instance.
+// Daily postulation sender — one wave per workflow run.
 //
-// Pipeline per postulation (status en_attente or re_execute, scheduled today or overdue):
-//   1. Load the user (dossier_pdf_link required)
-//   2. Load the company (email required)
-//   3. Atomically pick the active mail sender with the LOWEST usage_count
-//   4. Download the dossier PDF from Cloudinary
-//   5. Send the fixed message (from settings, German) + PDF attachment
-//   6. On success: status=envoyee, posted_at=now
-//      On failure: status=echouee, failed_reason recorded — and we CONTINUE
-//      to the next postulation (per specification).
+// The wave claims ALL available mail senders (active + not in_use) and runs
+// one parallel Execution per sender; each sender processes postulations
+// (status en_attente or re_execute, scheduled today or overdue) until the
+// queue is empty or the sender fails. Postulations are claimed atomically
+// (status → "executing"), so nothing is ever sent twice — even if several
+// workflow instances run in parallel.
+//
+// Every attempt is recorded in the executions collection (one Execution per
+// sender), and each postulation embeds the outcome of every execution that
+// processed it. If a sender fails (SMTP/API error), it is disabled with the
+// error saved — admins fix it, re-activate it and re-test it.
 //
 // Exit codes: 0 = there may be more postulations to process (re-trigger),
 //             1 = nothing left to do.
 
 import { connectDB, disconnectDB } from "./db";
 import { Postulation } from "../src/models/Postulation";
-import { User } from "../src/models/User";
-import { Company } from "../src/models/Company";
-import { MailSender } from "../src/models/MailSender";
-import { getSettings } from "../src/models/Setting";
-import { sendViaMailSender, textToHtml } from "../src/lib/mailer-core";
+import { startExecutionWave } from "../src/lib/postulation-executor";
 
-const BATCH_SIZE = 60;
-const SEND_DELAY_MS = 400;
+// Safety cap per sender-execution (GitHub Actions jobs are limited to 6 h;
+// the self re-trigger pattern drains the rest).
+const MAX_PER_SENDER = 5000;
 
 async function main() {
   await connectDB();
 
-  const now = new Date();
-  const endOfToday = new Date(now);
-  endOfToday.setUTCHours(23, 59, 59, 999);
+  const wave = await startExecutionWave({
+    trigger: "github",
+    statuses: ["en_attente", "re_execute"],
+    dueTodayOnly: true,
+    maxPerSender: MAX_PER_SENDER,
+  });
 
-  // Postulations due today (or overdue), FIFO by scheduled_at.
-  const postulations = await Postulation.find({
-    status: { $in: ["en_attente", "re_execute"] },
-    scheduled_at: { $lte: endOfToday },
-  })
-    .sort({ scheduled_at: 1 })
-    .limit(BATCH_SIZE)
-    .lean();
-
-  if (postulations.length === 0) {
+  if (wave.postulations_pending === 0) {
     console.log("[SEND] Aucune postulation à traiter aujourd'hui.");
     await disconnectDB();
     process.exit(1); // done — nothing more
   }
 
-  console.log(`[SEND] ${postulations.length} postulation(s) à traiter.`);
-
-  const settings = await getSettings();
-  const message = settings.postulations.email_message;
-  const subject = settings.postulations.email_subject;
-
-  let sent = 0;
-  let failed = 0;
-
-  for (const postulation of postulations) {
-    const tag = `[${String(postulation._id).slice(-6)}]`;
-    try {
-      // 1. User dossier.
-      const user = await User.findById(postulation.user_id).select("full_name dossier_pdf_link").lean();
-      if (!user) throw new Error("Utilisateur introuvable");
-      if (!user.dossier_pdf_link) {
-        throw new Error("Aucun dossier actif pour cet utilisateur (dossier_pdf_link manquant)");
-      }
-
-      // 2. Company email.
-      const company = await Company.findById(postulation.company_id).select("name email").lean();
-      if (!company) throw new Error("Entreprise introuvable");
-      if (!company.email) throw new Error("Entreprise sans adresse email");
-
-      // 3. Mail sender with min usage (atomic claim: $inc makes it rotate).
-      const mailSender = await MailSender.findOneAndUpdate(
-        { active: true },
-        { $inc: { usage_count: 1 } },
-        { new: true, sort: { usage_count: 1 } }
-      );
-      if (!mailSender) throw new Error("Aucun mail sender actif disponible");
-
-      // 4. Download the dossier PDF.
-      const pdfResponse = await fetch(user.dossier_pdf_link);
-      if (!pdfResponse.ok) {
-        throw new Error(`Téléchargement du dossier échoué (HTTP ${pdfResponse.status})`);
-      }
-      const pdfBuffer = Buffer.from(await pdfResponse.arrayBuffer());
-
-      // 5. Send email with attachment.
-      await sendViaMailSender(mailSender, {
-        to: company.email,
-        subject,
-        html: textToHtml(message),
-        attachments: [{ filename: "Bewerbungsunterlagen.pdf", content: pdfBuffer }],
-      });
-
-      // 6a. Success.
-      await Postulation.findByIdAndUpdate(postulation._id, {
-        status: "envoyee",
-        posted_at: new Date(),
-        mail_sender_id: mailSender._id,
-        failed_reason: null,
-      });
-      await MailSender.findByIdAndUpdate(mailSender._id, { $inc: { success_count: 1 } });
-      sent += 1;
-      console.log(`${tag} ENVOYÉE → ${company.name} <${company.email}> via ${mailSender.name}`);
-    } catch (error) {
-      // 6b. Failure — record and CONTINUE to the next postulation.
-      const reason = error instanceof Error ? error.message : String(error);
-      await Postulation.findByIdAndUpdate(postulation._id, {
-        status: "echouee",
-        failed_reason: reason.slice(0, 500),
-      }).catch(() => {});
-      failed += 1;
-      console.error(`${tag} ÉCHOUÉE — ${reason}`);
-    }
-
-    // Polite delay between sends.
-    await new Promise((resolve) => setTimeout(resolve, SEND_DELAY_MS));
+  if (wave.execution_ids.length === 0) {
+    console.error("[SEND] Postulations en attente mais AUCUN mail sender actif disponible.");
+    await disconnectDB();
+    process.exit(1);
   }
 
-  console.log(`[SEND] Terminé : ${sent} envoyée(s), ${failed} échouée(s).`);
+  console.log(
+    `[SEND] ${wave.postulations_pending} postulation(s) à traiter — ${wave.execution_ids.length} exécution(s) parallèle(s) démarrée(s).`
+  );
+  wave.execution_ids.forEach((id) => console.log(`[SEND]   exécution ${id}`));
 
-  // Re-trigger check: anything left due today after this batch?
+  // Wait for every execution of the wave to finish.
+  const summary = await wave.promise;
+
+  console.log(
+    `[SEND] Vague terminée : ${summary.sent} envoyée(s), ${summary.failed} échouée(s), ` +
+      `${summary.senders_used} sender(s) utilisé(s)` +
+      (summary.senders_disabled.length > 0
+        ? `, désactivé(s) : ${summary.senders_disabled.join(", ")}`
+        : "")
+  );
+  if (summary.fatal_error) console.error(`[SEND] ${summary.fatal_error}`);
+
+  // Re-trigger check: anything left due today after this wave?
+  const endOfToday = new Date();
+  endOfToday.setUTCHours(23, 59, 59, 999);
   const remaining = await Postulation.countDocuments({
     status: { $in: ["en_attente", "re_execute"] },
     scheduled_at: { $lte: endOfToday },
   });
+  console.log(`[SEND] ${remaining} postulation(s) restante(s) à traiter aujourd'hui.`);
 
   await disconnectDB();
   process.exit(remaining > 0 ? 0 : 1);

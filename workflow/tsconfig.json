@@ -8,8 +8,17 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@/*": ["../src/*"]
+    }
   },
-  "include": ["**/*.ts", "../src/models/**/*.ts", "../src/lib/mailer-core.ts"],
+  "include": [
+    "**/*.ts",
+    "../src/models/**/*.ts",
+    "../src/lib/mailer-core.ts",
+    "../src/lib/ref-number.ts",
+    "../src/lib/postulation-executor.ts"
+  ],
   "exclude": ["node_modules"]
 }

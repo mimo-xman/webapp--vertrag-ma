@@ -1,8 +1,10 @@
 name: Re-execute Postulations
 
 # Manual-trigger-only workflow: relaunches all postulations with status
-# re_execute. Launched from the admin panel (via GitHub API) after the team
-# has analyzed and fixed the failures.
+# re_execute. Launched from the admin panel (via GitHub API — « Lancer la
+# relance » → Workflow GitHub) or from the Actions tab. One parallel
+# Execution per available mail sender; failures disable the sender with the
+# error saved (visible in Admin → Services email).
 
 on:
   workflow_dispatch:
@@ -11,10 +13,6 @@ jobs:
   re-execute:
     name: Relaunch failed postulations
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        instance: [1, 2, 3]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,7 +26,7 @@ jobs:
         working-directory: workflow
         run: npm install
 
-      - name: Run re-execution
+      - name: Run re-execution wave
         working-directory: workflow
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
@@ -62,15 +60,11 @@ jobs:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
         run: |
-          node -e "
-          const mongoose = require('mongoose');
-          (async () => {
-            await mongoose.connect(process.env.MONGO_URI, { dbName: process.env.MONGO_DB_NAME || 'vertrag_ma' });
-            const count = await mongoose.connection.collection('postulations').countDocuments({ status: 're_execute' });
-            await mongoose.disconnect();
-            process.exit(count > 0 ? 0 : 1);
-          })().catch(() => process.exit(1));
-          " && echo "has_more=true" >> $GITHUB_OUTPUT || echo "has_more=false" >> $GITHUB_OUTPUT
+          if npx tsx check-postulations.ts re_execute; then
+            echo "has_more=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_more=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Re-run workflow
         if: steps.check.outputs.has_more == 'true'

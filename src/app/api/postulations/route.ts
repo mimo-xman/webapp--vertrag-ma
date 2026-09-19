@@ -3,7 +3,6 @@ import { connectDB } from "@/lib/mongodb";
 import { requireAuth } from "@/lib/auth";
 import { Postulation } from "@/models/Postulation";
 import { Company } from "@/models/Company";
-import type { FilterQuery } from "mongoose";
 
 // GET /api/postulations — user's own postulations, paginated with filters.
 export async function GET(request: NextRequest) {
@@ -17,7 +16,7 @@ export async function GET(request: NextRequest) {
   const status = params.get("status");
   const search = params.get("search")?.trim();
 
-  const filter: FilterQuery<typeof Postulation> = { user_id: auth.user._id };
+  const filter: Record<string, unknown> = { user_id: auth.user._id };
   if (status && status !== "all") filter.status = status;
 
   if (search) {

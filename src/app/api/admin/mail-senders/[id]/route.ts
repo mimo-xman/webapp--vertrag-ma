@@ -8,6 +8,7 @@ import { logAdminAction } from "@/lib/audit";
 const updateSchema = z.object({
   name: z.string().trim().min(2).max(60).optional(),
   type: z.enum(["api", "smtp"]).optional(),
+  sender_email: z.string().trim().email().max(200).optional().nullable(),
   api_key: z.string().optional().nullable(),
   smtp_config: z
     .object({
@@ -41,11 +42,23 @@ export async function PUT(
     return NextResponse.json({ success: false, error: "Service introuvable" }, { status: 404 });
   }
 
-  const { name, type, api_key, smtp_config, active } = parsed.data;
+  const { name, type, sender_email, api_key, smtp_config, active } = parsed.data;
   const finalType = type || sender.type;
 
-  if (finalType === "api" && api_key === null && !sender.api_key && !api_key) {
-    return NextResponse.json({ success: false, error: "Clé API requise" }, { status: 400 });
+  if (finalType === "api") {
+    const effectiveEmail =
+      sender_email !== undefined && sender_email !== null && sender_email !== ""
+        ? sender_email
+        : sender.sender_email;
+    if (!effectiveEmail) {
+      return NextResponse.json(
+        { success: false, error: "Email expéditeur requis pour un service de type API (Brevo exige une adresse sender)" },
+        { status: 400 }
+      );
+    }
+    if (api_key === null && !sender.api_key && !api_key) {
+      return NextResponse.json({ success: false, error: "Clé API requise" }, { status: 400 });
+    }
   }
   if (finalType === "smtp" && smtp_config === null && !sender.smtp_config && !smtp_config) {
     return NextResponse.json({ success: false, error: "Configuration SMTP requise" }, { status: 400 });
@@ -54,12 +67,22 @@ export async function PUT(
   if (name) sender.name = name;
   if (type) sender.type = type;
   if (active !== undefined) sender.active = active;
+  if (sender_email !== undefined) {
+    sender.sender_email =
+      finalType === "api" ? (sender_email && sender_email !== "" ? sender_email.toLowerCase() : null) : null;
+  }
   if (api_key !== undefined && api_key !== null && finalType === "api") sender.api_key = api_key;
   if (api_key === null) sender.api_key = null;
   if (smtp_config !== undefined && smtp_config !== null && finalType === "smtp") {
     sender.smtp_config = smtp_config;
   }
   if (smtp_config === null) sender.smtp_config = null;
+
+  // Re-activating a sender clears its last error (the admin fixed the problem).
+  if (active === true && sender.last_error) {
+    sender.last_error = null;
+    sender.last_error_at = null;
+  }
 
   await sender.save();
 

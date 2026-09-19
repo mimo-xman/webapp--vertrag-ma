@@ -28,16 +28,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Send } from "lucide-react";
+import { Plus, Pencil, Trash2, Send, AlertTriangle } from "lucide-react";
 
 interface SenderRow {
   _id: string;
   name: string;
   type: string;
   has_api_key: boolean;
+  sender_email: string;
   smtp_host: string;
   smtp_port: number;
   active: boolean;
+  in_use: boolean;
+  last_error: string;
+  last_error_at: string | null;
   usage_count: number;
   success_count: number;
   failed_count: number;
@@ -54,6 +58,7 @@ export default function AdminMailSendersPage() {
   const [editing, setEditing] = useState<SenderRow | null>(null);
   const [name, setName] = useState("");
   const [type, setType] = useState<"api" | "smtp">("api");
+  const [senderEmail, setSenderEmail] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [smtpHost, setSmtpHost] = useState("");
   const [smtpPort, setSmtpPort] = useState("587");
@@ -72,6 +77,7 @@ export default function AdminMailSendersPage() {
     setEditing(null);
     setName("");
     setType("api");
+    setSenderEmail("");
     setApiKey("");
     setSmtpHost("");
     setSmtpPort("587");
@@ -84,6 +90,7 @@ export default function AdminMailSendersPage() {
     setEditing(row);
     setName(row.name);
     setType(row.type as "api" | "smtp");
+    setSenderEmail(row.sender_email || "");
     setApiKey("");
     setSmtpHost(row.smtp_host);
     setSmtpPort(String(row.smtp_port || 587));
@@ -98,6 +105,7 @@ export default function AdminMailSendersPage() {
       const payload: Record<string, unknown> = { name, type };
       if (type === "api") {
         if (apiKey) payload.api_key = apiKey;
+        payload.sender_email = senderEmail.trim() || null;
         payload.smtp_config = null;
       } else {
         payload.smtp_config = {
@@ -107,6 +115,7 @@ export default function AdminMailSendersPage() {
           password: smtpPass,
         };
         payload.api_key = null;
+        payload.sender_email = null;
       }
       if (editing) {
         await apiFetch(`/api/admin/mail-senders/${editing._id}`, {
@@ -170,6 +179,9 @@ export default function AdminMailSendersPage() {
       render: (row) => (
         <div>
           <p className="font-medium">{row.name}</p>
+          {row.type === "api" && row.sender_email && (
+            <p className="aktenzeichen">{row.sender_email}</p>
+          )}
           {row.type === "smtp" && row.smtp_host && (
             <p className="aktenzeichen">
               {row.smtp_host}:{row.smtp_port}
@@ -218,10 +230,22 @@ export default function AdminMailSendersPage() {
       header: t("statuses.active"),
       sortable: true,
       render: (row) => (
-        <StatusStamp
-          status={row.active ? "active" : "canceled"}
-          label={row.active ? t("statuses.active") : t("statuses.inactive")}
-        />
+        <div className="space-y-1">
+          <StatusStamp
+            status={row.active ? "active" : "canceled"}
+            label={row.active ? t("statuses.active") : t("statuses.inactive")}
+          />
+          {row.in_use && <StatusStamp status="in_use" label={t("statuses.in_use")} />}
+          {row.last_error && (
+            <p
+              className="flex items-start gap-1 text-[11px] text-[#b3391f]"
+              title={row.last_error}
+            >
+              <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
+              {row.last_error.slice(0, 50)}
+            </p>
+          )}
+        </div>
       ),
     },
     {
@@ -262,8 +286,8 @@ export default function AdminMailSendersPage() {
     !saving &&
     (type === "api"
       ? editing
-        ? true
-        : apiKey.trim().length > 0
+        ? senderEmail.trim().length > 0 || editing.sender_email.length > 0
+        : apiKey.trim().length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(senderEmail.trim())
       : smtpHost.trim().length > 0 &&
         smtpUser.trim().length > 0 &&
         (editing ? true : smtpPass.length > 0) &&
@@ -325,14 +349,26 @@ export default function AdminMailSendersPage() {
             </div>
 
             {type === "api" ? (
-              <div className="space-y-1.5">
-                <Label>{t("admin.apiKeyLabel")}</Label>
-                <Input
-                  type="password"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder={editing ? "Laisser vide pour conserver" : "xkeysib-…"}
-                />
+              <div className="space-y-3">
+                <div className="space-y-1.5">
+                  <Label>{t("admin.senderEmailLabel")}</Label>
+                  <Input
+                    type="email"
+                    value={senderEmail}
+                    onChange={(e) => setSenderEmail(e.target.value)}
+                    placeholder={t("admin.senderEmailPlaceholder")}
+                  />
+                  <p className="text-xs text-muted-foreground">{t("admin.senderEmailHint")}</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>{t("admin.apiKeyLabel")}</Label>
+                  <Input
+                    type="password"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    placeholder={editing ? "Laisser vide pour conserver" : "xkeysib-…"}
+                  />
+                </div>
               </div>
             ) : (
               <div className="space-y-3">

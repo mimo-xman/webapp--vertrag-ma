@@ -6,6 +6,8 @@ export interface MailSenderLike {
   _id?: unknown;
   name: string;
   type: "api" | "smtp";
+  // Required for "api" (Brevo needs an explicit sender email address).
+  sender_email?: string | null;
   api_key: string | null;
   smtp_config: {
     host: string;
@@ -30,8 +32,11 @@ async function sendViaBrevo(
   options: SendEmailOptions
 ): Promise<void> {
   if (!sender.api_key) throw new Error(`Le mail sender "${sender.name}" n'a pas de clé API configurée.`);
+  if (!sender.sender_email) {
+    throw new Error(`Le mail sender "${sender.name}" n'a pas d'adresse email expéditeur configurée (requise par Brevo).`);
+  }
   const payload: Record<string, unknown> = {
-    sender: { email: options.senderEmail || "bewerbung@vertrag.ma", name: options.senderName || "Bewerbung" },
+    sender: { email: options.senderEmail || sender.sender_email, name: options.senderName || "Bewerbung" },
     to: [{ email: options.to }],
     subject: options.subject,
     htmlContent: options.html,

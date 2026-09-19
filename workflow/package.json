@@ -6,7 +6,8 @@
   "scripts": {
     "send-postulations": "tsx send-postulations.ts",
     "check-postulations": "tsx check-postulations.ts",
-    "re-execute-postulations": "tsx re-execute-postulations.ts"
+    "re-execute-postulations": "tsx re-execute-postulations.ts",
+    "seed-data": "tsx seed-data.ts"
   },
   "dependencies": {
     "mongoose": "^8.9.0",

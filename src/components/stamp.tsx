@@ -40,12 +40,19 @@ export function statusVariant(status: string): StampVariant {
     case "confirmed":
     case "completed":
     case "active":
+    case "success":
       return "green";
     case "echouee":
     case "rejected":
+    case "failed":
+    case "suspended":
       return "red";
     case "re_execute":
       return "gold";
+    case "executing":
+    case "running":
+    case "in_use":
+      return "blue";
     case "en_attente":
     case "canceled":
     default:

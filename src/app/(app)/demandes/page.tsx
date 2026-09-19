@@ -318,7 +318,7 @@ function CreateDemandeDialog({
               </div>
             )}
 
-            {options && options.companies_available < (options.pricing.min_total || 500) && (
+            {options && options.companies_available < (options.pricing.min_total || 100) && (
               <div className="rounded-sm border border-[#d9a441]/40 bg-[#d9a441]/10 px-3 py-2.5 text-sm text-[#8a6a1f]">
                 Pas assez d'entreprises disponibles ({options.companies_available}) — le minimum est{" "}
                 {options.pricing.min_total}. Élargissez vos catégories ou n'en sélectionnez aucune

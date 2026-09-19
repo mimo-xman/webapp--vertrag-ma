@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
   const [items, total] = await Promise.all([
     User.find(filter)
-      .select("full_name email role active two_factor_enabled dossier_pdf_link createdAt")
+      .select("full_name email role active suspended two_factor_enabled dossier_pdf_link createdAt")
       .sort(sort)
       .skip((page - 1) * limit)
       .limit(limit)
@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
       email: u.email,
       role: u.role,
       active: u.active,
+      suspended: Boolean(u.suspended),
       two_factor_enabled: u.two_factor_enabled,
       has_dossier: Boolean(u.dossier_pdf_link),
       createdAt: u.createdAt,

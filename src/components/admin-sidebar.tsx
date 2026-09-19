@@ -23,6 +23,8 @@ import {
   LogOut,
   ArrowLeft,
   Menu,
+  Inbox,
+  Activity,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -42,6 +44,8 @@ export function AdminSidebar({ userEmail }: { userEmail: string }) {
     { href: "/admin/demandes-ajout-dossier", label: t("admin.demandesAjout"), icon: FolderUp },
     { href: "/admin/demandes-creation-dossier", label: t("admin.demandesCreation"), icon: FilePlus2 },
     { href: "/admin/mail-senders", label: t("admin.mailSenders"), icon: Mail },
+    { href: "/admin/executions", label: t("admin.executions"), icon: Activity },
+    { href: "/admin/messages", label: t("admin.messages"), icon: Inbox },
     { href: "/admin/settings", label: t("admin.settings"), icon: Settings },
     { href: "/admin/audit-logs", label: t("admin.auditLogs"), icon: ScrollText },
   ];

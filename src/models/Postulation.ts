@@ -1,8 +1,25 @@
 import mongoose, { Schema } from "mongoose";
 
 // Status values (per specification, accent-free DB values):
-// en_attente | envoyee | echouee | re_execute
-export type PostulationStatus = "en_attente" | "envoyee" | "echouee" | "re_execute";
+// en_attente | envoyee | echouee | re_execute | executing
+// "executing" is a transient state set while an execution worker is sending
+// the email: it guarantees a postulation is never processed twice in parallel
+// (atomic findOneAndUpdate claim). Success → envoyee, failure → echouee.
+export type PostulationStatus =
+  | "en_attente"
+  | "envoyee"
+  | "echouee"
+  | "re_execute"
+  | "executing";
+
+// One entry per execution that processed (or attempted) this postulation.
+// A postulation can be executed several times (N1 failed, N2 failed, ... success).
+export interface PostulationExecutionEntry {
+  execution_id: mongoose.Types.ObjectId;
+  status: "success" | "failed";
+  error: string | null;
+  executed_at: Date;
+}
 
 export interface IPostulation extends mongoose.Document {
   user_id: mongoose.Types.ObjectId;
@@ -13,6 +30,7 @@ export interface IPostulation extends mongoose.Document {
   posted_at: Date | null;
   status: PostulationStatus;
   failed_reason: string | null;
+  executions: PostulationExecutionEntry[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,11 +45,22 @@ const PostulationSchema = new Schema<IPostulation>(
     posted_at: { type: Date, default: null },
     status: {
       type: String,
-      enum: ["en_attente", "envoyee", "echouee", "re_execute"],
+      enum: ["en_attente", "envoyee", "echouee", "re_execute", "executing"],
       default: "en_attente",
       index: true,
     },
     failed_reason: { type: String, default: null },
+    executions: {
+      type: [
+        {
+          execution_id: { type: Schema.Types.ObjectId, ref: "Execution", required: true },
+          status: { type: String, enum: ["success", "failed"], required: true },
+          error: { type: String, default: null },
+          executed_at: { type: Date, default: Date.now },
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } }
 );

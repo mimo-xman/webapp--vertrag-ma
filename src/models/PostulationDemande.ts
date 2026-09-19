@@ -21,8 +21,8 @@ const PostulationDemandeSchema = new Schema<IPostulationDemande>(
     ref_number: { type: String, required: true, unique: true },
     user_id: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
     categorie_ids: { type: [Schema.Types.ObjectId], ref: "Category", default: [] },
-    nmbr_total: { type: Number, required: true, min: 500 },
-    nmbr_per_day: { type: Number, required: true, min: 300 },
+    nmbr_total: { type: Number, required: true, min: 100 },
+    nmbr_per_day: { type: Number, required: true, min: 100 },
     price: { type: Number, required: true, min: 0 },
     confirmed_at: { type: Date, default: null },
     status: {

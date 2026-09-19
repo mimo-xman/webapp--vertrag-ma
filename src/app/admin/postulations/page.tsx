@@ -26,7 +26,24 @@ import { Label } from "@/components/ui/label";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, RefreshCcw, AlertTriangle } from "lucide-react";
+import {
+  Plus,
+  RefreshCcw,
+  AlertTriangle,
+  Play,
+  PenLine,
+  History,
+  Github,
+  Server,
+  Loader2,
+} from "lucide-react";
+
+interface PostulationExecutionEntry {
+  execution_id: string;
+  status: "success" | "failed";
+  error: string | null;
+  executed_at: string;
+}
 
 interface PostulationRow {
   _id: string;
@@ -34,9 +51,37 @@ interface PostulationRow {
   scheduled_at: string;
   posted_at: string | null;
   failed_reason: string | null;
+  executions: PostulationExecutionEntry[];
   user: { _id: string; full_name: string; email: string } | null;
   company: { _id: string; name: string; email: string } | null;
 }
+
+interface SenderOption {
+  _id: string;
+  name: string;
+  type: string;
+  active: boolean;
+  in_use: boolean;
+}
+
+interface ExecutionOfPostulation {
+  _id: string;
+  ref_number: string;
+  trigger: string;
+  status: string;
+  mail_sender_name: string;
+  started_at: string;
+  finished_at: string | null;
+  outcome: { status: string; error: string | null } | null;
+}
+
+const TRIGGER_LABELS: Record<string, string> = {
+  github: "admin.relanceGithub",
+  server: "admin.relanceServer",
+  admin: "admin.triggerAdmin",
+};
+
+const POSTULATION_STATUSES = ["en_attente", "envoyee", "echouee", "re_execute", "executing"] as const;
 
 export default function AdminPostulationsPage() {
   const { t } = useI18n();
@@ -52,6 +97,29 @@ export default function AdminPostulationsPage() {
   const [companySearch, setCompanySearch] = useState("");
   const [saving, setSaving] = useState(false);
   const [reExecuting, setReExecuting] = useState(false);
+
+  // "Lancer la relance" — choose the execution target first.
+  const [relanceOpen, setRelanceOpen] = useState(false);
+
+  // Execute-one-postulation dialog (mail sender selection).
+  const [execOpen, setExecOpen] = useState(false);
+  const [execTarget, setExecTarget] = useState<PostulationRow | null>(null);
+  const [execSenders, setExecSenders] = useState<SenderOption[]>([]);
+  const [execSendersLoading, setExecSendersLoading] = useState(false);
+  const [execSenderId, setExecSenderId] = useState("");
+  const [executing, setExecuting] = useState(false);
+
+  // Modify-status dialog.
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [statusTarget, setStatusTarget] = useState<PostulationRow | null>(null);
+  const [newStatus, setNewStatus] = useState<string>("");
+  const [statusSaving, setStatusSaving] = useState(false);
+
+  // Executions-of-postulation dialog.
+  const [execHistoryOpen, setExecHistoryOpen] = useState(false);
+  const [execHistoryTarget, setExecHistoryTarget] = useState<PostulationRow | null>(null);
+  const [execHistory, setExecHistory] = useState<ExecutionOfPostulation[]>([]);
+  const [execHistoryLoading, setExecHistoryLoading] = useState(false);
 
   // Load users + companies lists for the manual creation dialog.
   const loadLists = useCallback(() => {
@@ -101,33 +169,52 @@ export default function AdminPostulationsPage() {
     }
   };
 
-  const handleReExecute = async () => {
-    const ok = await confirmApp(t("admin.reExecuteDesc"), {
-      title: t("admin.reExecuteTitle"),
-      confirmLabel: t("admin.reExecuteCta"),
-    });
-    if (!ok) return;
+  // ── "Lancer la relance" — two targets ──────────────────────────────────
+
+  const handleRelance = async (target: "github" | "server") => {
     setReExecuting(true);
     try {
       const data = await apiFetch<{
         moved_to_re_execute: number;
         total_to_re_execute: number;
+        target: string;
+        executions_created: number;
+        execution_ids: string[];
         workflow_triggered: boolean;
         workflow_error: string | null;
-      }>("/api/admin/postulations/re-execute", { method: "POST" });
+      }>("/api/admin/postulations/re-execute", {
+        method: "POST",
+        body: JSON.stringify({ target }),
+      });
+      setRelanceOpen(false);
 
-      if (data.workflow_triggered) {
-        toast({ title: t("admin.reExecuteTriggered") });
-        toast({
-          title: t("admin.reExecuteCount", { count: data.total_to_re_execute }),
-        });
+      if (target === "server") {
+        if (data.executions_created > 0) {
+          toast({ title: t("admin.reExecuteTriggered") });
+          toast({
+            title: t("admin.relanceServerStarted", { count: data.executions_created }),
+          });
+        } else {
+          await alertApp(
+            `${data.moved_to_re_execute} postulation(s) marquée(s) « à relancer ».\n\n` +
+              `Aucun mail sender actif disponible — ajoutez ou ré-activez un service email, puis relancez.`,
+            t("admin.reExecuteTitle")
+          );
+        }
       } else {
-        await alertApp(
-          `${data.moved_to_re_execute} postulation(s) marquée(s) « à relancer ».\n\n` +
-            `Le workflow GitHub Actions n'a pas pu être lancé automatiquement : ${data.workflow_error}. ` +
-            `Vous pouvez le lancer manuellement depuis GitHub.`,
-          t("admin.reExecuteTitle")
-        );
+        if (data.workflow_triggered) {
+          toast({ title: t("admin.reExecuteTriggered") });
+          toast({
+            title: t("admin.reExecuteCount", { count: data.total_to_re_execute }),
+          });
+        } else {
+          await alertApp(
+            `${data.moved_to_re_execute} postulation(s) marquée(s) « à relancer ».\n\n` +
+              `Le workflow GitHub Actions n'a pas pu être lancé automatiquement : ${data.workflow_error}. ` +
+              `Vous pouvez le lancer manuellement depuis GitHub.`,
+            t("admin.reExecuteTitle")
+          );
+        }
       }
       setRefreshKey((k) => k + 1);
     } catch (err) {
@@ -136,6 +223,106 @@ export default function AdminPostulationsPage() {
       setReExecuting(false);
     }
   };
+
+  // ── Execute ONE postulation with a selected mail sender ────────────────
+
+  const openExecute = async (row: PostulationRow) => {
+    setExecTarget(row);
+    setExecSenderId("");
+    setExecOpen(true);
+    setExecSendersLoading(true);
+    try {
+      const data = await apiFetch<{ data: SenderOption[] }>(
+        "/api/admin/mail-senders?limit=100"
+      );
+      // Only active senders not currently claimed by an execution.
+      setExecSenders(data.data.filter((s) => s.active && !s.in_use));
+    } catch {
+      setExecSenders([]);
+    } finally {
+      setExecSendersLoading(false);
+    }
+  };
+
+  const handleExecute = async () => {
+    if (!execTarget || !execSenderId) return;
+    setExecuting(true);
+    try {
+      const data = await apiFetch<{
+        status: "success" | "failed";
+        error: string | null;
+        sender_disabled: boolean;
+        ref_number: string;
+      }>(`/api/admin/postulations/${execTarget._id}/execute`, {
+        method: "POST",
+        body: JSON.stringify({ mail_sender_id: execSenderId }),
+      });
+
+      if (data.status === "success") {
+        toast({ title: t("admin.executeSuccess") });
+      } else if (data.sender_disabled) {
+        await alertApp(
+          `${t("admin.executeFailedSenderDisabled")}\n\n${data.error || ""}`,
+          t("admin.executeTitle")
+        );
+      } else {
+        await alertApp(data.error || "Échec de l'exécution", t("admin.executeTitle"));
+      }
+      setExecOpen(false);
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      await alertApp(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setExecuting(false);
+    }
+  };
+
+  // ── Modify status manually ─────────────────────────────────────────────
+
+  const openStatus = (row: PostulationRow) => {
+    setStatusTarget(row);
+    setNewStatus(row.status);
+    setStatusOpen(true);
+  };
+
+  const handleStatusSave = async () => {
+    if (!statusTarget || !newStatus) return;
+    setStatusSaving(true);
+    try {
+      await apiFetch(`/api/admin/postulations/${statusTarget._id}`, {
+        method: "PUT",
+        body: JSON.stringify({ status: newStatus }),
+      });
+      toast({ title: t("common.operationSuccess") });
+      setStatusOpen(false);
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      await alertApp(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setStatusSaving(false);
+    }
+  };
+
+  // ── Executions of one postulation ──────────────────────────────────────
+
+  const openExecHistory = async (row: PostulationRow) => {
+    setExecHistoryTarget(row);
+    setExecHistory([]);
+    setExecHistoryOpen(true);
+    setExecHistoryLoading(true);
+    try {
+      const data = await apiFetch<{ data: ExecutionOfPostulation[] }>(
+        `/api/admin/executions?postulation_id=${row._id}`
+      );
+      setExecHistory(data.data);
+    } catch {
+      // leave empty
+    } finally {
+      setExecHistoryLoading(false);
+    }
+  };
+
+  // ── Table columns ───────────────────────────────────────────────────────
 
   const columns: DataTableColumn<PostulationRow>[] = [
     {
@@ -187,13 +374,77 @@ export default function AdminPostulationsPage() {
       sortable: true,
       render: (row) => (
         <div className="space-y-1">
-          <StatusStamp status={row.status} label={t(`statuses.${row.status}`)} />
+          <StatusStamp
+            status={row.status}
+            label={t(`statuses.${row.status}`)}
+            animate={row.status === "executing"}
+          />
           {row.failed_reason && (
             <p className="flex items-start gap-1 text-[11px] text-[#b3391f]">
               <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
               {row.failed_reason.slice(0, 60)}
             </p>
           )}
+        </div>
+      ),
+    },
+    {
+      key: "executions",
+      header: t("admin.colExecutions"),
+      render: (row) => {
+        if (!row.executions || row.executions.length === 0) {
+          return <span className="aktenzeichen text-muted-foreground/50">—</span>;
+        }
+        const failed = row.executions.filter((e) => e.status === "failed").length;
+        return (
+          <div className="flex items-center gap-1.5">
+            <span className="num text-xs font-semibold">
+              {row.executions.length}
+              {failed > 0 && (
+                <span className="ml-1 text-[#b3391f]">({failed} ✗)</span>
+              )}
+            </span>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-6 w-6"
+              title={t("admin.viewExecutions")}
+              aria-label={t("admin.viewExecutions")}
+              onClick={() => openExecHistory(row)}
+            >
+              <History className="h-3 w-3" />
+            </Button>
+          </div>
+        );
+      },
+    },
+    {
+      key: "actions",
+      header: t("common.actions"),
+      render: (row) => (
+        <div className="flex gap-1">
+          {(row.status === "en_attente" || row.status === "re_execute") && (
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-7 w-7 text-[#2f6b4a] hover:bg-[#2f6b4a]/10"
+              title={t("admin.executePostulation")}
+              aria-label={t("admin.executePostulation")}
+              onClick={() => openExecute(row)}
+            >
+              <Play className="h-3.5 w-3.5" />
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-7 w-7"
+            title={t("admin.modifyStatus")}
+            aria-label={t("admin.modifyStatus")}
+            onClick={() => openStatus(row)}
+          >
+            <PenLine className="h-3.5 w-3.5" />
+          </Button>
         </div>
       ),
     },
@@ -214,7 +465,7 @@ export default function AdminPostulationsPage() {
         subtitle={t("admin.postulationsSubtitle")}
         actions={
           <>
-            <Button variant="outline" onClick={handleReExecute} disabled={reExecuting} className="gap-1.5">
+            <Button variant="outline" onClick={() => setRelanceOpen(true)} disabled={reExecuting} className="gap-1.5">
               <RefreshCcw className={`h-4 w-4 ${reExecuting ? "animate-spin" : ""}`} />
               {t("admin.reExecuteCta")}
             </Button>
@@ -233,14 +484,213 @@ export default function AdminPostulationsPage() {
         statusFilter={{
           key: "status",
           label: t("common.status"),
-          options: [
-            { value: "en_attente", label: t("statuses.en_attente") },
-            { value: "envoyee", label: t("statuses.envoyee") },
-            { value: "echouee", label: t("statuses.echouee") },
-            { value: "re_execute", label: t("statuses.re_execute") },
-          ],
+          options: POSTULATION_STATUSES.map((s) => ({
+            value: s,
+            label: t(`statuses.${s}`),
+          })),
         }}
       />
+
+      {/* ── Relance target chooser ─────────────────────────────── */}
+      <Dialog open={relanceOpen} onOpenChange={setRelanceOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display">{t("admin.reExecuteCta")}</DialogTitle>
+            <DialogDescription>{t("admin.reExecuteDesc")}</DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              disabled={reExecuting}
+              onClick={() => handleRelance("github")}
+              className="form-sheet group flex flex-col items-start gap-2 p-4 text-left transition-shadow hover:shadow-md disabled:opacity-60"
+            >
+              <Github className="h-6 w-6 text-[#1a1d21]" />
+              <span className="font-display text-sm font-bold">{t("admin.relanceGithub")}</span>
+              <span className="text-xs leading-relaxed text-muted-foreground">
+                {t("admin.relanceGithubDesc")}
+              </span>
+              {reExecuting && <Loader2 className="h-4 w-4 animate-spin" />}
+            </button>
+            <button
+              type="button"
+              disabled={reExecuting}
+              onClick={() => handleRelance("server")}
+              className="form-sheet group flex flex-col items-start gap-2 p-4 text-left transition-shadow hover:shadow-md disabled:opacity-60"
+            >
+              <Server className="h-6 w-6 text-[#1e4475]" />
+              <span className="font-display text-sm font-bold">{t("admin.relanceServer")}</span>
+              <span className="text-xs leading-relaxed text-muted-foreground">
+                {t("admin.relanceServerDesc")}
+              </span>
+              {reExecuting && <Loader2 className="h-4 w-4 animate-spin" />}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Execute one postulation (mail sender selection) ────── */}
+      <Dialog open={execOpen} onOpenChange={setExecOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display">{t("admin.executeTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("admin.executeDesc")} —{" "}
+              <span className="aktenzeichen">
+                {execTarget?.user?.full_name} → {execTarget?.company?.name}
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-1.5">
+            <Label>{t("admin.colSender")}</Label>
+            {execSendersLoading ? (
+              <p className="py-4 text-center text-sm text-muted-foreground">
+                <Loader2 className="mr-2 inline h-4 w-4 animate-spin" />
+                {t("common.loading")}
+              </p>
+            ) : execSenders.length === 0 ? (
+              <p className="rounded-sm border border-[#d9a441]/40 bg-[#d9a441]/10 px-3 py-2.5 text-sm text-[#8a6a1f]">
+                {t("admin.executeNoSenders")}
+              </p>
+            ) : (
+              <Select value={execSenderId} onValueChange={setExecSenderId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="—" />
+                </SelectTrigger>
+                <SelectContent>
+                  {execSenders.map((s) => (
+                    <SelectItem key={s._id} value={s._id}>
+                      {s.name} ({s.type === "api" ? "API" : "SMTP"})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setExecOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              onClick={handleExecute}
+              disabled={!execSenderId || executing || execSenders.length === 0}
+              className="font-semibold"
+            >
+              {executing ? (
+                <>
+                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                  {t("common.loading")}
+                </>
+              ) : (
+                <>
+                  <Play className="mr-1.5 h-4 w-4" />
+                  {t("admin.executePostulation")}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Modify status dialog ───────────────────────────────── */}
+      <Dialog open={statusOpen} onOpenChange={setStatusOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display">{t("admin.modifyStatusTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("admin.modifyStatusDesc")} —{" "}
+              <span className="aktenzeichen">
+                {statusTarget?.user?.full_name} → {statusTarget?.company?.name}
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-1.5">
+            <Label>{t("admin.newStatus")}</Label>
+            <Select value={newStatus} onValueChange={setNewStatus}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {POSTULATION_STATUSES.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {t(`statuses.${s}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setStatusOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              onClick={handleStatusSave}
+              disabled={!newStatus || statusSaving || newStatus === statusTarget?.status}
+              className="font-semibold"
+            >
+              {statusSaving ? t("common.loading") : t("common.save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Executions of one postulation ──────────────────────── */}
+      <Dialog open={execHistoryOpen} onOpenChange={setExecHistoryOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display">{t("admin.executionsOfPostulation")}</DialogTitle>
+            <DialogDescription>
+              <span className="aktenzeichen">
+                {execHistoryTarget?.user?.full_name} → {execHistoryTarget?.company?.name}
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+
+          {execHistoryLoading ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              <Loader2 className="mr-2 inline h-4 w-4 animate-spin" />
+              {t("common.loading")}
+            </p>
+          ) : execHistory.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">{t("admin.noExecutions")}</p>
+          ) : (
+            <div className="max-h-80 space-y-2 overflow-y-auto scroll-slim pr-1">
+              {execHistory.map((e) => (
+                <div key={e._id} className="form-sheet p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="aktenzeichen num">{e.ref_number}</span>
+                    <StatusStamp
+                      status={e.outcome?.status || e.status}
+                      label={
+                        e.outcome
+                          ? t(`statuses.${e.outcome.status}`)
+                          : t(`statuses.${e.status}`)
+                      }
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t(TRIGGER_LABELS[e.trigger] || "admin.triggerAdmin")}
+                    {" · "}
+                    {e.mail_sender_name} ·{" "}
+                    {new Date(e.started_at).toLocaleString("fr-FR")}
+                  </p>
+                  {e.outcome?.error && (
+                    <p className="mt-1 flex items-start gap-1 text-[11px] text-[#b3391f]">
+                      <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
+                      {e.outcome.error.slice(0, 120)}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Manual creation dialog */}
       <Dialog open={addOpen} onOpenChange={setAddOpen}>

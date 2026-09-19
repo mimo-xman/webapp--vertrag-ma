@@ -24,7 +24,7 @@ export async function createPostulationsForDemande(params: {
   // Companies never used by this user (lifetime anti-duplicate), in the
   // selected categories (or all companies if no category selected).
   const usedCompanyIds = await Postulation.find({ user_id }).distinct("company_id");
-  const usedIds = usedCompanyIds.map((id) => id.toString());
+  const usedIds = usedCompanyIds.map((id: unknown) => String(id));
 
   const filter: Record<string, unknown> = { _id: { $nin: usedIds } };
   if (categorie_ids.length > 0) {
@@ -44,7 +44,14 @@ export async function createPostulationsForDemande(params: {
   }
 
   // Spread over days starting tomorrow.
-  const docs: mongoose.RootFilterQuery<never>[] = [];
+  interface PostulationSeedDoc {
+    user_id: mongoose.Types.ObjectId;
+    company_id: mongoose.Types.ObjectId;
+    demande_id: mongoose.Types.ObjectId;
+    scheduled_at: Date;
+    status: "en_attente";
+  }
+  const docs: PostulationSeedDoc[] = [];
   const days: { date: string; count: number }[] = [];
   const start = new Date();
   start.setUTCHours(0, 0, 0, 0);
@@ -63,7 +70,7 @@ export async function createPostulationsForDemande(params: {
     }
     docs.push({
       user_id,
-      company_id: company._id,
+      company_id: company._id as mongoose.Types.ObjectId,
       demande_id,
       scheduled_at: new Date(currentDate),
       status: "en_attente",
@@ -74,8 +81,7 @@ export async function createPostulationsForDemande(params: {
   // Group counts per day for the response.
   const perDay = new Map<string, number>();
   for (const doc of docs) {
-    const d = doc as unknown as { scheduled_at: Date };
-    const key = d.scheduled_at.toISOString().slice(0, 10);
+    const key = doc.scheduled_at.toISOString().slice(0, 10);
     perDay.set(key, (perDay.get(key) || 0) + 1);
   }
   for (const [date, count] of perDay) days.push({ date, count });

@@ -41,9 +41,13 @@ export async function GET(request: NextRequest) {
       type: s.type,
       // Secrets are never returned — only a masked hint.
       has_api_key: Boolean(s.api_key),
+      sender_email: s.sender_email || "",
       smtp_host: s.smtp_config?.host || "",
       smtp_port: s.smtp_config?.port || 587,
       active: s.active,
+      in_use: Boolean(s.in_use),
+      last_error: s.last_error || "",
+      last_error_at: s.last_error_at,
       usage_count: s.usage_count,
       success_count: s.success_count,
       failed_count: s.failed_count,
@@ -56,6 +60,8 @@ export async function GET(request: NextRequest) {
 const createSchema = z.object({
   name: z.string().trim().min(2).max(60),
   type: z.enum(["api", "smtp"]),
+  // Brevo requires a sender email address on the account.
+  sender_email: z.string().trim().email().max(200).optional().nullable(),
   api_key: z.string().optional().nullable(),
   smtp_config: z
     .object({
@@ -81,9 +87,15 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { name, type, api_key, smtp_config } = parsed.data;
+  const { name, type, sender_email, api_key, smtp_config } = parsed.data;
   if (type === "api" && !api_key) {
     return NextResponse.json({ success: false, error: "Clé API requise pour un service de type API" }, { status: 400 });
+  }
+  if (type === "api" && !sender_email) {
+    return NextResponse.json(
+      { success: false, error: "Email expéditeur requis pour un service de type API (Brevo exige une adresse sender)" },
+      { status: 400 }
+    );
   }
   if (type === "smtp" && !smtp_config) {
     return NextResponse.json({ success: false, error: "Configuration SMTP requise" }, { status: 400 });
@@ -98,6 +110,7 @@ export async function POST(request: NextRequest) {
   const sender = await MailSender.create({
     name,
     type,
+    sender_email: type === "api" ? sender_email!.toLowerCase() : null,
     api_key: type === "api" ? api_key! : null,
     smtp_config: type === "smtp" ? smtp_config! : null,
     active: true,

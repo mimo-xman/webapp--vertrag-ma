@@ -6,7 +6,7 @@ const TOKEN_NAME = "vertrag_token";
 const authOnlyRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
 // Public access regardless of auth state
-const publicAccessRoutes = ["/verify-email", "/delete-account-confirm", "/2fa-disable"];
+const publicAccessRoutes = ["/verify-email", "/delete-account-confirm", "/2fa-disable", "/contact"];
 
 // Requires at least a session cookie (real verification happens server-side)
 const protectedRoutes = [
@@ -16,6 +16,7 @@ const protectedRoutes = [
   "/dossier",
   "/profile",
   "/admin",
+  "/suspended",
 ];
 
 export function middleware(request: NextRequest) {
@@ -47,7 +48,6 @@ export function middleware(request: NextRequest) {
   if (publicAccessRoutes.some((route) => pathname.startsWith(route))) {
     return NextResponse.next();
   }
-
   return NextResponse.next();
 }
 
@@ -59,6 +59,7 @@ export const config = {
     "/dossier/:path*",
     "/profile/:path*",
     "/admin/:path*",
+    "/suspended",
     "/login",
     "/register",
     "/forgot-password",

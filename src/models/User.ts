@@ -7,6 +7,9 @@ export interface IUser extends mongoose.Document {
   password: string;
   role: "user" | "admin";
   active: boolean;
+  suspended: boolean;
+  suspended_at: Date | null;
+  suspended_reason: string | null;
   dossier_pdf_link: string | null;
   dossier_source_type: "ajout" | "creation" | null;
   dossier_source_demande_id: mongoose.Types.ObjectId | null;
@@ -44,6 +47,9 @@ const UserSchema = new Schema<IUser>(
     password: { type: String, required: true, minlength: 6 },
     role: { type: String, enum: ["user", "admin"], default: "user", index: true },
     active: { type: Boolean, default: false },
+    suspended: { type: Boolean, default: false, index: true },
+    suspended_at: { type: Date, default: null },
+    suspended_reason: { type: String, default: null, maxlength: 500 },
     dossier_pdf_link: { type: String, default: null },
     dossier_source_type: { type: String, enum: ["ajout", "creation"], default: null },
     dossier_source_demande_id: { type: Schema.Types.ObjectId, default: null },

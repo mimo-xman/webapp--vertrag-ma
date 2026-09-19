@@ -118,17 +118,20 @@ export default function AdminDemandesAjoutDossierPage() {
         <div className="space-y-1">
           <StatusStamp status={statusVariant(row)} label={t(addStatusKey(row))} />
           {row.status === "rejected" && row.message_on_failed && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-6 gap-1 px-2 text-[11px] text-[#b3391f]"
-              onClick={() =>
-                alertApp(row.message_on_failed!, t("admin.rejectMessageTitle", { ref: row.ref_number }))
-              }
-            >
-              <MessageSquare className="h-3 w-3" />
-              {t("admin.viewMessage")}
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-6 w-6 text-[#b3391f] hover:bg-[#b3391f]/10"
+                title={t("admin.viewMessage")}
+                aria-label={t("admin.viewMessage")}
+                onClick={() =>
+                  alertApp(row.message_on_failed!, t("admin.rejectMessageTitle", { ref: row.ref_number }))
+                }
+              >
+                <MessageSquare className="h-3 w-3" />
+              </Button>
+            </div>
           )}
         </div>
       ),

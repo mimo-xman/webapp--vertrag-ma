@@ -204,6 +204,7 @@ export async function seedIfEmpty(): Promise<void> {
       {
         name: "Brevo Principal",
         type: "api",
+        sender_email: "bewerbung@vertrag.ma",
         api_key: "xkeysib-mock-demo",
         active: true,
         usage_count: 214,

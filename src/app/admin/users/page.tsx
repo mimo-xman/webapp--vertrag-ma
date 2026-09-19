@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowUpDown, Trash2, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowUpDown, Trash2, ShieldCheck, UserRound, Ban, LockOpen } from "lucide-react";
 
 interface UserRow {
   _id: string;
@@ -18,6 +18,7 @@ interface UserRow {
   email: string;
   role: string;
   active: boolean;
+  suspended: boolean;
   two_factor_enabled: boolean;
   has_dossier: boolean;
   createdAt: string;
@@ -25,7 +26,7 @@ interface UserRow {
 
 export default function AdminUsersPage() {
   const { t } = useI18n();
-  const { confirmApp, alertApp } = useAppPopup();
+  const { confirmApp, alertApp, promptApp } = useAppPopup();
   const { toast } = useToast();
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -42,6 +43,44 @@ export default function AdminUsersPage() {
         body: JSON.stringify({ role: newRole }),
       });
       toast({ title: t("common.operationSuccess") });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      await alertApp(err instanceof Error ? err.message : "Erreur");
+    }
+  };
+
+  const handleSuspend = async (row: UserRow) => {
+    const reason = await promptApp(t("admin.suspendReasonLabel"), {
+      title: t("admin.suspendConfirmTitle"),
+      placeholder: t("admin.suspendReasonPlaceholder"),
+    });
+    if (reason === null) return; // cancelled
+    const ok = await confirmApp(
+      t("admin.suspendConfirmMessage", { name: row.full_name }),
+      { title: t("admin.suspendConfirmTitle"), destructive: true, confirmLabel: t("admin.suspend") }
+    );
+    if (!ok) return;
+    try {
+      await apiFetch(`/api/admin/users/${row._id}/suspend`, {
+        method: "POST",
+        body: JSON.stringify({ reason: reason.trim() || undefined }),
+      });
+      toast({ title: t("admin.suspendSuccess") });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      await alertApp(err instanceof Error ? err.message : "Erreur");
+    }
+  };
+
+  const handleUnsuspend = async (row: UserRow) => {
+    const ok = await confirmApp(t("admin.unsuspendConfirmMessage", { name: row.full_name }), {
+      title: t("admin.unsuspendConfirmTitle"),
+      confirmLabel: t("admin.unsuspend"),
+    });
+    if (!ok) return;
+    try {
+      await apiFetch(`/api/admin/users/${row._id}/unsuspend`, { method: "POST" });
+      toast({ title: t("admin.unsuspendSuccess") });
       setRefreshKey((k) => k + 1);
     } catch (err) {
       await alertApp(err instanceof Error ? err.message : "Erreur");
@@ -98,10 +137,15 @@ export default function AdminUsersPage() {
       header: t("statuses.active"),
       sortable: true,
       render: (row) => (
-        <StatusStamp
-          status={row.active ? "active" : "canceled"}
-          label={row.active ? t("statuses.active") : t("statuses.inactive")}
-        />
+        <div className="space-y-1">
+          <StatusStamp
+            status={row.active ? "active" : "canceled"}
+            label={row.active ? t("statuses.active") : t("statuses.inactive")}
+          />
+          {row.suspended && (
+            <StatusStamp status="suspended" label={t("statuses.suspended")} />
+          )}
+        </div>
       ),
     },
     {
@@ -129,6 +173,26 @@ export default function AdminUsersPage() {
       header: t("common.actions"),
       render: (row) => (
         <div className="flex gap-1">
+          {row.role === "user" && (
+            <Button
+              variant="outline"
+              size="icon"
+              className={
+                row.suspended
+                  ? "h-7 w-7 text-[#2f6b4a] hover:bg-[#2f6b4a]/10"
+                  : "h-7 w-7 text-[#b3391f] hover:bg-[#b3391f]/10"
+              }
+              title={row.suspended ? t("admin.unsuspend") : t("admin.suspend")}
+              aria-label={row.suspended ? t("admin.unsuspend") : t("admin.suspend")}
+              onClick={() => (row.suspended ? handleUnsuspend(row) : handleSuspend(row))}
+            >
+              {row.suspended ? (
+                <LockOpen className="h-3.5 w-3.5" />
+              ) : (
+                <Ban className="h-3.5 w-3.5" />
+              )}
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
