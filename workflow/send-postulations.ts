@@ -13,7 +13,9 @@
 // error saved — admins fix it, re-activate it and re-test it.
 //
 // Exit codes: 0 = there may be more postulations to process (re-trigger),
-//             1 = nothing left to do.
+//             1 = nothing left to do (queue drained — expected),
+//             2 = fatal error / no mail sender available (fails the CI job,
+//                 visible in red in GitHub Actions — never masked as "done").
 
 import { connectDB, disconnectDB } from "./db";
 import { Postulation } from "../src/models/Postulation";
@@ -42,7 +44,7 @@ async function main() {
   if (wave.execution_ids.length === 0) {
     console.error("[SEND] Postulations en attente mais AUCUN mail sender actif disponible.");
     await disconnectDB();
-    process.exit(1);
+    process.exit(2);
   }
 
   console.log(
@@ -78,5 +80,5 @@ async function main() {
 main().catch(async (error) => {
   console.error("[SEND] FATAL:", error);
   await disconnectDB().catch(() => {});
-  process.exit(1);
+  process.exit(2);
 });

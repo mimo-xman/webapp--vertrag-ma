@@ -3,6 +3,10 @@
 // Processes all postulations with status re_execute, same wave mechanism as
 // the daily sender (one parallel execution per available mail sender).
 // Failed ones go back to echouee (with the reason recorded).
+//
+// Exit codes: 0 = more re_execute postulations remain (re-trigger),
+//             1 = nothing left to relaunch (expected),
+//             2 = fatal error / no mail sender available (fails the CI job).
 
 import { connectDB, disconnectDB } from "./db";
 import { Postulation } from "../src/models/Postulation";
@@ -29,7 +33,7 @@ async function main() {
   if (wave.execution_ids.length === 0) {
     console.error("[RE-EXECUTE] Postulations à relancer mais AUCUN mail sender actif disponible.");
     await disconnectDB();
-    process.exit(1);
+    process.exit(2);
   }
 
   console.log(
@@ -57,5 +61,5 @@ async function main() {
 main().catch(async (error) => {
   console.error("[RE-EXECUTE] FATAL:", error);
   await disconnectDB().catch(() => {});
-  process.exit(1);
+  process.exit(2);
 });

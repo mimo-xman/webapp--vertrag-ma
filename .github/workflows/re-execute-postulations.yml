@@ -67,11 +67,20 @@ jobs:
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+        # exit 0 = more to process (re-run) · exit 1 = drained (stop) ·
+        # exit 2+ = fatal error → fail the job (never masked as "drained").
         run: |
-          if npx tsx check-postulations.ts re_execute; then
+          set +e
+          npx tsx check-postulations.ts re_execute
+          code=$?
+          set -e
+          if [ "$code" -eq 0 ]; then
             echo "has_more=true" >> $GITHUB_OUTPUT
-          else
+          elif [ "$code" -eq 1 ]; then
             echo "has_more=false" >> $GITHUB_OUTPUT
+          else
+            echo "check-postulations.ts failed with exit code $code" >&2
+            exit "$code"
           fi
 
       - name: Re-run workflow

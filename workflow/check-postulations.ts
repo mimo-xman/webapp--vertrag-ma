@@ -1,6 +1,7 @@
 // Gate script for the self re-trigger pattern:
 // exit 0 = there are due postulations remaining (re-run the workflow),
 // exit 1 = queue drained for today.
+// exit 2 = fatal error (fails the CI job — never masked as "drained").
 //
 // Optional argument: a specific status to check (default: en_attente + re_execute).
 
@@ -30,5 +31,5 @@ async function main() {
 main().catch(async (error) => {
   console.error("[CHECK] FATAL:", error);
   await disconnectDB().catch(() => {});
-  process.exit(1);
+  process.exit(2);
 });
