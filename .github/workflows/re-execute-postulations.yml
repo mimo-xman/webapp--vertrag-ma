@@ -26,6 +26,11 @@ jobs:
         working-directory: workflow
         run: npm install
 
+      # Same as send-postulations.yml: scripts import shared code from ../src/*
+      # whose bare imports must resolve against a root-level node_modules.
+      - name: Link node_modules for shared src/ imports
+        run: ln -sfn "$GITHUB_WORKSPACE/workflow/node_modules" "$GITHUB_WORKSPACE/node_modules"
+
       - name: Run re-execution wave
         working-directory: workflow
         env:
@@ -52,6 +57,9 @@ jobs:
       - name: Install dependencies
         working-directory: workflow
         run: npm install
+
+      - name: Link node_modules for shared src/ imports
+        run: ln -sfn "$GITHUB_WORKSPACE/workflow/node_modules" "$GITHUB_WORKSPACE/node_modules"
 
       - name: Check for remaining postulations
         id: check

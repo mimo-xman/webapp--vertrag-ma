@@ -28,6 +28,14 @@ jobs:
         working-directory: workflow
         run: npm install
 
+      # The workflow scripts import shared models/libs from ../src/* — Node
+      # resolves their bare imports (mongoose, nodemailer) by walking UP from
+      # src/, so a node_modules must exist at the repo root. A symlink to
+      # workflow/node_modules keeps ONE shared mongoose instance (models and
+      # db.ts must never end up on two different mongoose copies).
+      - name: Link node_modules for shared src/ imports
+        run: ln -sfn "$GITHUB_WORKSPACE/workflow/node_modules" "$GITHUB_WORKSPACE/node_modules"
+
       - name: Run sender wave
         working-directory: workflow
         env:
@@ -55,6 +63,9 @@ jobs:
       - name: Install dependencies
         working-directory: workflow
         run: npm install
+
+      - name: Link node_modules for shared src/ imports
+        run: ln -sfn "$GITHUB_WORKSPACE/workflow/node_modules" "$GITHUB_WORKSPACE/node_modules"
 
       - name: Check for remaining postulations
         id: check
