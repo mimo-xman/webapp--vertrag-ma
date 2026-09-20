@@ -8,7 +8,7 @@ import { DEFAULT_PRICING } from "@/lib/pricing";
 // Public, non-sensitive counters + live pricing for the home page.
 // The pricing block mirrors the admin settings: when an admin changes the
 // prices or the steps, the home page reflects it immediately (no hardcoded
-// values). The companies counter only counts ACTIVE companies — those
+// values). The companies counter only counts ACTIVE companies - those
 // targetable by a new demande de postulation (deactivated ones are excluded).
 export async function GET() {
   try {

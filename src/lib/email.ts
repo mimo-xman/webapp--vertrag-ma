@@ -55,7 +55,7 @@ function emailShell(content: string): string {
     </div>
     <div style="padding:28px;color:#1a1d21;font-size:15px;line-height:1.6;">${content}</div>
     <div style="padding:16px 28px;border-top:1px solid #d8d5cc;color:#71757c;font-size:12px;">
-      Vertrag.ma — Votre passerelle vers l'emploi en Allemagne.
+      Vertrag.ma · Votre passerelle vers l'emploi en Allemagne.
     </div>
   </div>
 </body></html>`;
@@ -70,7 +70,7 @@ export async function sendVerificationEmail(email: string, token: string): Promi
   const url = `${APP_URL}/verify-email?token=${token}`;
   await sendEmailBrevo({
     to: email,
-    subject: `${APP_NAME} — Activez votre compte`,
+    subject: `${APP_NAME} · Activez votre compte`,
     htmlContent: emailShell(`
       <h2 style="margin:0 0 12px;">Bienvenue chez Vertrag.ma</h2>
       <p>Merci pour votre inscription. Cliquez sur le bouton ci-dessous pour activer votre compte. Ce lien expire dans <strong>24 heures</strong>.</p>
@@ -83,7 +83,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string):
   const url = `${APP_URL}/reset-password?token=${resetToken}`;
   await sendEmailBrevo({
     to: email,
-    subject: `${APP_NAME} — Réinitialisation du mot de passe`,
+    subject: `${APP_NAME} · Réinitialisation du mot de passe`,
     htmlContent: emailShell(`
       <h2 style="margin:0 0 12px;">Réinitialisation du mot de passe</h2>
       <p>Vous avez demandé la réinitialisation de votre mot de passe. Ce lien expire dans <strong>1 heure</strong>. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>
@@ -96,7 +96,7 @@ export async function sendDeleteAccountEmail(email: string, deletionToken: strin
   const url = `${APP_URL}/delete-account-confirm?token=${deletionToken}`;
   await sendEmailBrevo({
     to: email,
-    subject: `${APP_NAME} — Confirmer la suppression du compte`,
+    subject: `${APP_NAME} · Confirmer la suppression du compte`,
     htmlContent: emailShell(`
       <h2 style="margin:0 0 12px;color:#b3391f;">Suppression du compte</h2>
       <p>Vous avez demandé la <strong>suppression définitive</strong> de votre compte. Toutes vos données seront effacées. Cette action est irréversible. Ce lien expire dans <strong>1 heure</strong>.</p>
@@ -109,7 +109,7 @@ export async function send2faDisableEmail(email: string, token: string): Promise
   const url = `${APP_URL}/api/auth/2fa/disable-by-email?token=${token}`;
   await sendEmailBrevo({
     to: email,
-    subject: `${APP_NAME} — Désactivation de la double authentification`,
+    subject: `${APP_NAME} · Désactivation de la double authentification`,
     htmlContent: emailShell(`
       <h2 style="margin:0 0 12px;">Désactivation du 2FA</h2>
       <p>Vous avez demandé la désactivation de la double authentification (2FA). Cliquez ci-dessous pour confirmer. Ce lien expire dans <strong>1 heure</strong>.</p>

@@ -6,7 +6,9 @@ import { Postulation } from "@/models/Postulation";
 import { logAdminAction } from "@/lib/audit";
 
 const updateSchema = z.object({
-  status: z.enum(["en_attente", "envoyee", "echouee", "re_execute", "executing"]).optional(),
+  status: z
+    .enum(["en_attente", "envoyee", "echouee", "re_execute", "executing", "annulee_admin"])
+    .optional(),
   scheduled_at: z.string().optional(),
   failed_reason: z.string().nullable().optional(),
 });

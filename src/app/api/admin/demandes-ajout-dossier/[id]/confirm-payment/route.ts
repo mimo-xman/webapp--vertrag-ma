@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
 import { logAdminAction } from "@/lib/audit";
 
-// POST — validate the payment of a priced add-dossier demande (price > 0).
+// POST - validate the payment of a priced add-dossier demande (price > 0).
 // waiting_payment → payed_waiting_review.
 // After this, the classic review flow continues: mark in review → confirm /
 // reject. The user can no longer cancel once the payment is validated.
@@ -43,7 +43,7 @@ export async function POST(
     action: "dossier_add.confirm_payment",
     entity_type: "dossier_demande_for_add",
     entity_id: id,
-    details: `Paiement validé (${demande.price} $) — ${demande.ref_number}`,
+    details: `Paiement validé (${demande.price} $) · ${demande.ref_number}`,
   });
 
   return NextResponse.json({ success: true });

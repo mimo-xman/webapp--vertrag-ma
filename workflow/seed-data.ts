@@ -1,6 +1,6 @@
 // Imports the test dataset into the database:
-//   seed/categories.json — 1 000 categories
-//   seed/companies.json  — 20 000 companies (test emails)
+//   seed/categories.json - 1 000 categories
+//   seed/companies.json  - 20 000 companies (test emails)
 // Also aligns the pricing settings with the new minimum (500 → 100).
 //
 // Usage (from the repo root or the workflow/ folder):
@@ -84,7 +84,7 @@ async function main() {
       created_by: new mongoose.Types.ObjectId(c.created_by.$oid),
     }));
   if (companyDocs.length > 0) {
-    // Batches of 5 000 — insertMany with ordered:false tolerates duplicates.
+    // Batches of 5 000 - insertMany with ordered:false tolerates duplicates.
     const BATCH = 5000;
     for (let i = 0; i < companyDocs.length; i += BATCH) {
       const batch = companyDocs.slice(i, i + BATCH);
@@ -102,7 +102,7 @@ async function main() {
   console.log(
     creator
       ? `[SEED] created_by → ${creator.email}`
-      : `[SEED] ⚠ l'utilisateur 6aa9c627d566c8aa115e2468 n'existe pas encore (created_by restera une référence pendante — créez le compte admin correspondant ou importez-le).`
+      : `[SEED] ⚠ l'utilisateur 6aa9c627d566c8aa115e2468 n'existe pas encore (created_by restera une référence pendante : créez le compte admin correspondant ou importez-le).`
   );
 
   // ── Align pricing settings with the new minimum (500 → 100) ──────────

@@ -2,7 +2,7 @@
 //
 // SNAPSHOT semantics: when the user created his demande, the exact list of
 // companies was selected and saved on it (PostulationDemande.company_ids).
-// The confirmation creates the postulations from THIS saved list — so a
+// The confirmation creates the postulations from THIS saved list - so a
 // company deactivated (or a category disabled) between the creation and the
 // confirmation cannot reduce what the user paid for. A company deactivated
 // after being snapshotted still receives the postulation: it was selected
@@ -32,6 +32,8 @@ export async function createPostulationsForDemande(params: {
   company_ids?: mongoose.Types.ObjectId[];
   nmbr_total: number;
   nmbr_per_day: number;
+  /** Ref number of the demande - stored on every postulation for origin traceability. */
+  demande_ref?: string | null;
 }): Promise<CreatePostulationsResult> {
   const {
     user_id,
@@ -40,6 +42,7 @@ export async function createPostulationsForDemande(params: {
     company_ids = [],
     nmbr_total,
     nmbr_per_day,
+    demande_ref = null,
   } = params;
 
   // Companies never used by this user (lifetime anti-duplicate).
@@ -49,7 +52,7 @@ export async function createPostulationsForDemande(params: {
   let companies: { _id: mongoose.Types.ObjectId }[];
 
   if (company_ids.length > 0) {
-    // Snapshot mode — the companies were chosen at demande creation time.
+    // Snapshot mode - the companies were chosen at demande creation time.
     // No `active` filter on purpose (snapshot semantics); companies deleted
     // in the meantime simply drop out and are reported below.
     const snapshotCompanies = await Company.find({ _id: { $in: company_ids } })
@@ -60,19 +63,19 @@ export async function createPostulationsForDemande(params: {
 
     // Guard against a company having become used between the demande
     // creation and the confirmation (e.g. a postulation manually created by
-    // an admin) — it cannot be duplicated (unique index user+company).
+    // an admin) - it cannot be duplicated (unique index user+company).
     companies = companies.filter((c) => !usedIds.has(String(c._id)));
 
     if (companies.length < nmbr_total) {
       const missing = nmbr_total - companies.length;
       throw new Error(
         `Incohérence sur la demande : ${missing} entreprise(s) de la sélection d'origine ne sont plus disponibles (supprimées ou déjà utilisées). ` +
-          `La demande reste en attente — vérifiez les entreprises concernées puis reconfirmez.`
+          `La demande reste en attente : vérifiez les entreprises concernées puis reconfirmez.`
       );
     }
   } else {
     // Legacy fallback (demande created before the snapshot feature):
-    // fresh selection of eligible companies — active companies only, in the
+    // fresh selection of eligible companies - active companies only, in the
     // selected categories (or all companies belonging to an active category).
     const filter: Record<string, unknown> = {
       active: true,
@@ -106,6 +109,8 @@ export async function createPostulationsForDemande(params: {
     user_id: mongoose.Types.ObjectId;
     company_id: mongoose.Types.ObjectId;
     demande_id: mongoose.Types.ObjectId;
+    demande_ref: string | null;
+    created_by_admin: boolean;
     scheduled_at: Date;
     status: "en_attente";
   }
@@ -130,6 +135,8 @@ export async function createPostulationsForDemande(params: {
       user_id,
       company_id: company._id as mongoose.Types.ObjectId,
       demande_id,
+      demande_ref,
+      created_by_admin: false, // generated automatically from a confirmed demande
       scheduled_at: new Date(currentDate),
       status: "en_attente",
     });

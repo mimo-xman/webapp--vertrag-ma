@@ -82,7 +82,7 @@ export async function PUT(
   return NextResponse.json({ success: true });
 }
 
-// PATCH — activate / deactivate a company.
+// PATCH - activate / deactivate a company.
 // A deactivated company is excluded from NEW demande targeting (counts,
 // selection, snapshot) but keeps receiving its already-scheduled postulations.
 export async function PATCH(
@@ -134,7 +134,7 @@ export async function DELETE(
   await connectDB();
 
   // Data-integrity guard: never delete a company that is used by postulations
-  // (sent or scheduled) or reserved by a pending demande — the historical
+  // (sent or scheduled) or reserved by a pending demande - the historical
   // links would break (postulations would lose their company). Deactivate it
   // instead: data and history are preserved, and it stops being targeted by
   // new demandes.
@@ -153,7 +153,7 @@ export async function DELETE(
     return NextResponse.json(
       {
         success: false,
-        error: `Impossible de supprimer cette entreprise : elle est ${reasons.join(" et ")}. Désactivez-la plutôt — l'historique est préservé et elle ne sera plus ciblée par les nouvelles demandes.`,
+        error: `Impossible de supprimer cette entreprise : elle est ${reasons.join(" et ")}. Désactivez-la plutôt : l'historique est préservé et elle ne sera plus ciblée par les nouvelles demandes.`,
       },
       { status: 400 }
     );

@@ -28,7 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Send, AlertTriangle, Power } from "lucide-react";
+import { Plus, Pencil, Trash2, Send, AlertTriangle, Power, History, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SenderRow {
@@ -46,6 +46,26 @@ interface SenderRow {
   usage_count: number;
   success_count: number;
   failed_count: number;
+  daily_limit: number;
+  today_usage: number;
+}
+
+interface UsageDay {
+  iso: string;
+  date: string;
+  count: number;
+  times: string[];
+}
+
+interface UsageResponse {
+  _id: string;
+  name: string;
+  type: string;
+  usage_count: number;
+  success_count: number;
+  failed_count: number;
+  daily_limit: number;
+  days: UsageDay[];
 }
 
 export default function AdminMailSendersPage() {
@@ -65,6 +85,7 @@ export default function AdminMailSendersPage() {
   const [smtpPort, setSmtpPort] = useState("587");
   const [smtpUser, setSmtpUser] = useState("");
   const [smtpPass, setSmtpPass] = useState("");
+  const [dailyLimit, setDailyLimit] = useState("0");
   const [saving, setSaving] = useState(false);
 
   // Test dialog state
@@ -73,6 +94,12 @@ export default function AdminMailSendersPage() {
   const [testEmail, setTestEmail] = useState("");
   const [testMessage, setTestMessage] = useState("Ceci est un email de test depuis Vertrag.ma.");
   const [testing, setTesting] = useState(false);
+
+  // Usage history dialog state
+  const [usageOpen, setUsageOpen] = useState(false);
+  const [usageTarget, setUsageTarget] = useState<SenderRow | null>(null);
+  const [usageDays, setUsageDays] = useState<UsageDay[] | null>(null);
+  const [usageLoading, setUsageLoading] = useState(false);
 
   const openCreate = () => {
     setEditing(null);
@@ -84,6 +111,7 @@ export default function AdminMailSendersPage() {
     setSmtpPort("587");
     setSmtpUser("");
     setSmtpPass("");
+    setDailyLimit("0");
     setEditOpen(true);
   };
 
@@ -97,13 +125,14 @@ export default function AdminMailSendersPage() {
     setSmtpPort(String(row.smtp_port || 587));
     setSmtpUser("");
     setSmtpPass("");
+    setDailyLimit(String(row.daily_limit || 0));
     setEditOpen(true);
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const payload: Record<string, unknown> = { name, type };
+      const payload: Record<string, unknown> = { name, type, daily_limit: Math.max(0, Number(dailyLimit) || 0) };
       if (type === "api") {
         if (apiKey) payload.api_key = apiKey;
         payload.sender_email = senderEmail.trim() || null;
@@ -183,6 +212,22 @@ export default function AdminMailSendersPage() {
     }
   };
 
+  // ── Usage history dialog ─────────────────────────────────
+  const openUsage = async (row: SenderRow) => {
+    setUsageTarget(row);
+    setUsageDays(null);
+    setUsageOpen(true);
+    setUsageLoading(true);
+    try {
+      const data = await apiFetch<UsageResponse>(`/api/admin/mail-senders/${row._id}/usage`);
+      setUsageDays(data.days);
+    } catch {
+      setUsageDays([]);
+    } finally {
+      setUsageLoading(false);
+    }
+  };
+
   const handleTest = async () => {
     if (!testTarget) return;
     setTesting(true);
@@ -195,7 +240,7 @@ export default function AdminMailSendersPage() {
       setTestOpen(false);
       setRefreshKey((k) => k + 1);
     } catch (err) {
-      await alertApp(err instanceof Error ? err.message : "Échec du test");
+      await alertApp(err instanceof Error ? err.message : t("admin.testFailed"));
     } finally {
       setTesting(false);
     }
@@ -234,7 +279,27 @@ export default function AdminMailSendersPage() {
       key: "usage_count",
       header: t("admin.colUsage"),
       sortable: true,
-      render: (row) => <span className="num font-semibold">{row.usage_count}</span>,
+      render: (row) => (
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-1.5">
+            <span className="num font-semibold">{row.usage_count}</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-muted-foreground hover:text-foreground"
+              title={t("admin.usageHistory")}
+              aria-label={t("admin.usageHistory")}
+              onClick={() => openUsage(row)}
+            >
+              <History className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+          <p className="num text-[11px] text-muted-foreground">
+            {t("admin.todayUsage")}: {row.today_usage}
+            {row.daily_limit > 0 ? ` / ${row.daily_limit}` : ""}
+          </p>
+        </div>
+      ),
     },
     {
       key: "success_rate",
@@ -245,7 +310,7 @@ export default function AdminMailSendersPage() {
         return (
           <span className="num text-xs">
             {rate === null ? (
-              <span className="text-muted-foreground">—</span>
+              <span className="text-muted-foreground">-</span>
             ) : (
               <span
                 style={{
@@ -361,6 +426,9 @@ export default function AdminMailSendersPage() {
         endpoint="/api/admin/mail-senders"
         columns={columns}
         refreshKey={refreshKey}
+        columnToggle
+        storageKey="admin-mail-senders"
+        dateFilters={[{ prefix: "created", label: t("common.createdAt") }]}
         statusFilter={{
           key: "type",
           label: t("admin.senderType"),
@@ -376,7 +444,7 @@ export default function AdminMailSendersPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display">
-              {editing ? t("common.edit") : t("common.add")} — {t("admin.mailSenders")}
+              {editing ? t("common.edit") : t("common.add")} · {t("admin.mailSenders")}
             </DialogTitle>
           </DialogHeader>
 
@@ -447,6 +515,19 @@ export default function AdminMailSendersPage() {
                 </div>
               </div>
             )}
+
+            {/* Daily send limit : applies to both types */}
+            <div className="space-y-1.5">
+              <Label>{t("admin.dailyLimit")}</Label>
+              <Input
+                value={dailyLimit}
+                onChange={(e) => setDailyLimit(e.target.value)}
+                type="number"
+                min={0}
+                placeholder="0"
+              />
+              <p className="text-xs text-muted-foreground">{t("admin.dailyLimitHint")}</p>
+            </div>
           </div>
 
           <DialogFooter>
@@ -465,7 +546,7 @@ export default function AdminMailSendersPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display">
-              {t("admin.testTitle")} — {testTarget?.name}
+              {t("admin.testTitle")} · {testTarget?.name}
             </DialogTitle>
             <DialogDescription>{t("admin.testDesc")}</DialogDescription>
           </DialogHeader>
@@ -476,7 +557,7 @@ export default function AdminMailSendersPage() {
                 type="email"
                 value={testEmail}
                 onChange={(e) => setTestEmail(e.target.value)}
-                placeholder="vous@exemple.com"
+                placeholder={t("common.emailPlaceholder")}
               />
             </div>
             <div className="space-y-1.5">
@@ -498,9 +579,77 @@ export default function AdminMailSendersPage() {
               disabled={!testEmail || testing || testMessage.trim().length === 0}
               className="font-semibold"
             >
-              {testing ? t("common.loading") : t("admin.testSend")}
+              {testing ? (
+                <>
+                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                  {t("common.loading")}
+                </>
+              ) : (
+                t("admin.testSend")
+              )}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Usage history dialog : per day, with the exact time of each send */}
+      <Dialog open={usageOpen} onOpenChange={setUsageOpen}>
+        <DialogContent className="max-h-[85dvh] max-w-md overflow-y-auto scroll-slim">
+          <DialogHeader>
+            <DialogTitle className="font-display">
+              {t("admin.usageDialogTitle", { name: usageTarget?.name || "" })}
+            </DialogTitle>
+            <DialogDescription>
+              {t("admin.usageDialogDesc")} {t("admin.usageTimesUtc")}
+            </DialogDescription>
+          </DialogHeader>
+
+          {usageLoading ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              <Loader2 className="mr-2 inline h-4 w-4 animate-spin" />
+              {t("common.loading")}
+            </p>
+          ) : !usageDays || usageDays.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              {t("admin.usageNoData")}
+            </p>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>
+                  {t("admin.usageLifetime")}:{" "}
+                  <span className="num font-semibold text-foreground">
+                    {usageTarget?.usage_count}
+                  </span>
+                </span>
+                <span className="num">
+                  {usageTarget?.daily_limit && usageTarget.daily_limit > 0
+                    ? `${t("admin.dailyLimit")}: ${usageTarget.daily_limit}`
+                    : t("admin.unlimited")}
+                </span>
+              </div>
+              {usageDays.map((day) => (
+                <div key={day.iso} className="rounded-sm border border-border bg-paper p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="num text-xs font-semibold">{day.date}</span>
+                    <span className="num text-[11px] text-muted-foreground">
+                      {t("admin.usageTimesCount", { count: day.count })}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {day.times.map((time, i) => (
+                      <span
+                        key={`${day.iso}-${i}`}
+                        className="num rounded-sm border border-border bg-card px-1.5 py-0.5 text-[11px]"
+                      >
+                        {time}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

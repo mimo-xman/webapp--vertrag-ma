@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { requireAdmin } from "@/lib/auth";
 import { PostulationDemande } from "@/models/PostulationDemande";
-import { User } from "@/models/User";
+import { User } from "@/models/User";import { applyDateRange } from "@/lib/api-filters";
 
-// GET — all postulation demandes (with user info).
+
+// GET - all postulation demandes (with user info).
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
@@ -22,6 +23,8 @@ export async function GET(request: NextRequest) {
   const filter: Record<string, unknown> = {};
   if (status && status !== "all") filter.status = status;
   if (userFilter && userFilter !== "all") filter.user_id = userFilter;
+  // Date-range filter on the demande creation date.
+  applyDateRange(filter, params, "created", "createdAt");
   if (search) {
     const users = await User.find({
       $or: [
@@ -58,7 +61,7 @@ export async function GET(request: NextRequest) {
       nmbr_total: d.nmbr_total,
       nmbr_per_day: d.nmbr_per_day,
       price: d.price,
-      // Pricing parameters in effect when this demande was created —
+      // Pricing parameters in effect when this demande was created -
       // lets the admin see exactly how the price was computed even after
       // the settings have changed.
       pricing_snapshot: d.pricing_snapshot || null,

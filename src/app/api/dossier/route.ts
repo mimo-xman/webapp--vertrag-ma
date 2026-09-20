@@ -7,8 +7,8 @@ import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
 import { DossierDemandeForCreate } from "@/models/DossierDemandeForCreate";
 import { DossierDeletionHistory } from "@/models/DossierDeletionHistory";
 
-// GET /api/dossier — current dossier state + demandes history.
-// GET /api/dossier?token=… — email-confirmation link for dossier deletion.
+// GET /api/dossier - current dossier state + demandes history.
+// GET /api/dossier?token=… - email-confirmation link for dossier deletion.
 //   Performs the deletion and redirects to /dossier with a flag.
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
   });
 }
 
-// DELETE /api/dossier — first call sends a confirmation email; the email
+// DELETE /api/dossier - first call sends a confirmation email; the email
 // link (GET ?token=…) performs the actual deletion.
 export async function DELETE(request: NextRequest) {
   const auth = await requireAuth(request);

@@ -68,7 +68,7 @@ export default function AdminSettingsPage() {
     } catch (err) {
       setCloudTest({
         status: "error",
-        message: err instanceof Error ? err.message : "Erreur lors du test.",
+        message: err instanceof Error ? err.message : t("admin.testErrorMessage"),
       });
     } finally {
       setCloudTesting(false);
@@ -179,11 +179,11 @@ export default function AdminSettingsPage() {
       />
 
       <div className="grid gap-5 lg:grid-cols-2">
-        {/* ── Section [Postulations] — two independent pricing axes ── */}
+        {/* ── Section [Postulations] : two independent pricing axes ── */}
         <div className="form-sheet lg:col-span-2">
           <div className="sheet-band px-5 py-3.5">
             <h2 className="font-display text-sm font-bold">
-              {t("admin.pricingSectionPostulations")} — {t("demandes.priceTitle")}
+              {t("admin.pricingSectionPostulations")} · {t("demandes.priceTitle")}
             </h2>
             <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
               {t("admin.pricingSectionPostulationsHint")}
@@ -195,11 +195,11 @@ export default function AdminSettingsPage() {
           </div>
         </div>
 
-        {/* ── Section [Dossier] — creation & add prices ── */}
+        {/* ── Section [Dossier] : creation & add prices ── */}
         <div className="form-sheet">
           <div className="sheet-band px-5 py-3.5">
             <h2 className="font-display text-sm font-bold">
-              {t("admin.pricingSectionDossier")} — {t("demandes.priceTitle")}
+              {t("admin.pricingSectionDossier")} · {t("demandes.priceTitle")}
             </h2>
             <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
               {t("admin.pricingSectionDossierHint")}
@@ -304,7 +304,7 @@ export default function AdminSettingsPage() {
             </div>
           </div>
         </div>
-        {/* Cloudinary — PDF hosting diagnostic */}
+        {/* Cloudinary · PDF hosting diagnostic */}
         <div className="form-sheet lg:col-span-2">
           <div className="sheet-band px-5 py-3.5">
             <h2 className="font-display text-sm font-bold">{t("admin.cloudinaryTitle")}</h2>

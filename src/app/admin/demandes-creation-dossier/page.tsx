@@ -26,6 +26,7 @@ import {
   adminCanCancel,
 } from "@/lib/dossier-status";
 import { Banknote, CalendarClock, Upload, Loader2, XCircle, MessageSquare, FileUp } from "lucide-react";
+import { DatePicker } from "@/components/date-picker";
 
 interface DemandeRow {
   _id: string;
@@ -110,7 +111,7 @@ export default function AdminDemandesCreationDossierPage() {
     try {
       const formData = new FormData();
       formData.append("file", finalFile);
-      // Traduction price is only submitted on FIRST completion — when
+      // Traduction price is only submitted on FIRST completion - when
       // replacing the PDF the price stays untouched (field not shown).
       if (
         completeTarget.status !== "completed" &&
@@ -125,8 +126,8 @@ export default function AdminDemandesCreationDossierPage() {
       );
       const data = await response
         .json()
-        .catch(() => ({ success: false, error: `Erreur serveur (${response.status})` }));
-      if (!response.ok || !data.success) throw new Error(data.error || "Erreur");
+        .catch(() => ({ success: false, error: t("common.serverError", { status: response.status }) }));
+      if (!response.ok || !data.success) throw new Error(data.error || t("common.errorFallback"));
       toast({ title: t("admin.completedSuccess") });
       setCompleteOpen(false);
       setRefreshKey((k) => k + 1);
@@ -172,7 +173,7 @@ export default function AdminDemandesCreationDossierPage() {
       header: t("admin.colName"),
       render: (row) => (
         <div>
-          <p className="font-medium">{row.user?.full_name || "—"}</p>
+          <p className="font-medium">{row.user?.full_name || "-"}</p>
           <p className="aktenzeichen">{row.user?.email}</p>
         </div>
       ),
@@ -202,7 +203,7 @@ export default function AdminDemandesCreationDossierPage() {
             {new Date(row.dossier_ready_at).toLocaleDateString("fr-FR")}
           </span>
         ) : (
-          <span className="aktenzeichen text-muted-foreground/50">—</span>
+          <span className="aktenzeichen text-muted-foreground/50">-</span>
         ),
     },
     {
@@ -252,9 +253,9 @@ export default function AdminDemandesCreationDossierPage() {
                 size="sm"
                 className="h-7 gap-1 bg-primary text-xs hover:bg-primary/90"
                 onClick={async () => {
-                  const ok = await confirmApp("Marquer cette demande comme en cours de création ?", {
-                    title: "En cours de création",
-                    confirmLabel: "Confirmer",
+                  const ok = await confirmApp(t("admin.markInCreationConfirm"), {
+                    title: t("admin.markInCreationTitle"),
+                    confirmLabel: t("common.confirm"),
                   });
                   if (!ok) return;
                   try {
@@ -336,6 +337,9 @@ export default function AdminDemandesCreationDossierPage() {
         endpoint="/api/admin/demandes-creation-dossier"
         columns={columns}
         refreshKey={refreshKey}
+        columnToggle
+        storageKey="admin-demandes-creation"
+        dateFilters={[{ prefix: "created", label: t("common.createdAt") }]}
         statusFilter={{
           key: "status",
           label: t("common.status"),
@@ -355,7 +359,7 @@ export default function AdminDemandesCreationDossierPage() {
           <DialogHeader>
             <DialogTitle className="font-display">{t("admin.confirmPayed")}</DialogTitle>
             <DialogDescription>
-              {payTarget?.ref_number} — {payTarget?.price} $
+              {payTarget?.ref_number} · {payTarget?.price} $
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -364,7 +368,12 @@ export default function AdminDemandesCreationDossierPage() {
                 <CalendarClock className="h-3.5 w-3.5" />
                 {t("admin.setReadyDate")}
               </Label>
-              <Input type="date" value={readyDate} onChange={(e) => setReadyDate(e.target.value)} />
+              {/* Custom popup picker (same as /register) : future dates allowed */}
+              <DatePicker
+                value={readyDate}
+                onChange={setReadyDate}
+                maxDate={new Date(2099, 11, 31)}
+              />
             </div>
             <div className="space-y-1.5">
               <Label>{t("admin.traductionPriceLabel")}</Label>
@@ -395,20 +404,19 @@ export default function AdminDemandesCreationDossierPage() {
       <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-display">Annuler la demande</DialogTitle>
+            <DialogTitle className="font-display">{t("admin.cancelDemandeTitle")}</DialogTitle>
             <DialogDescription>
-              {cancelTarget?.ref_number} — la demande sera marquée « annulée par
-              l&apos;admin » et l&apos;utilisateur pourra en créer une nouvelle.
+              {t("admin.cancelDemandeDesc", { ref: cancelTarget?.ref_number || "" })}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-1.5">
-            <Label>Message d&apos;annulation (visible par l&apos;utilisateur)</Label>
+            <Label>{t("admin.cancelMessageLabel")}</Label>
             <Textarea
               autoFocus
               value={cancelMessage}
               onChange={(e) => setCancelMessage(e.target.value)}
               rows={4}
-              placeholder="Expliquez la raison de l'annulation…"
+              placeholder={t("admin.cancelMessagePlaceholder")}
             />
           </div>
           <DialogFooter>
@@ -421,7 +429,7 @@ export default function AdminDemandesCreationDossierPage() {
               disabled={cancelMessage.trim().length < 5 || saving}
               className="font-semibold"
             >
-              {saving ? t("common.loading") : "Annuler la demande"}
+              {saving ? t("common.loading") : t("admin.cancelDemandeTitle")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -433,7 +441,7 @@ export default function AdminDemandesCreationDossierPage() {
           <DialogHeader>
             <DialogTitle className="font-display">{t("admin.uploadFinalDossier")}</DialogTitle>
             <DialogDescription>
-              {completeTarget?.ref_number} —{" "}
+              {completeTarget?.ref_number} ·{" "}
               {completeTarget?.status === "completed"
                 ? t("admin.replacePdfHint")
                 : t("admin.markCompleted")}
@@ -449,7 +457,7 @@ export default function AdminDemandesCreationDossierPage() {
               />
             </div>
             {/* Prix de traduction : uniquement à la première finalisation.
-                Lors du REMPLACEMENT du PDF, le prix reste inchangé — on ne
+                Lors du REMPLACEMENT du PDF, le prix reste inchangé - on ne
                 modifie que le fichier. */}
             {completeTarget?.status !== "completed" && (
               <div className="space-y-1.5">

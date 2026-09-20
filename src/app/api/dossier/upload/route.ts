@@ -9,7 +9,7 @@ import { CloudinaryError, uploadPdfToCloudinary, validatePdfFile } from "@/lib/c
 import { generateRefNumber } from "@/lib/audit";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
-// POST /api/dossier/upload — multipart form with "file" (PDF).
+// POST /api/dossier/upload - multipart form with "file" (PDF).
 // Uploads to Cloudinary, creates a "demande d'ajout" with status en_attente.
 export async function POST(request: NextRequest) {
   try {
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     const { url } = await uploadPdfToCloudinary(buffer, file.name);
 
     // The price in effect NOW is snapshotted on the demande (the admin can
-    // change it later — the user pays the price he saw). When the price is
+    // change it later - the user pays the price he saw). When the price is
     // above zero, the demande starts in the payment workflow: the user pays
     // via WhatsApp, then the admin validates the payment before the review.
     const addPrice = settings.dossier.add_price ?? 0;

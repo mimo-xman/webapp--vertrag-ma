@@ -35,7 +35,7 @@ import {
 export default function HomePage() {
   const { t } = useI18n();
   const [stats, setStats] = useState<{ companies: number; sent: number }>({ companies: 0, sent: 0 });
-  // Live pricing — mirrors the admin settings (prices, steps, free amounts,
+  // Live pricing - mirrors the admin settings (prices, steps, free amounts,
   // dossier prices). Everything in the pricing section is computed from it.
   const [pricing, setPricing] = useState<PricingSettings>(DEFAULT_PRICING);
   const [dossierPrices, setDossierPrices] = useState<{ creation: number; add: number }>({
@@ -58,7 +58,7 @@ export default function HomePage() {
       .catch(() => {});
   }, []);
 
-  // Example quantities derived from the LIVE steps — stays representative
+  // Example quantities derived from the LIVE steps - stays representative
   // whatever the admin configures (min + 3 steps total, min + 4 steps/day).
   const exampleTotal = pricing.total.min + 3 * pricing.total.step;
   const examplePerDay = pricing.per_day.min + 4 * pricing.per_day.step;
@@ -72,7 +72,7 @@ export default function HomePage() {
       <main className="flex-1">
         {/* ── Hero ───────────────────────────────────────────── */}
         <section className="relative overflow-hidden border-b border-border">
-          {/* Background grid — graph paper */}
+          {/* Background grid : graph paper */}
           <div aria-hidden className="bg-graph-paper absolute inset-0 opacity-35" />
           <div className="relative mx-auto grid max-w-6xl gap-10 px-4 py-16 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:py-24">
             <div className="fade-up">
@@ -119,7 +119,7 @@ export default function HomePage() {
               </dl>
             </div>
 
-            {/* The Bewerbung document — signature visual (a physical paper
+            {/* The Bewerbung document : signature visual (a physical paper
                 sheet: stays white in both themes) */}
             <div className="relative mx-auto w-full max-w-sm fade-up fade-up-delay-2" aria-hidden>
               <div className="doc-paper relative rotate-[1.5deg] rounded-sm p-6">
@@ -151,7 +151,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Stamps — positioned like official document stamps (overlapping edges) */}
+                {/* Stamps : positioned like official document stamps (overlapping edges) */}
                 <div className="stamp stamp-green stamp-anim absolute -right-3 -top-3 !text-[10px] sm:!text-xs">
                   GEPRÜFT ✓
                 </div>
@@ -169,7 +169,7 @@ export default function HomePage() {
         {/* ── Services ──────────────────────────────────────── */}
         <section id="services" className="border-b border-border py-16 lg:py-20">
           <div className="mx-auto max-w-6xl px-4">
-            <p className="eyebrow mb-2 fade-up">01 — LEISTUNGEN</p>
+            <p className="eyebrow mb-2 fade-up">01 · LEISTUNGEN</p>
             <h2 className="font-display text-3xl font-bold tracking-tight fade-up fade-up-delay-1">
               {t("home.servicesTitle")}
             </h2>
@@ -221,7 +221,7 @@ export default function HomePage() {
         {/* ── How it works ──────────────────────────────────── */}
         <section id="how" className="border-b border-border bg-paper py-16 lg:py-20">
           <div className="mx-auto max-w-6xl px-4">
-            <p className="eyebrow mb-2 fade-up">02 — ABLAUF</p>
+            <p className="eyebrow mb-2 fade-up">02 · ABLAUF</p>
             <h2 className="font-display text-3xl font-bold tracking-tight fade-up fade-up-delay-1">
               {t("home.howTitle")}
             </h2>
@@ -251,11 +251,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── Pricing — fully LIVE: prices, steps and free amounts come
+        {/* ── Pricing : fully LIVE: prices, steps and free amounts come
              from the admin settings (see /api/public/stats) ────────── */}
         <section id="pricing" className="border-b border-border py-16 lg:py-20">
           <div className="mx-auto max-w-6xl px-4">
-            <p className="eyebrow mb-2 fade-up">03 — PREISE</p>
+            <p className="eyebrow mb-2 fade-up">03 · PREISE</p>
             <h2 className="font-display text-3xl font-bold tracking-tight fade-up fade-up-delay-1">
               {t("home.pricingTitle")}
             </h2>
@@ -264,7 +264,7 @@ export default function HomePage() {
             </p>
 
             <div className="mt-10 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-              {/* Price table — official form style (values are LIVE from the admin settings) */}
+              {/* Price table : official form style (values are LIVE from the admin settings) */}
               <div className="form-sheet overflow-hidden">
                 <table className="w-full text-sm">
                   <tbody>
@@ -309,21 +309,38 @@ export default function HomePage() {
                 </table>
               </div>
 
-              {/* Example calculation — computed with the LIVE pricing engine */}
+              {/* Example calculation : computed with the LIVE pricing engine */}
               <div className="form-sheet border-primary/40 bg-paper p-6">
                 <p className="eyebrow mb-4">{t("home.pricingExampleTitle")}</p>
                 <div className="space-y-3 text-sm">
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-muted-foreground">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="min-w-0 text-muted-foreground">
                       {t("home.pricingExampleTotal", { count: exampleTotal.toLocaleString("fr-FR") })}
                     </span>
-                    <span className="num font-medium">{example.total_price} $</span>
+                    <span className="num flex shrink-0 items-center gap-2">
+                      {example.total_discount > 0 && (
+                        <span className="relative text-muted-foreground">
+                          {example.total_full_price} $
+                          <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 rotate-[-6deg] bg-destructive" />
+                        </span>
+                      )}
+                      <span className="font-medium">{example.total_price} $</span>
+                    </span>
                   </div>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-muted-foreground">
+                  {example.total_discount > 0 && (
+                    <div className="flex items-center justify-between gap-3 text-xs text-success">
+                      <span className="flex min-w-0 items-center gap-1">
+                        <TrendingDown className="h-3 w-3 shrink-0" />
+                        {t("home.pricingFreeNoteTotal", { count: pricing.total.free_amount })}
+                      </span>
+                      <span className="num shrink-0">−{example.total_discount} $</span>
+                    </div>
+                  )}
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="min-w-0 text-muted-foreground">
                       {t("home.pricingExamplePerDay", { count: examplePerDay })}
                     </span>
-                    <span className="num flex items-center gap-2">
+                    <span className="num flex shrink-0 items-center gap-2">
                       {example.per_day_discount > 0 && (
                         <span className="relative text-muted-foreground">
                           {example.per_day_price} $
@@ -334,16 +351,16 @@ export default function HomePage() {
                     </span>
                   </div>
                   {example.per_day_discount > 0 && (
-                    <div className="flex items-center justify-between text-xs text-success">
-                      <span className="flex items-center gap-1">
-                        <TrendingDown className="h-3 w-3" />
+                    <div className="flex items-center justify-between gap-3 text-xs text-success">
+                      <span className="flex min-w-0 items-center gap-1">
+                        <TrendingDown className="h-3 w-3 shrink-0" />
                         {t("home.pricingFreeNote", { count: pricing.per_day.free_amount })}
                       </span>
-                      <span className="num">−{example.per_day_discount} $</span>
+                      <span className="num shrink-0">−{example.per_day_discount} $</span>
                     </div>
                   )}
                   <div className="rule-dashed" />
-                  <div className="flex items-baseline justify-between">
+                  <div className="flex items-baseline justify-between gap-3">
                     <span className="font-display font-bold">{t("demandes.priceTotal")}</span>
                     <span className="num font-display text-2xl font-extrabold text-primary">
                       {example.final_price} $
@@ -361,7 +378,7 @@ export default function HomePage() {
         {/* ── Trust ─────────────────────────────────────────── */}
         <section className="border-b border-border bg-paper py-16 lg:py-20">
           <div className="mx-auto max-w-6xl px-4">
-            <p className="eyebrow mb-2 fade-up">04 — VERTRAUEN</p>
+            <p className="eyebrow mb-2 fade-up">04 · VERTRAUEN</p>
             <h2 className="font-display text-3xl font-bold tracking-tight fade-up fade-up-delay-1">
               {t("home.trustTitle")}
             </h2>
@@ -384,7 +401,7 @@ export default function HomePage() {
         {/* ── FAQ ───────────────────────────────────────────── */}
         <section id="faq" className="border-b border-border py-16 lg:py-20">
           <div className="mx-auto max-w-3xl px-4">
-            <p className="eyebrow mb-2 fade-up">05 — FRAGEN</p>
+            <p className="eyebrow mb-2 fade-up">05 · FRAGEN</p>
             <h2 className="font-display text-3xl font-bold tracking-tight fade-up fade-up-delay-1">
               {t("home.faqTitle")}
             </h2>
@@ -408,7 +425,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── Final CTA — the ink band ──────────────────────── */}
+        {/* ── Final CTA : the ink band ──────────────────────── */}
         <section className="relative overflow-hidden bg-ink-section py-16 lg:py-20">
           <div aria-hidden className="bg-graph-paper-ink absolute inset-0 opacity-20" />
           <div className="relative mx-auto max-w-6xl px-4 text-center fade-up">

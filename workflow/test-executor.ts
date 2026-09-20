@@ -1,13 +1,13 @@
 // Local smoke test of the postulation execution engine.
 //
 // - Starts an in-memory MongoDB (no real database needed).
-// - Starts a FAKE local SMTP server (no real email is sent — the whole
+// - Starts a FAKE local SMTP server (no real email is sent - the whole
 //   SMTP dialogue is captured in memory).
 // - Runs the wave executor end-to-end: parallel executions per mail sender,
 //   atomic postulation claiming (no double send), sender failure disabling,
 //   single-postulation execution, stuck-run recovery.
 //
-// Usage (from the repo root — uses the app's node_modules):
+// Usage (from the repo root - uses the app's node_modules):
 //   npx tsx workflow/test-executor.ts
 //   # or: cd workflow && npx tsx test-executor.ts
 
@@ -103,7 +103,7 @@ function startFakeSmtpServer(port: number): Promise<{ server: net.Server; mails:
   });
 }
 
-// Tiny valid PDF as a data URL — used as the user's dossier_pdf_link
+// Tiny valid PDF as a data URL - used as the user's dossier_pdf_link
 // (Node's fetch supports data: URLs).
 const TINY_PDF = Buffer.from(
   "%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF",
@@ -120,7 +120,7 @@ function check(name: string, condition: boolean, detail = "") {
     console.log(`  ✓ ${name}`);
   } else {
     failed += 1;
-    console.error(`  ✗ ${name}${detail ? ` — ${detail}` : ""}`);
+    console.error(`  ✗ ${name}${detail ? ` · ${detail}` : ""}`);
   }
 }
 
@@ -323,7 +323,7 @@ async function main() {
   const manualPostulation = await Postulation.create({
     user_id: user._id,
     company_id: manualCompany._id,
-    scheduled_at: new Date(Date.now() + 86400000), // tomorrow — still executable manually
+    scheduled_at: new Date(Date.now() + 86400000), // tomorrow : still executable manually
     status: "en_attente",
   });
 
@@ -379,7 +379,7 @@ async function main() {
     scheduled_at: dueToday,
     status: "executing", // stuck
   });
-  // Bypass mongoose timestamps middleware — set updatedAt directly so the
+  // Bypass mongoose timestamps middleware - set updatedAt directly so the
   // postulation looks abandoned 30 minutes ago.
   await Postulation.collection.updateOne(
     { _id: stuckPostulation._id },
@@ -499,7 +499,7 @@ async function main() {
   );
 
   // ══════════════════════════════════════════════════════════════════════
-  console.log("[TEST 7] Pricing — nouveau minimum total à 100");
+  console.log("[TEST 7] Pricing : nouveau minimum total à 100");
 
   const { buildTotalOptions, validateDemandeInput, DEFAULT_PRICING } = await import(
     "../src/lib/pricing"

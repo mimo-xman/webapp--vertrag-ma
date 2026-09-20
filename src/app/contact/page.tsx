@@ -3,7 +3,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { getAuthUser } from "@/lib/auth";
 import { ContactView } from "./contact-view";
 
-// Public contact page — the support form. Also linked from the suspended
+// Public contact page - the support form. Also linked from the suspended
 // account page so suspended users can reach the team.
 export default async function ContactPage() {
   // Best-effort prefill (suspended users keep a valid session).
@@ -11,7 +11,7 @@ export default async function ContactPage() {
 
   return (
     <div className="min-h-dvh flex flex-col bg-paper">
-      {/* Briefkopf — letterhead */}
+      {/* Briefkopf : letterhead */}
       <header className="border-b border-border bg-paper/80 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
           <Logo />

@@ -5,11 +5,16 @@ import { requireAdmin } from "@/lib/auth";
 import { Postulation } from "@/models/Postulation";
 import { logAdminAction } from "@/lib/audit";
 import { hasActiveExecution, startExecutionWave } from "@/lib/postulation-executor";
+import { parseDateParam, END_OF_DAY_MS } from "@/lib/api-filters";
 
-// POST /api/admin/postulations/re-execute — "Lancer la relance".
-// 1. Marks all failed postulations (echouee) as re_execute.
+// POST /api/admin/postulations/re-execute - "Lancer la relance".
+// 1. Marks failed postulations (echouee) as re_execute - only those
+//    scheduled today or in the past (scheduled_at <= end of today), or
+//    within the optional admin-selected date interval [date_from, date_to]
+//    (the picker caps every date at today: the future is never relaunched).
 // 2. Runs them via the selected target:
-//      github → dispatches the GitHub Actions workflow (async)
+//      github → dispatches the GitHub Actions workflow (async, with the
+//               same date interval passed as workflow inputs)
 //      server → runs the execution wave directly on this backend
 //               (Oracle Cloud VM), one parallel execution per mail sender.
 // A freshness check prevents launching a second execution of the same
@@ -18,6 +23,10 @@ import { hasActiveExecution, startExecutionWave } from "@/lib/postulation-execut
 
 const schema = z.object({
   target: z.enum(["github", "server"]).default("github"),
+  // Optional relaunch interval (YYYY-MM-DD, both <= today by construction
+  // of the picker). date_from must be <= date_to.
+  date_from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  date_to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -27,9 +36,20 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Cible invalide" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "Cible ou dates invalides" }, { status: 400 });
   }
-  const target = parsed.data.target;
+  const { target, date_from, date_to } = parsed.data;
+
+  // Interval validation: start must be <= end (also enforced client-side,
+  // but the API never trusts the client).
+  const from = parseDateParam(date_from, 0);
+  const to = parseDateParam(date_to, END_OF_DAY_MS);
+  if (from && to && from.getTime() > to.getTime()) {
+    return NextResponse.json(
+      { success: false, error: "La date de début doit être antérieure ou égale à la date de fin." },
+      { status: 400 }
+    );
+  }
 
   await connectDB();
 
@@ -49,9 +69,26 @@ export async function POST(request: NextRequest) {
   }
 
   // 1. Move failed → re_execute (team has analyzed and fixed the issue).
-  const toRelaunch = await Postulation.countDocuments({ status: "echouee" });
-  await Postulation.updateMany({ status: "echouee" }, { $set: { status: "re_execute" } });
-  const pending = await Postulation.countDocuments({ status: "re_execute" });
+  //    Scheduling window: explicit interval, or "today or overdue" by default.
+  const windowFilter: Record<string, unknown> = { status: "echouee" };
+  if (from || to) {
+    windowFilter.scheduled_at = {
+      ...(from ? { $gte: from } : {}),
+      ...(to ? { $lte: to } : {}),
+    };
+  } else {
+    const endOfToday = new Date();
+    endOfToday.setUTCHours(23, 59, 59, 999);
+    windowFilter.scheduled_at = { $lte: endOfToday };
+  }
+
+  const toRelaunch = await Postulation.countDocuments(windowFilter);
+  await Postulation.updateMany(windowFilter, { $set: { status: "re_execute" } });
+
+  // Pending = everything re_execute within the SAME window.
+  const pendingFilter: Record<string, unknown> = { status: "re_execute" };
+  pendingFilter.scheduled_at = windowFilter.scheduled_at;
+  const pending = await Postulation.countDocuments(pendingFilter);
 
   if (pending === 0) {
     return NextResponse.json({
@@ -63,7 +100,7 @@ export async function POST(request: NextRequest) {
       execution_ids: [],
       workflow_triggered: false,
       workflow_error: null,
-      message: "Aucune postulation à relancer.",
+      message: "Aucune postulation à relancer (seules les postulations programmées aujourd'hui ou passées sont concernées).",
     });
   }
 
@@ -72,16 +109,21 @@ export async function POST(request: NextRequest) {
     const wave = await startExecutionWave({
       trigger: "server",
       statuses: ["re_execute"],
-      dueTodayOnly: false, // relaunch ALL re_execute postulations, whatever their date
+      scheduledFrom: from ?? undefined,
+      scheduledTo: to ?? undefined,
+      dueTodayOnly: !from && !to, // default window: today or overdue only
       adminId: auth.user._id,
     });
 
-    // Don't await the whole wave — the executions page shows it live.
+    // Don't await the whole wave - the executions page shows it live.
     wave.promise
       .then((summary) => {
         console.log(
           `[RE-EXECUTE] Vague serveur terminée : ${summary.sent} envoyée(s), ${summary.failed} échouée(s)` +
-            (summary.fatal_error ? ` — ${summary.fatal_error}` : "")
+            (summary.senders_limited.length > 0
+              ? ` · limite quotidienne : ${summary.senders_limited.join(", ")}`
+              : "") +
+            (summary.fatal_error ? ` · ${summary.fatal_error}` : "")
         );
       })
       .catch(() => {});
@@ -107,7 +149,8 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // 2b. GitHub workflow: dispatch via the GitHub API.
+  // 2b. GitHub workflow: dispatch via the GitHub API, passing the interval
+  //      as workflow inputs so the worker relaunches the same window.
   const token = process.env.GITHUB_WORKFLOW_TOKEN;
   const repo = process.env.GITHUB_WORKFLOW_REPO || "mimo-xman/webapp--vertrag-ma";
 
@@ -125,7 +168,13 @@ export async function POST(request: NextRequest) {
             Authorization: `Bearer ${token}`,
             "X-GitHub-Api-Version": "2022-11-28",
           },
-          body: JSON.stringify({ ref: "main" }),
+          body: JSON.stringify({
+            ref: "main",
+            inputs: {
+              ...(date_from ? { date_from } : {}),
+              ...(date_to ? { date_to } : {}),
+            },
+          }),
         }
       );
       workflow_triggered = response.ok;
@@ -144,7 +193,7 @@ export async function POST(request: NextRequest) {
     admin_email: auth.user.email,
     action: "postulation.re_execute",
     entity_type: "postulation",
-    details: `Relance GitHub déclenchée : ${toRelaunch} échouée(s) → re_execute, ${pending} en attente de relance. Workflow: ${workflow_triggered ? "lancé" : `non lancé (${workflow_error})`}`,
+    details: `Relance GitHub déclenchée : ${toRelaunch} échouée(s) → re_execute, ${pending} en attente de relance${from ? ` (du ${date_from}` : ""}${to ? ` au ${date_to})` : from ? ")" : ""}. Workflow: ${workflow_triggered ? "lancé" : `non lancé (${workflow_error})`}`,
   });
 
   return NextResponse.json({

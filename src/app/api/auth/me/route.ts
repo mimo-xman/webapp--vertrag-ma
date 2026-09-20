@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
   });
 }
 
-// Birth date between 01/01/1900 and today — reasonable bounds only.
+// Birth date between 01/01/1900 and today - reasonable bounds only.
 function isValidBirthDate(value: string): boolean {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   if (!match) return false;

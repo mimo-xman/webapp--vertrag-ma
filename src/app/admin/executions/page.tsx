@@ -24,6 +24,7 @@ import {
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { AlertTriangle, Radio, RadioTower, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { DatePicker } from "@/components/date-picker";
 
 // Live polling refresh rate.
 const POLL_MS = 3000;
@@ -81,7 +82,7 @@ export default function AdminExecutionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Live polling — pauses when the tab is hidden.
+  // Live polling - pauses when the tab is hidden.
   const [live, setLive] = useState(true);
   const liveRef = useRef(live);
   liveRef.current = live;
@@ -98,7 +99,7 @@ export default function AdminExecutionsPage() {
       setPagination({ total: data.pagination.total, totalPages: data.pagination.totalPages });
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : t("common.errorFallback"));
     } finally {
       setLoading(false);
     }
@@ -177,12 +178,11 @@ export default function AdminExecutionsPage() {
         <div className="flex flex-wrap items-end gap-2">
           <div className="space-y-1">
             <label className="eyebrow block">{t("common.date")}</label>
-            <Input
-              type="date"
-              value={date}
-              onChange={(e) => changeDate(e.target.value)}
-              className="bg-card"
-            />
+            {/* Custom popup picker (same as /register) : executions history,
+                so the selectable range stops at today. */}
+            <div className="w-40">
+              <DatePicker value={date} onChange={changeDate} compact />
+            </div>
           </div>
           <div className="space-y-1">
             <label className="eyebrow block">{t("admin.execOpenExecutions")}</label>
@@ -269,7 +269,7 @@ export default function AdminExecutionsPage() {
                       </Badge>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-xs">{row.mail_sender_name || "—"}</span>
+                      <span className="text-xs">{row.mail_sender_name || "-"}</span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="space-y-1">
@@ -306,7 +306,7 @@ export default function AdminExecutionsPage() {
                           {new Date(row.finished_at).toLocaleTimeString("fr-FR")}
                         </span>
                       ) : (
-                        <span className="aktenzeichen text-muted-foreground/50">—</span>
+                        <span className="aktenzeichen text-muted-foreground/50">-</span>
                       )}
                     </td>
                   </tr>
@@ -392,7 +392,7 @@ export default function AdminExecutionsPage() {
                   <p className="aktenzeichen mt-1">
                     {detail.finished_at
                       ? new Date(detail.finished_at).toLocaleTimeString("fr-FR")
-                      : "—"}
+                      : "-"}
                   </p>
                 </div>
               </div>
@@ -406,7 +406,7 @@ export default function AdminExecutionsPage() {
               <div>
                 <p className="eyebrow mb-2">{t("admin.execPostulations")}</p>
                 {detail.postulations_details.length === 0 ? (
-                  <p className="py-3 text-center text-sm text-muted-foreground">—</p>
+                  <p className="py-3 text-center text-sm text-muted-foreground">-</p>
                 ) : (
                   <div className="max-h-72 space-y-1.5 overflow-y-auto scroll-slim pr-1">
                     {detail.postulations_details.map((p) => (
@@ -416,7 +416,7 @@ export default function AdminExecutionsPage() {
                       >
                         <div className="min-w-0">
                           <p className="truncate text-xs font-medium">
-                            {p.user?.full_name || "—"} → {p.company?.name || "—"}
+                            {p.user?.full_name || "-"} → {p.company?.name || "-"}
                           </p>
                           {p.error && (
                             <p className="truncate text-[11px] text-destructive" title={p.error}>

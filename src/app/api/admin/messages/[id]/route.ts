@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/auth";
 import { SupportMessage } from "@/models/SupportMessage";
 import { logAdminAction } from "@/lib/audit";
 
-// PATCH /api/admin/messages/[id] — toggle a support message between
+// PATCH /api/admin/messages/[id] - toggle a support message between
 // "active" and "closed".
 //   closed = the team contacted the user by email and resolved the issue
 //            (possibly over several exchanges).

@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 import { DossierDemandeForCreate } from "@/models/DossierDemandeForCreate";
 import { logAdminAction } from "@/lib/audit";
 
-// POST — mark as in_creation (team is working on it)
+// POST - mark as in_creation (team is working on it)
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/auth";
 import { getSettings, Setting } from "@/models/Setting";
 import { logAdminAction } from "@/lib/audit";
 
-// GET — current settings.
+// GET - current settings.
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
@@ -53,7 +53,7 @@ const schema = z.object({
     .optional(),
 });
 
-// PUT — update settings (merge semantics).
+// PUT - update settings (merge semantics).
 export async function PUT(request: NextRequest) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;

@@ -83,7 +83,7 @@ export default function LoginPage() {
     <div className="form-sheet">
       {/* Form band header */}
       <div className="sheet-band px-6 py-5 border-b border-border rounded-t-[var(--radius)]">
-        <p className="eyebrow mb-1.5">Vertrag.ma — {t("auth.loginTitle")}</p>
+        <p className="eyebrow mb-1.5">Vertrag.ma · {t("auth.loginTitle")}</p>
         <h1 className="font-display text-2xl font-bold tracking-tight">
           {userId ? t("auth.twoFATitle") : t("auth.loginTitle")}
         </h1>

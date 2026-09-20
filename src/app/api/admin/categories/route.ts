@@ -5,8 +5,9 @@ import { requireAdmin } from "@/lib/auth";
 import { Category } from "@/models/Category";
 import { Company } from "@/models/Company";
 import { logAdminAction } from "@/lib/audit";
+import { applyDateRange } from "@/lib/api-filters";
 
-// GET — categories with company counts.
+// GET - categories with company counts.
 // ?status=active|inactive filters on the activation state.
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
@@ -26,6 +27,8 @@ export async function GET(request: NextRequest) {
     : {};
   if (statusFilter === "active") match.active = true;
   else if (statusFilter === "inactive") match.active = false;
+  // Date-range filter on the creation date.
+  applyDateRange(match, params, "created", "createdAt");
 
   const sort: Record<string, 1 | -1> = { [sortField === "companies_count" ? "companies_count" : sortField]: sortOrder };
 

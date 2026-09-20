@@ -1,11 +1,11 @@
 // Cloudinary PDF upload via REST API with signature.
 //
 // ═══════════════════════════════════════════════════════════════════════════
-// IMPORTANT — DISTRIBUTION DES PDF SUR CLOUDINARY (cause racine du 401)
+// IMPORTANT - DISTRIBUTION DES PDF SUR CLOUDINARY (cause racine du 401)
 // ═══════════════════════════════════════════════════════════════════════════
 // Cloudinary désactive PAR DÉFAUT la distribution des fichiers PDF/ZIP sur les
 // comptes (mesure de sécurité). Quand ce réglage est désactivé, TOUT lien PDF
-// renvoie HTTP 401 « deny or ACL failure » — quel que soit le mode d'envoi
+// renvoie HTTP 401 « deny or ACL failure » - quel que soit le mode d'envoi
 // (image, raw, auto, URL signée authenticated : tous bloqués, vérifié
 // empiriquement). Les images ne sont PAS concernées, d'où l'impression que
 // « Cloudinary marche » alors que les PDF échouent.
@@ -20,7 +20,7 @@
 //
 // Sécurité intégrée : après chaque envoi, le lien est VÉRIFIÉ par une requête
 // HTTP. Si le fichier n'est pas publiquement accessible, l'asset est détruit
-// et une erreur explicite est levée — aucun lien mort n'est persisté en DB.
+// et une erreur explicite est levée - aucun lien mort n'est persisté en DB.
 //
 // Configuration (au choix, dans cet ordre) :
 //   1. CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
@@ -48,7 +48,7 @@ export class CloudinaryError extends Error {
 
 /** Étapes exactes pour activer la distribution PDF dans la console Cloudinary. */
 export const CLOUDINARY_PDF_DELIVERY_FIX_FR =
-  "Cloudinary : la distribution des fichiers PDF est bloquée sur ce compte (HTTP 401 — « deny or ACL failure »).\n\n" +
+  "Cloudinary : la distribution des fichiers PDF est bloquée sur ce compte (HTTP 401 · « deny or ACL failure »).\n\n" +
   "Correction (une seule fois, ~30 secondes) :\n" +
   "1. Ouvrez la console Cloudinary → Paramètres → Sécurité\n" +
   "   (lien direct : https://console.cloudinary.com/settings/security)\n" +
@@ -238,7 +238,7 @@ export async function uploadPdfToCloudinary(
     throw new CloudinaryError(
       "delivery_unreachable",
       `Cloudinary : le PDF a été envoyé mais son lien n'est pas accessible publiquement ` +
-        `(HTTP ${check.status ?? "?"}${check.cldError ? ` — ${check.cldError}` : ""}). ` +
+        `(HTTP ${check.status ?? "?"}${check.cldError ? ` · ${check.cldError}` : ""}). ` +
         `Le fichier a été supprimé. Lien testé : ${data.secure_url}`
     );
   }
@@ -291,7 +291,7 @@ export async function testCloudinaryPdfDelivery(): Promise<CloudinaryTestResult>
 
   try {
     const { url, publicId } = await uploadPdfToCloudinary(TEST_PDF, "test-distribution.pdf");
-    // Delivery already verified by the upload itself — clean up the test asset.
+    // Delivery already verified by the upload itself - clean up the test asset.
     await destroyRawAsset(credentials, publicId);
     return {
       status: "ok",

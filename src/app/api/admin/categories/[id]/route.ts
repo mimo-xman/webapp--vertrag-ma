@@ -41,7 +41,7 @@ export async function PUT(
   return NextResponse.json({ success: true, data: { _id: String(category._id), name: category.name } });
 }
 
-// PATCH — activate / deactivate a category.
+// PATCH - activate / deactivate a category.
 // A deactivated category is hidden from the user's category selector, and
 // its companies are excluded from NEW demande targeting (selection, counts
 // and snapshot). Already-scheduled postulations keep their course.
@@ -97,7 +97,7 @@ export async function DELETE(
   }
 
   // Data-integrity guard: a category containing companies must not be
-  // deleted — its companies would lose their classification. Deactivate it
+  // deleted - its companies would lose their classification. Deactivate it
   // instead (its companies stop being targeted by new demandes) or move the
   // companies elsewhere first.
   const companiesCount = await Company.countDocuments({ categorie_ids: id });
@@ -105,7 +105,7 @@ export async function DELETE(
     return NextResponse.json(
       {
         success: false,
-        error: `Impossible de supprimer cette catégorie : elle contient ${companiesCount} entreprise(s). Déplacez ou supprimez d'abord ses entreprises — ou désactivez simplement la catégorie (elle ne sera plus proposée aux utilisateurs).`,
+        error: `Impossible de supprimer cette catégorie : elle contient ${companiesCount} entreprise(s). Déplacez ou supprimez d'abord ses entreprises : ou désactivez simplement la catégorie (elle ne sera plus proposée aux utilisateurs).`,
       },
       { status: 400 }
     );

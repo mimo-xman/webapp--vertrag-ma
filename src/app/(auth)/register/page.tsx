@@ -99,8 +99,7 @@ export default function RegisterPage() {
         </div>
         <h1 className="font-display text-xl font-bold">{t("auth.emailSent")}</h1>
         <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-          Cliquez sur le lien d'activation reçu par email pour activer votre compte. Le lien expire
-          dans 24 heures.
+          {t("auth.registerSuccessDesc")}
         </p>
         <Button asChild variant="outline" className="mt-6">
           <Link href="/login">{t("auth.loginCta")}</Link>
@@ -112,7 +111,7 @@ export default function RegisterPage() {
   return (
     <div className="form-sheet">
       <div className="sheet-band px-6 py-5 border-b border-border rounded-t-[var(--radius)]">
-        <p className="eyebrow mb-1.5">Vertrag.ma — {t("auth.registerTitle")}</p>
+        <p className="eyebrow mb-1.5">Vertrag.ma · {t("auth.registerTitle")}</p>
         <h1 className="font-display text-2xl font-bold tracking-tight">{t("auth.registerTitle")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{t("auth.registerSubtitle")}</p>
       </div>

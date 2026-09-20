@@ -1,4 +1,4 @@
-// TOTP helpers — thin adapter over oplib v13 functional API.
+// TOTP helpers - thin adapter over oplib v13 functional API.
 // otplib v13 removed the legacy `authenticator` object; the new API is:
 //   generateSecret() / generateSync({ secret }) / verifySync({ secret, token })
 //   generateURI({ issuer, label, secret })

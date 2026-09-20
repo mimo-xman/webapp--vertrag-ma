@@ -1,6 +1,6 @@
 "use client";
 
-// der Stempel — the signature status element: a rubber-stamp badge.
+// der Stempel - the signature status element: a rubber-stamp badge.
 
 import { cn } from "@/lib/utils";
 
@@ -58,6 +58,7 @@ export function statusVariant(status: string): StampVariant {
       return "blue";
     case "en_attente":
     case "canceled":
+    case "annulee_admin":
     default:
       return "ink";
   }

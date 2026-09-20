@@ -5,7 +5,7 @@ export type PostulationDemandeStatus = "en_attente" | "payed" | "canceled";
 
 // Snapshot of the pricing parameters that were in effect when the user
 // created the demande. Prices and steps can change at any time in the admin
-// settings — the demande keeps the exact parameters used for its own price
+// settings - the demande keeps the exact parameters used for its own price
 // so both the user and the admin can see how it was computed, forever.
 const pricingAxisSnapshot = {
   step: { type: Number, required: true },
@@ -32,6 +32,10 @@ export interface IPricingSnapshot {
   };
   breakdown: {
     total_price: number;
+    /** Full total price before free units (0 on legacy demandes). */
+    total_full_price?: number;
+    /** Discount from the free units on the TOTAL axis (0 on legacy demandes). */
+    total_discount?: number;
     per_day_price: number;
     per_day_discount: number;
     per_day_price_after_discount: number;
@@ -50,7 +54,7 @@ export interface IPostulationDemande extends mongoose.Document {
   company_ids: mongoose.Types.ObjectId[];
   nmbr_total: number;
   nmbr_per_day: number;
-  // Final price, computed once at creation — never recomputed later.
+  // Final price, computed once at creation - never recomputed later.
   price: number;
   // Pricing parameters in effect at creation time (see IPricingSnapshot).
   pricing_snapshot: IPricingSnapshot;
@@ -75,6 +79,8 @@ const PostulationDemandeSchema = new Schema<IPostulationDemande>(
         per_day: pricingAxisSnapshot,
         breakdown: {
           total_price: { type: Number, required: true },
+          total_full_price: { type: Number, default: 0 },
+          total_discount: { type: Number, default: 0 },
           per_day_price: { type: Number, required: true },
           per_day_discount: { type: Number, required: true },
           per_day_price_after_discount: { type: Number, required: true },

@@ -1,8 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 
-// Status values — TWO workflows depending on the demande's price:
+// Status values - TWO workflows depending on the demande's price:
 //
-// price = 0 (verification is free — default):
+// price = 0 (verification is free - default):
 //   en_attente → en_cours_de_revision → confirmed | rejected
 //   en_attente → cancelled (by user, before the review starts)
 //
@@ -25,7 +25,7 @@ export interface IDossierDemandeForAdd extends mongoose.Document {
   user_id: mongoose.Types.ObjectId;
   dossier_pdf_link: string;
   // Price in effect when the demande was created (0 by default). Stored on
-  // the demande because the admin can change the price at any time — the
+  // the demande because the admin can change the price at any time - the
   // user pays the price he saw, not the current one.
   price: number;
   confirmed_at: Date | null;

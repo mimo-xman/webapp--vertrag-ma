@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { requireAdmin } from "@/lib/auth";
-import { SupportMessage } from "@/models/SupportMessage";
+import { SupportMessage } from "@/models/SupportMessage";import { applyDateRange } from "@/lib/api-filters";
 
-// GET /api/admin/messages — support messages inbox (paginated, searchable,
+
+// GET /api/admin/messages - support messages inbox (paginated, searchable,
 // filterable by status: active | closed).
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
@@ -28,6 +29,8 @@ export async function GET(request: NextRequest) {
     ];
   }
   if (statusFilter && statusFilter !== "all") filter.status = statusFilter;
+  // Date-range filter on the message date.
+  applyDateRange(filter, params, "created", "createdAt");
 
   const allowedSorts = ["createdAt", "status", "full_name", "email", "ref_id"];
   const sort: Record<string, 1 | -1> = {

@@ -62,7 +62,7 @@ export async function connectDB(): Promise<typeof mongoose> {
 }
 
 // One-time-per-process data migrations: normalize fields introduced by later
-// features on documents created before they existed. Idempotent — a no-op
+// features on documents created before they existed. Idempotent - a no-op
 // once every document carries the field. Never throws (best effort).
 async function runDataMigrations(): Promise<void> {
   try {

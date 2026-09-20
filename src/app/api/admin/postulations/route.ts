@@ -6,8 +6,11 @@ import { Postulation } from "@/models/Postulation";
 import { Company } from "@/models/Company";
 import { User } from "@/models/User";
 import { logAdminAction } from "@/lib/audit";
+import { applyDateRange } from "@/lib/api-filters";
 
-// GET — all postulations, with user + company info, filterable by user.
+// GET - all postulations, with user + company info, filterable by user.
+// Date-range filters: scheduled_from/scheduled_to and posted_from/posted_to
+// (ISO dates, inclusive - the end is expanded to 23:59:59 UTC).
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
@@ -25,6 +28,11 @@ export async function GET(request: NextRequest) {
   const filter: Record<string, unknown> = {};
   if (status && status !== "all") filter.status = status;
   if (userFilter && userFilter !== "all") filter.user_id = userFilter;
+
+  // Date-range filters (inclusive; "to" covers the whole day in UTC).
+  applyDateRange(filter, params, "scheduled", "scheduled_at");
+  applyDateRange(filter, params, "posted", "posted_at");
+
   if (search) {
     const users = await User.find({
       $or: [
@@ -67,6 +75,9 @@ export async function GET(request: NextRequest) {
       posted_at: p.posted_at,
       failed_reason: p.failed_reason,
       mail_sender_id: p.mail_sender_id ? String(p.mail_sender_id) : null,
+      demande_ref: p.demande_ref || null,
+      created_by_admin: Boolean(p.created_by_admin),
+      createdAt: p.createdAt,
       executions: (p.executions || []).map((e) => ({
         execution_id: String(e.execution_id),
         status: e.status,
@@ -83,9 +94,9 @@ export async function GET(request: NextRequest) {
     users: users.map((u) => ({ _id: String(u._id), label: `${u.full_name} (${u.email})` })),
     companies: companies.map((c) => ({
       _id: String(c._id),
-      // "inactive" marker so the admin knows the company is deactivated —
+      // "inactive" marker so the admin knows the company is deactivated -
       // manual creation stays allowed (deliberate admin action).
-      label: `${c.name} (${c.email})${c.active === false ? " — inactive" : ""}`,
+      label: `${c.name} (${c.email})${c.active === false ? " : inactive" : ""}`,
     })),
     pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) },
   });
@@ -98,7 +109,7 @@ const createSchema = z.object({
   force: z.boolean().optional(),
 });
 
-// POST — manual creation by admin. If the company was already used by this
+// POST - manual creation by admin. If the company was already used by this
 // user (lifetime anti-duplicate), returns 409 duplicate:true unless force=true.
 export async function POST(request: NextRequest) {
   const auth = await requireAdmin(request);
@@ -133,7 +144,7 @@ export async function POST(request: NextRequest) {
   }
   if (!user.dossier_pdf_link) {
     return NextResponse.json(
-      { success: false, error: "Cet utilisateur n'a pas de dossier actif — impossible de créer la postulation." },
+      { success: false, error: "Cet utilisateur n'a pas de dossier actif : impossible de créer la postulation." },
       { status: 400 }
     );
   }
@@ -144,6 +155,7 @@ export async function POST(request: NextRequest) {
     user_id: parsed.data.user_id,
     company_id: parsed.data.company_id,
     scheduled_at: scheduled,
+    created_by_admin: true, // manual admin creation (not from a demande)
     status: "en_attente",
   });
 

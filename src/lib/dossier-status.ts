@@ -1,7 +1,7 @@
 // Unified dossier-demande status system.
 //
 // One single source of truth for status labels, colors, price wording and
-// cancellation rules — used by the user pages (dossier, dashboard) AND the
+// cancellation rules - used by the user pages (dossier, dashboard) AND the
 // admin pages so the exact same wording appears everywhere in the webapp.
 //
 // DB status values (shared enums):
@@ -106,7 +106,7 @@ export function userCanCancel(type: DossierDemandeType, d: StatusLike): boolean 
 
 /**
  * Can the ADMIN cancel this demande?
- * - Creation: only while UNPAID (en_attente) — once the payment is
+ * - Creation: only while UNPAID (en_attente) - once the payment is
  *   confirmed it cannot be cancelled.
  * - Add: any active status (before confirmation/rejection). When the
  *   payment has been validated (payed_*), a message is required.
@@ -124,11 +124,11 @@ export function isAddDemandePayed(d: StatusLike): boolean {
 }
 
 export interface PriceParts {
-  /** e.g. "20 $" — the main demande price, never summed with translation. */
+  /** e.g. "20 $" - the main demande price, never summed with translation. */
   main: string;
-  /** e.g. "+ 5 $ (Traduction)" — empty string when no translation price. */
+  /** e.g. "+ 5 $ (Traduction)" - empty string when no translation price. */
   traduction: string;
-  /** "à payer" | "payés" — the suffix wording. */
+  /** "à payer" | "payés" - the suffix wording. */
   suffixKey: string;
 }
 

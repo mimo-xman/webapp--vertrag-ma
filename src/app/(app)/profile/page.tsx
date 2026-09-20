@@ -99,7 +99,7 @@ export default function ProfilePage() {
 
   const changePassword = async () => {
     if (newPassword !== confirmNewPassword) {
-      await alertApp("Les mots de passe ne correspondent pas.");
+      await alertApp(t("common.passwordsMismatch"));
       return;
     }
     setSavingPassword(true);
@@ -217,7 +217,7 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="eyebrow mb-1">Vertrag.ma — {t("profile.title")}</p>
+        <p className="eyebrow mb-1">Vertrag.ma · {t("profile.title")}</p>
         <h1 className="font-display text-2xl font-bold tracking-tight">{t("profile.title")}</h1>
         <p className="mt-0.5 text-sm text-muted-foreground">{t("profile.subtitle")}</p>
       </div>

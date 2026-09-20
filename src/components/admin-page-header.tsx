@@ -1,6 +1,6 @@
 "use client";
 
-// Shared admin page header — form band aesthetic.
+// Shared admin page header - form band aesthetic.
 
 export function AdminPageHeader({
   eyebrow,

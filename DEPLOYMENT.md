@@ -73,7 +73,7 @@ sudo iptables -L INPUT -n --line-numbers
 
 ## Points importants
 
-- **Jamais `pm2 kill` ni `pm2 stop all`** — tue les autres apps sur le serveur
+- **Jamais `pm2 kill` ni `pm2 stop all`** : tue les autres apps sur le serveur
 - **Les cookies sont en `secure: false`** via `ALLOW_HTTP_COOKIES=true`
 - **Le rate limit est désactivé** via `DISABLE_RATE_LIMIT=test`
 

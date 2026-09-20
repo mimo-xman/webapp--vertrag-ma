@@ -6,7 +6,7 @@ import { PostulationDemande } from "@/models/PostulationDemande";
 import { logAdminAction } from "@/lib/audit";
 import { createPostulationsForDemande } from "@/lib/postulation-utils";
 
-// POST — confirm payment: status → payed, then automatically
+// POST - confirm payment: status → payed, then automatically
 // create all postulations with the demande's configuration.
 export async function POST(
   request: NextRequest,
@@ -38,6 +38,7 @@ export async function POST(
       company_ids: (demande.company_ids as mongoose.Types.ObjectId[]) || [],
       nmbr_total: demande.nmbr_total,
       nmbr_per_day: demande.nmbr_per_day,
+      demande_ref: demande.ref_number,
     });
 
     demande.status = "payed";
@@ -50,7 +51,7 @@ export async function POST(
       action: "demande_postulation.confirm",
       entity_type: "postulation_demande",
       entity_id: id,
-      details: `Paiement confirmé (${demande.price} $) — ${result.created} postulations créées pour ${demande.ref_number}`,
+      details: `Paiement confirmé (${demande.price} $) · ${result.created} postulations créées pour ${demande.ref_number}`,
     });
 
     return NextResponse.json({

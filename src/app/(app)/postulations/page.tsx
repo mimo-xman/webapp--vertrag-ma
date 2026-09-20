@@ -23,7 +23,7 @@ export default function PostulationsPage() {
       header: t("postulations.company"),
       render: (row) => (
         <div>
-          <p className="font-medium">{row.company?.name || "—"}</p>
+          <p className="font-medium">{row.company?.name || "-"}</p>
           {row.company && row.company.categories && row.company.categories.length > 0 && (
             <p className="text-xs text-muted-foreground">{row.company.categories.join(", ")}</p>
           )}
@@ -58,7 +58,7 @@ export default function PostulationsPage() {
             })}
           </span>
         ) : (
-          <span className="aktenzeichen text-muted-foreground/50">—</span>
+          <span className="aktenzeichen text-muted-foreground/50">-</span>
         ),
     },
     {
@@ -82,7 +82,7 @@ export default function PostulationsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <p className="eyebrow mb-1">Vertrag.ma — {t("postulations.title")}</p>
+        <p className="eyebrow mb-1">Vertrag.ma · {t("postulations.title")}</p>
         <h1 className="font-display text-2xl font-bold tracking-tight">
           {t("postulations.title")}
         </h1>
@@ -92,7 +92,12 @@ export default function PostulationsPage() {
       <DataTable
         endpoint="/api/postulations"
         columns={columns}
+        storageKey="user-postulations"
         emptyMessage={t("postulations.empty")}
+        dateFilters={[
+          { prefix: "scheduled", label: t("postulations.scheduledAt") },
+          { prefix: "posted", label: t("postulations.postedAt") },
+        ]}
         statusFilter={{
           key: "status",
           label: t("common.status"),
@@ -101,6 +106,7 @@ export default function PostulationsPage() {
             { value: "envoyee", label: t("statuses.envoyee") },
             { value: "echouee", label: t("statuses.echouee") },
             { value: "re_execute", label: t("statuses.re_execute") },
+            { value: "annulee_admin", label: t("statuses.annulee_admin") },
           ],
         }}
       />

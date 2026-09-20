@@ -1,6 +1,6 @@
 # Vertrag.ma
 
-Next.js web application that sends automatic job applications to German companies — from Morocco.
+Next.js web application that sends automatic job applications to German companies : from Morocco.
 
 **Services:** automatic applications (postulations) · professional dossier preparation (20 $) · diploma translation.
 
@@ -34,7 +34,7 @@ Single repository containing both the web application and the GitHub Actions wor
 
 ### Authentication (reused from CVAutoSender)
 - JWT sessions (7 days, httpOnly cookies) + bcrypt (12 rounds)
-- Email verification (Brevo) with 24h tokens — anti-spam accounts
+- Email verification (Brevo) with 24h tokens : anti-spam accounts
 - Full TOTP 2FA: setup with QR code, 8 backup codes, disable by email fallback
 - Password reset (1h tokens), password change (invalidates existing sessions)
 - Account deletion with email confirmation + **cascade** delete of all user data
@@ -43,11 +43,11 @@ Single repository containing both the web application and the GitHub Actions wor
 - Middleware route protection + server-side role checks (`requireAuth` / `requireAdmin`)
 
 ### User space
-- **Dashboard** — live stats, upcoming applications, dossier status
-- **Postulations** — full history with status stamps (en attente / envoyée / échouée / à relancer)
-- **Demandes** — dynamic order form: company count by category → total options (500, +500…) → per-day options (300, +100…) → **live price with free 300/day discount displayed strikethrough**; WhatsApp payment CTA after creation
-- **Dossier** — upload own PDF (free, team-verified) or request creation (20 $, paid via WhatsApp); full request history; permanent delete with pending-postulations guard
-- **Profile** — personal info, password change, full 2FA management, account deletion
+- **Dashboard** : live stats, upcoming applications, dossier status
+- **Postulations** : full history with status stamps (en attente / envoyée / échouée / à relancer)
+- **Demandes** : dynamic order form: company count by category → total options (500, +500…) → per-day options (300, +100…) → **live price with free 300/day discount displayed strikethrough**; WhatsApp payment CTA after creation
+- **Dossier** : upload own PDF (free, team-verified) or request creation (20 $, paid via WhatsApp); full request history; permanent delete with pending-postulations guard
+- **Profile** : personal info, password change, full 2FA management, account deletion
 
 ### Admin panel (11 pages)
 - Dashboard with global stats + audit feed
@@ -62,12 +62,12 @@ Single repository containing both the web application and the GitHub Actions wor
 - Audit logs: all admin actions recorded, read-only
 
 ### Workflow workers (GitHub Actions)
-- **send-postulations.yml** — daily cron (06:00 UTC), 3 parallel instances × 60 postulations, self re-trigger loop until the queue is drained
-- **re-execute-postulations.yml** — manual only, launched from the admin panel
+- **send-postulations.yml** : daily cron (06:00 UTC), 3 parallel instances × 60 postulations, self re-trigger loop until the queue is drained
+- **re-execute-postulations.yml** : manual only, launched from the admin panel
 - Pipeline per postulation: user dossier (required) → company email (required) → mail sender with **min usage_count** (atomic `$inc` claim) → download PDF from Cloudinary → send fixed German message + attachment → status update
 - **A failure marks échouée and continues** to the next postulation (per spec); the reason is admin-only visible
 
-### Design — "Das Amt"
+### Design - "Das Amt"
 Official German registry aesthetic: paper (#F4F2EC), ink (#1A1D21), Behördenblau (#1E4475), stamp red/green, Archivo + IBM Plex Sans/Mono, rubber-stamp status badges, Aktenzeichen reference numbers (VT-P-2026-000123). Custom `alertApp()` / `confirmApp()` popups replace native `alert()`/`confirm()` everywhere. FR/EN bilingual (cookie-based i18n foundation, extensible).
 
 ---
@@ -75,7 +75,7 @@ Official German registry aesthetic: paper (#F4F2EC), ink (#1A1D21), Behördenbla
 ## Setup
 
 ```bash
-# 1. Install (needs GITHUB_TOKEN for @el-zazo packages — see .npmrc)
+# 1. Install (needs GITHUB_TOKEN for @el-zazo packages - see .npmrc)
 export GITHUB_TOKEN=ghp_…    # PAT with read:packages
 bun install                   # or npm install
 
@@ -97,8 +97,8 @@ bun run dev
 | `BREVO_API_KEY` + `BREVO_SENDER_EMAIL` | Transactional emails |
 | `CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET` | Dossier PDF uploads |
 | `NEXT_PUBLIC_APP_URL` | Links inside emails |
-| `GITHUB_TOKEN` | `read:packages` — installs `@el-zazo/email-verifier` |
-| `GITHUB_WORKFLOW_TOKEN` | `repo` — triggers re-execute workflow from admin |
+| `GITHUB_TOKEN` | `read:packages` : installs `@el-zazo/email-verifier` |
+| `GITHUB_WORKFLOW_TOKEN` | `repo` : triggers re-execute workflow from admin |
 | `GITHUB_WORKFLOW_REPO` | Repository for workflow triggers |
 
 ### GitHub Actions secrets (Settings → Secrets → Actions)
@@ -117,15 +117,15 @@ The daily workflow runs automatically at 06:00 UTC. The re-execute workflow is t
 | Collection | Key fields | Statuses |
 |---|---|---|
 | `users` | full_name, date_of_birth, email, password, role, dossier_pdf_link, 2FA fields | active (email-verified) |
-| `categories` | name | — |
-| `companies` | name, email (verified), categorie_ids | — |
+| `categories` | name | · |
+| `companies` | name, email (verified), categorie_ids | · |
 | `postulations` | user_id, company_id, mail_sender_id, demande_id, scheduled_at, posted_at, failed_reason | en_attente · envoyee · echouee · re_execute |
 | `postulationdemandes` | ref_number, user_id, categorie_ids, nmbr_total, nmbr_per_day, price, confirmed_at | en_attente · payed · canceled |
 | `dossierdemandeforadds` | ref_number, user_id, dossier_pdf_link, message_on_failed | en_attente · confirmed · rejected |
 | `dossierdemandeforcreates` | ref_number, user_id, price, traduction_price, payed_at, dossier_ready_at, completed_at | en_attente · payed · completed · canceled |
 | `mailsenders` | name, type (api/smtp), api_key / smtp_config, usage counters | active |
-| `settings` | prices, German email message, WhatsApp link | — |
-| `auditlogs` | admin_id, action, entity_type, details | — |
+| `settings` | prices, German email message, WhatsApp link | · |
+| `auditlogs` | admin_id, action, entity_type, details | · |
 
 All collections carry `createdAt` / `updatedAt`. Unique index `(user_id, company_id)` on postulations enforces the **lifetime one-application-per-company** rule.
 
@@ -140,4 +140,4 @@ All collections carry `createdAt` / `updatedAt`. Unique index `(user_id, company
 
 ## License
 
-Private project — © Vertrag.ma
+Private project · © Vertrag.ma

@@ -1,4 +1,4 @@
-// Postulation execution engine — the single source of truth for sending
+// Postulation execution engine - the single source of truth for sending
 // postulation emails, shared by:
 //   - the Next.js app (admin "exécuter" button + "Lancer la relance" server mode)
 //   - the GitHub Actions workflow scripts (workflow/send-postulations.ts, …)
@@ -10,7 +10,7 @@
 //
 // Execution model:
 //   - A "wave" claims ALL available mail senders (active + not in_use) and
-//     runs one parallel Execution per sender — each sender processes
+//     runs one parallel Execution per sender - each sender processes
 //     postulations until the queue is empty or the sender fails.
 //   - A postulation is claimed atomically via findOneAndUpdate
 //     (status → "executing"), so two executions can NEVER process the same
@@ -35,7 +35,7 @@ import { sendViaMailSender, textToHtml } from "./mailer-core";
 import { createWithUniqueRef } from "./ref-number";
 
 const SEND_DELAY_MS = 400;
-// Executions running longer than this are considered dead (crashed worker) —
+// Executions running longer than this are considered dead (crashed worker) -
 // they get closed by recoverStuckExecutions() at the next wave start.
 const STALE_EXECUTION_MS = 60 * 60 * 1000;
 // A postulation stuck in "executing" longer than this is considered abandoned.
@@ -47,8 +47,13 @@ export interface WaveOptions {
   trigger: ExecutorTrigger;
   /** Which statuses to process. Default: ["en_attente", "re_execute"]. */
   statuses?: Array<"en_attente" | "re_execute">;
-  /** Only postulations scheduled today or overdue. Default: true. */
+  /** Only postulations scheduled today or overdue. Default: true. Ignored
+   *  when scheduledFrom/scheduledTo is provided. */
   dueTodayOnly?: boolean;
+  /** Restrict to postulations scheduled within [from, to] (UTC, inclusive).
+   *  Used by the admin relance with a date interval; overrides dueTodayOnly. */
+  scheduledFrom?: Date;
+  scheduledTo?: Date;
   /** Safety cap per sender-execution (GitHub 6h job limit). Default: Infinity. */
   maxPerSender?: number;
   /** Admin who started the execution (trigger "admin"/"server"). */
@@ -61,6 +66,8 @@ export interface WaveSummary {
   failed: number;
   senders_used: number;
   senders_disabled: string[];
+  /** Senders that stopped early because their daily limit was reached. */
+  senders_limited: string[];
   fatal_error: string | null;
 }
 
@@ -89,6 +96,39 @@ function endOfToday(): Date {
   const d = new Date();
   d.setUTCHours(23, 59, 59, 999);
   return d;
+}
+
+function startOfToday(): Date {
+  const d = new Date();
+  d.setUTCHours(0, 0, 0, 0);
+  return d;
+}
+
+/** Number of send attempts recorded today (UTC day) in a usage log. */
+export function countTodayUsage(usageLog: unknown): number {
+  const start = startOfToday().getTime();
+  if (!Array.isArray(usageLog)) return 0;
+  return usageLog.filter((at) => new Date(at as Date).getTime() >= start).length;
+}
+
+/** Records ONE usage entry on a mail sender - immediately, so a crash can
+ *  never lose usage history (counters + timestamp log together). */
+async function recordUsageNow(
+  senderId: mongoose.Types.ObjectId,
+  inc: { usage: number; success: number; failed: number }
+): Promise<void> {
+  try {
+    await MailSender.findByIdAndUpdate(senderId, {
+      $inc: {
+        usage_count: inc.usage,
+        success_count: inc.success,
+        failed_count: inc.failed,
+      },
+      $push: { usage_log: { $each: [new Date()], $slice: -5000 } },
+    });
+  } catch (e) {
+    console.error("[EXECUTOR] Failed to record usage:", e);
+  }
 }
 
 interface MailContent {
@@ -161,7 +201,7 @@ async function sendOnePostulation(
     };
   }
 
-  // 4. Send email — any failure here is a sender-level problem.
+  // 4. Send email - any failure here is a sender-level problem.
   try {
     await sendViaMailSender(sender, {
       to: company.email,
@@ -211,9 +251,9 @@ async function recordOutcome(params: {
             postulations: { postulation_id, status: "success", executed_at: now },
           },
         }),
-        // usage_count counts actual send attempts; success_count email health.
-        MailSender.findByIdAndUpdate(sender_id, { $inc: { usage_count: 1, success_count: 1 } }),
       ]);
+      // Usage recorded IMMEDIATELY (attempt + success) - see recordUsageNow.
+      await recordUsageNow(sender_id, { usage: 1, success: 1, failed: 0 });
     } else {
       await Promise.all([
         Postulation.findByIdAndUpdate(postulation_id, {
@@ -232,15 +272,19 @@ async function recordOutcome(params: {
       if (outcome.senderFailed) {
         // Disable the sender so no other execution picks it up until an admin
         // fixes the problem, then re-activates and re-tests it.
-        await MailSender.findByIdAndUpdate(sender_id, {
-          $set: {
-            active: false,
-            in_use: false,
-            last_error: outcome.error.slice(0, 1000),
-            last_error_at: now,
-          },
-          $inc: { usage_count: 1, failed_count: 1 },
-        });
+        await Promise.all([
+          MailSender.findByIdAndUpdate(sender_id, {
+            $set: {
+              active: false,
+              in_use: false,
+              last_error: outcome.error.slice(0, 1000),
+              last_error_at: now,
+            },
+          }),
+          // A real send attempt was made (and failed) - usage is recorded
+          // immediately, like every send.
+          recordUsageNow(sender_id, { usage: 1, success: 0, failed: 1 }),
+        ]);
       }
     }
   } catch (e) {
@@ -274,7 +318,7 @@ export async function recoverStuckExecutions(): Promise<void> {
         $set: {
           status: "completed",
           finished_at: now,
-          fatal_error: "Exécution interrompue (timeout) — traitée comme terminée",
+          fatal_error: "Exécution interrompue (timeout) : traitée comme terminée",
         },
       }
     );
@@ -322,32 +366,46 @@ export async function hasActiveExecution(trigger: ExecutorTrigger): Promise<bool
 async function runSenderExecution(params: {
   execution: IExecution;
   sender: IMailSender;
-  statuses: Array<"en_attente" | "re_execute">;
-  dueTodayOnly: boolean;
+  claimFilter: Record<string, unknown>;
   maxPerSender: number;
   content: MailContent;
 }): Promise<WaveSummary> {
-  const { execution, sender, statuses, dueTodayOnly, maxPerSender, content } = params;
+  const { execution, sender, claimFilter, maxPerSender, content } = params;
   const summary: WaveSummary = {
     executions: 1,
     sent: 0,
     failed: 0,
     senders_used: 1,
     senders_disabled: [],
+    senders_limited: [],
     fatal_error: null,
   };
 
-  const claimFilter: Record<string, unknown> = { status: { $in: statuses } };
-  if (dueTodayOnly) claimFilter.scheduled_at = { $lte: endOfToday() };
+  const claimFilterLocal: Record<string, unknown> = { ...claimFilter };
 
   let senderDisabled = false;
+  // Daily-limit accounting - in-memory, seeded from the sender document so
+  // usages recorded earlier today (other executions, tests) count too.
+  const dailyLimit = sender.daily_limit || 0;
+  let todayUsage = countTodayUsage(sender.usage_log);
 
   try {
     let processed = 0;
     while (processed < maxPerSender) {
-      // Atomic claim — no other execution can take this postulation.
+      // Daily limit guard - checked BEFORE claiming the next postulation,
+      // so a limited sender never claims work it cannot send. Other senders
+      // of the wave keep processing the queue.
+      if (dailyLimit > 0 && todayUsage >= dailyLimit) {
+        summary.senders_limited.push(sender.name);
+        console.log(
+          `[EXECUTOR] Limite quotidienne atteinte pour « ${sender.name} » (${dailyLimit}/jour) · ${sender.name} s'arrête proprement.`
+        );
+        break;
+      }
+
+      // Atomic claim - no other execution can take this postulation.
       const postulation = await Postulation.findOneAndUpdate(
-        claimFilter,
+        claimFilterLocal,
         { $set: { status: "executing" } },
         { returnDocument: "after", sort: { scheduled_at: 1 } }
       );
@@ -356,6 +414,9 @@ async function runSenderExecution(params: {
 
       const tag = `[${String(postulation._id).slice(-6)}]`;
       const outcome = await sendOnePostulation(sender, postulation, content);
+
+      // Every real send attempt counts towards today's quota immediately.
+      if (outcome.ok || outcome.senderFailed) todayUsage += 1;
 
       await recordOutcome({
         execution_id: execution._id as mongoose.Types.ObjectId,
@@ -369,7 +430,7 @@ async function runSenderExecution(params: {
         console.log(`${tag} ENVOYÉE via ${sender.name} (exécution ${execution.ref_number})`);
       } else {
         summary.failed += 1;
-        console.error(`${tag} ÉCHOUÉE — ${outcome.error}`);
+        console.error(`${tag} ÉCHOUÉE · ${outcome.error}`);
         if (outcome.senderFailed) {
           senderDisabled = true;
           summary.senders_disabled.push(sender.name);
@@ -393,6 +454,13 @@ async function runSenderExecution(params: {
           status: "completed",
           finished_at: new Date(),
           ...(summary.fatal_error ? { fatal_error: summary.fatal_error.slice(0, 1000) } : {}),
+          ...(summary.senders_limited.length > 0
+            ? {
+                fatal_error:
+                  (summary.fatal_error ? summary.fatal_error + " | " : "") +
+                  `Limite quotidienne atteinte : ${summary.senders_limited.join(", ")}`,
+              }
+            : {}),
         },
       });
       if (!senderDisabled) {
@@ -426,11 +494,19 @@ export async function startExecutionWave(opts: WaveOptions): Promise<WaveHandle>
   await recoverStuckExecutions();
 
   const statuses = opts.statuses ?? ["en_attente", "re_execute"];
-  const dueTodayOnly = opts.dueTodayOnly ?? true;
   const maxPerSender = opts.maxPerSender ?? Infinity;
 
+  // Build the claim filter once - statuses + scheduling window.
+  // An explicit date interval (admin relance) overrides dueTodayOnly.
   const claimFilter: Record<string, unknown> = { status: { $in: statuses } };
-  if (dueTodayOnly) claimFilter.scheduled_at = { $lte: endOfToday() };
+  if (opts.scheduledFrom || opts.scheduledTo) {
+    claimFilter.scheduled_at = {
+      ...(opts.scheduledFrom ? { $gte: opts.scheduledFrom } : {}),
+      ...(opts.scheduledTo ? { $lte: opts.scheduledTo } : {}),
+    };
+  } else if (opts.dueTodayOnly ?? true) {
+    claimFilter.scheduled_at = { $lte: endOfToday() };
+  }
 
   const pending = await Postulation.countDocuments(claimFilter);
 
@@ -440,6 +516,7 @@ export async function startExecutionWave(opts: WaveOptions): Promise<WaveHandle>
     failed: 0,
     senders_used: 0,
     senders_disabled: [],
+    senders_limited: [],
     fatal_error: null,
   };
 
@@ -460,7 +537,7 @@ export async function startExecutionWave(opts: WaveOptions): Promise<WaveHandle>
   }
 
   if (senders.length === 0) {
-    empty.fatal_error = "Aucun mail sender actif disponible — exécution impossible";
+    empty.fatal_error = "Aucun mail sender actif disponible : exécution impossible";
     return {
       execution_ids: [],
       postulations_pending: pending,
@@ -497,8 +574,7 @@ export async function startExecutionWave(opts: WaveOptions): Promise<WaveHandle>
       runSenderExecution({
         execution,
         sender,
-        statuses,
-        dueTodayOnly,
+        claimFilter,
         maxPerSender,
         content,
       })
@@ -507,17 +583,40 @@ export async function startExecutionWave(opts: WaveOptions): Promise<WaveHandle>
 
   const promise = (async () => {
     const summaries = await Promise.all(workers);
-    return summaries.reduce(
+    const merged = summaries.reduce(
       (acc, s) => ({
         executions: acc.executions + s.executions,
         sent: acc.sent + s.sent,
         failed: acc.failed + s.failed,
         senders_used: acc.senders_used + s.senders_used,
         senders_disabled: [...acc.senders_disabled, ...s.senders_disabled],
+        senders_limited: [...acc.senders_limited, ...s.senders_limited],
         fatal_error: acc.fatal_error || s.fatal_error,
       }),
       { ...empty }
     );
+
+    // Postulations still due after the wave, with every sender either
+    // limited or disabled → they become "à relancer" so admins see the
+    // backlog (they will be picked up again by the next daily wave or a
+    // manual relance, once quotas reset / senders are re-activated).
+    if (merged.senders_limited.length > 0) {
+      try {
+        const remaining = await Postulation.countDocuments(claimFilter);
+        if (remaining > 0) {
+          await Postulation.updateMany(claimFilter, { $set: { status: "re_execute" } });
+          merged.fatal_error = merged.fatal_error ||
+            `${remaining} postulation(s) non envoyée(s) : limite quotidienne atteinte sur tous les services : marquées « à relancer ».`;
+          console.log(
+            `[EXECUTOR] ${remaining} postulation(s) restante(s) après limite quotidienne : marquée(s) à relancer.`
+          );
+        }
+      } catch (e) {
+        console.error("[EXECUTOR] Failed to mark remaining postulations:", e);
+      }
+    }
+
+    return merged;
   })();
 
   return { execution_ids: executionIds, postulations_pending: pending, promise };
@@ -529,7 +628,7 @@ export async function startExecutionWave(opts: WaveOptions): Promise<WaveHandle>
  * Executes exactly ONE postulation with the admin-selected mail sender.
  * Verifies the postulation is not already executing, claims the sender
  * atomically, sends, records everything, and releases the sender.
- * All awaited — returns the full outcome for the admin UI.
+ * All awaited - returns the full outcome for the admin UI.
  */
 export async function executeSinglePostulation(params: {
   postulation_id: string;
@@ -560,6 +659,15 @@ export async function executeSinglePostulation(params: {
   if (!sender) {
     throw new Error(
       "Mail sender indisponible (inactif, introuvable ou déjà utilisé par une exécution en cours)"
+    );
+  }
+
+  // 2.5. Daily limit - manual executions respect the provider quota too.
+  const dailyLimit = sender.daily_limit || 0;
+  if (dailyLimit > 0 && countTodayUsage(sender.usage_log) >= dailyLimit) {
+    await MailSender.findByIdAndUpdate(sender._id, { $set: { in_use: false } });
+    throw new Error(
+      `Limite quotidienne atteinte pour « ${sender.name} » (${dailyLimit} envois/jour) : choisissez un autre service ou réessayez demain.`
     );
   }
 

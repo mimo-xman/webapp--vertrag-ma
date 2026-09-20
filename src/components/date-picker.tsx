@@ -7,7 +7,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-// Minimum and maximum selectable birth dates.
+// Default selectable range: 01/01/1900 → today. Used for the birth date
+// on /register; every other usage passes its own min/max (or none).
 export const DOB_MIN_DATE = new Date(1900, 0, 1); // 01/01/1900
 export const DOB_MAX_DATE = (() => {
   const now = new Date();
@@ -23,6 +24,12 @@ interface DatePickerProps {
   className?: string;
   /** Locale for the calendar and the displayed date. */
   locale?: string;
+  /** Earliest selectable date (default 01/01/1900). */
+  minDate?: Date;
+  /** Latest selectable date (default: today). */
+  maxDate?: Date;
+  /** Compact variant for filter toolbars (smaller height). */
+  compact?: boolean;
 }
 
 function parseISODate(iso: string): Date | undefined {
@@ -41,9 +48,10 @@ function toISODate(date: Date): string {
 }
 
 /**
- * Custom date picker popup: a button + popover calendar.
- * Constrains the selection between 01/01/1900 and today, so
- * unreasonable dates (year 0099, 1234, 3422…) are impossible.
+ * Custom date picker popup: a button + popover calendar - the same popup
+ * used for the birth date on /register, reused across the app (forms,
+ * filters, date intervals). Dates outside [minDate, maxDate] are
+ * unselectable, so unreasonable values are impossible by construction.
  */
 export function DatePicker({
   value,
@@ -53,9 +61,12 @@ export function DatePicker({
   disabled,
   className,
   locale = "fr-FR",
+  minDate = DOB_MIN_DATE,
+  maxDate = DOB_MAX_DATE,
+  compact = false,
 }: DatePickerProps) {
   const [open, setOpen] = useState(false);
-  const [month, setMonth] = useState<Date>(() => parseISODate(value) ?? DOB_MAX_DATE);
+  const [month, setMonth] = useState<Date>(() => parseISODate(value) ?? maxDate);
 
   const selected = useMemo(() => parseISODate(value), [value]);
 
@@ -71,7 +82,12 @@ export function DatePicker({
 
   const handleSelect = (date: Date | undefined) => {
     if (!date) return;
-    onChange(toISODate(date));
+    // Clamp defensively - days already disabled can never reach here, but
+    // a stale value from outside the bounds is still sanitized.
+    const clamped = new Date(
+      Math.min(Math.max(date.getTime(), minDate.getTime()), maxDate.getTime())
+    );
+    onChange(toISODate(clamped));
     setOpen(false);
   };
 
@@ -93,6 +109,7 @@ export function DatePicker({
           disabled={disabled}
           className={cn(
             "w-full justify-start font-normal",
+            compact && "h-8 px-2.5 text-xs",
             !selected && "text-muted-foreground",
             className
           )}
@@ -130,13 +147,13 @@ export function DatePicker({
           onMonthChange={setMonth}
           onSelect={handleSelect}
           disabled={[
-            { before: DOB_MIN_DATE },
-            { after: DOB_MAX_DATE },
+            { before: minDate },
+            { after: maxDate },
           ]}
-          fromYear={1900}
-          toYear={DOB_MAX_DATE.getFullYear()}
+          fromYear={minDate.getFullYear()}
+          toYear={maxDate.getFullYear()}
           captionLayout="dropdown"
-          defaultMonth={selected ?? DOB_MAX_DATE}
+          defaultMonth={selected ?? maxDate}
         />
       </PopoverContent>
     </Popover>

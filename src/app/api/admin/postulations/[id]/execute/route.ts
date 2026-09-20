@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/auth";
 import { logAdminAction } from "@/lib/audit";
 import { executeSinglePostulation } from "@/lib/postulation-executor";
 
-// POST /api/admin/postulations/[id]/execute — manually execute ONE
+// POST /api/admin/postulations/[id]/execute - manually execute ONE
 // postulation with the admin-selected mail sender.
 // Creates a dedicated Execution (trigger "admin") recording the attempt.
 const schema = z.object({ mail_sender_id: z.string().min(1) });
@@ -39,7 +39,7 @@ export async function POST(
       action: "postulation.execute",
       entity_type: "postulation",
       entity_id: id,
-      details: `Exécution manuelle ${result.ref_number} — ${result.status === "success" ? "envoyée" : `échouée : ${result.error}`}${result.sender_disabled ? " (mail sender désactivé)" : ""}`,
+      details: `Exécution manuelle ${result.ref_number} · ${result.status === "success" ? "envoyée" : `échouée : ${result.error}`}${result.sender_disabled ? " (mail sender désactivé)" : ""}`,
     });
 
     return NextResponse.json({ success: true, ...result });

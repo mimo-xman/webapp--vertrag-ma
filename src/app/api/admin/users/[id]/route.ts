@@ -8,7 +8,7 @@ import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
 import { DossierDemandeForCreate } from "@/models/DossierDemandeForCreate";
 import { logAdminAction } from "@/lib/audit";
 
-// DELETE /api/admin/users/[id] — cascade delete user + all their data.
+// DELETE /api/admin/users/[id] - cascade delete user + all their data.
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

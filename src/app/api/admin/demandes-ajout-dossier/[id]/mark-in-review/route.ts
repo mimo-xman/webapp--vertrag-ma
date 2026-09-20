@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
 import { logAdminAction } from "@/lib/audit";
 
-// POST — mark as in review (admin is reviewing it, user cannot cancel).
+// POST - mark as in review (admin is reviewing it, user cannot cancel).
 // Two workflows, same endpoint:
 //   free demande  : en_attente            → en_cours_de_revision
 //   priced demande: payed_waiting_review  → payed_in_review

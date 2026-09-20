@@ -170,6 +170,9 @@ export default function AdminMessagesPage() {
         endpoint="/api/admin/messages"
         columns={columns}
         refreshKey={refreshKey}
+        columnToggle
+        storageKey="admin-messages"
+        dateFilters={[{ prefix: "created", label: t("common.date") }]}
         statusFilter={{
           key: "status",
           label: t("common.status"),

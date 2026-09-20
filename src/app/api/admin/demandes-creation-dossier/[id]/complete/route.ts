@@ -7,7 +7,7 @@ import { User } from "@/models/User";
 import { logAdminAction } from "@/lib/audit";
 import { CloudinaryError, uploadPdfToCloudinary, validatePdfFile } from "@/lib/cloudinary";
 
-// POST — complete: multipart form with "file" (final dossier PDF) +
+// POST - complete: multipart form with "file" (final dossier PDF) +
 // optional traduction_price. Uploads to Cloudinary, saves the link in
 // BOTH the demande and the user document, marks completed.
 // A completed demande can be re-delivered (PDF replacement).
@@ -51,7 +51,7 @@ async function handleComplete(request: NextRequest, id: string) {
     return NextResponse.json({ success: false, error: "Demande introuvable" }, { status: 404 });
   }
   // First delivery requires a confirmed payment. A COMPLETED demande can be
-  // re-delivered (PDF replacement) — useful when the previous link is broken.
+  // re-delivered (PDF replacement) - useful when the previous link is broken.
   const isReplacement = demande.status === "completed";
   if (!["payed", "in_creation", "completed"].includes(demande.status)) {
     return NextResponse.json(

@@ -147,7 +147,7 @@ export default function AdminCompaniesPage() {
 
   const handleDelete = async (row: CompanyRow) => {
     const ok = await confirmApp(
-      `${t("common.confirmDeleteMessage")}\n\n${row.name} — ${row.email}`,
+      `${t("common.confirmDeleteMessage")}\n\n${row.name} · ${row.email}`,
       { title: t("common.confirmDeleteTitle"), destructive: true, confirmLabel: t("common.delete") }
     );
     if (!ok) return;
@@ -160,7 +160,7 @@ export default function AdminCompaniesPage() {
     }
   };
 
-  // Activate / deactivate — recommended instead of deletion when the company
+  // Activate / deactivate - recommended instead of deletion when the company
   // is referenced by postulations (data integrity is preserved).
   const handleToggle = async (row: CompanyRow) => {
     const ok = await confirmApp(
@@ -212,7 +212,7 @@ export default function AdminCompaniesPage() {
             ))}
           </div>
         ) : (
-          <span className="text-xs text-muted-foreground">—</span>
+          <span className="text-xs text-muted-foreground">-</span>
         ),
     },
     {
@@ -285,6 +285,9 @@ export default function AdminCompaniesPage() {
         endpoint="/api/admin/companies"
         columns={columns}
         refreshKey={refreshKey}
+        columnToggle
+        storageKey="admin-companies"
+        dateFilters={[{ prefix: "created", label: t("common.createdAt") }]}
         statusFilter={{
           key: "status",
           label: t("common.status"),
@@ -299,7 +302,7 @@ export default function AdminCompaniesPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display">
-              {editing ? t("common.edit") : t("common.add")} — {t("admin.companies")}
+              {editing ? t("common.edit") : t("common.add")} · {t("admin.companies")}
             </DialogTitle>
           </DialogHeader>
 

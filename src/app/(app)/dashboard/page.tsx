@@ -110,7 +110,7 @@ export default function DashboardPage() {
     },
   ];
 
-  // Unified dossier status — the exact same wording as the dossier page.
+  // Unified dossier status - the exact same wording as the dossier page.
   const activeDemande = stats.dossier.active_demande;
   const lastDemande = stats.dossier.last_demande;
 
@@ -223,7 +223,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Dossier summary — dossier-related info only */}
+        {/* Dossier summary : dossier-related info only */}
         <div className="form-sheet">
           <div className="sheet-band flex items-center justify-between px-5 py-3.5">
             <div className="flex items-center gap-2">
@@ -235,7 +235,7 @@ export default function DashboardPage() {
             </Link>
           </div>
           <div className="space-y-3 p-5">
-            {/* Unified status — same wording as the dossier page */}
+            {/* Unified status : same wording as the dossier page */}
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">{t("dashboard.dossierStatus")}</span>
               <StatusStamp

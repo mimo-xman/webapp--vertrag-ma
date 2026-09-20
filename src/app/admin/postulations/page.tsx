@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DatePicker } from "@/components/date-picker";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
@@ -36,6 +37,8 @@ import {
   Github,
   Server,
   Loader2,
+  Ban,
+  Zap,
 } from "lucide-react";
 
 interface PostulationExecutionEntry {
@@ -51,6 +54,9 @@ interface PostulationRow {
   scheduled_at: string;
   posted_at: string | null;
   failed_reason: string | null;
+  demande_ref: string | null;
+  created_by_admin: boolean;
+  createdAt?: string;
   executions: PostulationExecutionEntry[];
   user: { _id: string; full_name: string; email: string } | null;
   company: { _id: string; name: string; email: string } | null;
@@ -81,7 +87,14 @@ const TRIGGER_LABELS: Record<string, string> = {
   admin: "admin.triggerAdmin",
 };
 
-const POSTULATION_STATUSES = ["en_attente", "envoyee", "echouee", "re_execute", "executing"] as const;
+const POSTULATION_STATUSES = [
+  "en_attente",
+  "envoyee",
+  "echouee",
+  "re_execute",
+  "executing",
+  "annulee_admin",
+] as const;
 
 export default function AdminPostulationsPage() {
   const { t } = useI18n();
@@ -98,8 +111,14 @@ export default function AdminPostulationsPage() {
   const [saving, setSaving] = useState(false);
   const [reExecuting, setReExecuting] = useState(false);
 
-  // "Lancer la relance" — choose the execution target first.
+  // "Lancer la relance" - choose the execution target + optional date interval.
   const [relanceOpen, setRelanceOpen] = useState(false);
+  const [relanceFrom, setRelanceFrom] = useState("");
+  const [relanceTo, setRelanceTo] = useState("");
+
+  // "Lancer l'exécution" - manual launch of the daily wave (pending postulations).
+  const [execPendingOpen, setExecPendingOpen] = useState(false);
+  const [execPendingRunning, setExecPendingRunning] = useState(false);
 
   // Execute-one-postulation dialog (mail sender selection).
   const [execOpen, setExecOpen] = useState(false);
@@ -169,9 +188,16 @@ export default function AdminPostulationsPage() {
     }
   };
 
-  // ── "Lancer la relance" — two targets ──────────────────────────────────
+  // ── "Lancer la relance" - two targets + optional date interval ────────
+
+  const relanceIntervalValid =
+    !relanceFrom || !relanceTo || relanceFrom <= relanceTo; // ISO dates compare lexically
 
   const handleRelance = async (target: "github" | "server") => {
+    if (!relanceIntervalValid) {
+      await alertApp(t("admin.relanceDateError"));
+      return;
+    }
     setReExecuting(true);
     try {
       const data = await apiFetch<{
@@ -182,9 +208,14 @@ export default function AdminPostulationsPage() {
         execution_ids: string[];
         workflow_triggered: boolean;
         workflow_error: string | null;
+        message?: string | null;
       }>("/api/admin/postulations/re-execute", {
         method: "POST",
-        body: JSON.stringify({ target }),
+        body: JSON.stringify({
+          target,
+          ...(relanceFrom ? { date_from: relanceFrom } : {}),
+          ...(relanceTo ? { date_to: relanceTo } : {}),
+        }),
       });
       setRelanceOpen(false);
 
@@ -196,8 +227,8 @@ export default function AdminPostulationsPage() {
           });
         } else {
           await alertApp(
-            `${data.moved_to_re_execute} postulation(s) marquée(s) « à relancer ».\n\n` +
-              `Aucun mail sender actif disponible — ajoutez ou ré-activez un service email, puis relancez.`,
+            `${data.moved_to_re_execute} · ${t("statuses.re_execute")}\n\n` +
+              t("admin.noSendersAlert"),
             t("admin.reExecuteTitle")
           );
         }
@@ -209,10 +240,60 @@ export default function AdminPostulationsPage() {
           });
         } else {
           await alertApp(
-            `${data.moved_to_re_execute} postulation(s) marquée(s) « à relancer ».\n\n` +
-              `Le workflow GitHub Actions n'a pas pu être lancé automatiquement : ${data.workflow_error}. ` +
-              `Vous pouvez le lancer manuellement depuis GitHub.`,
+            `${data.moved_to_re_execute} · ${t("statuses.re_execute")}\n\n` +
+              t("admin.workflowLaunchError", { error: data.workflow_error || "" }),
             t("admin.reExecuteTitle")
+          );
+        }
+      }
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      await alertApp(err instanceof Error ? err.message : t("common.errorFallback"));
+    } finally {
+      setReExecuting(false);
+    }
+  };
+
+  // ── "Lancer l'exécution" - manual daily wave (pending postulations) ────
+
+  const handleExecutePending = async (target: "github" | "server") => {
+    setExecPendingRunning(true);
+    try {
+      const data = await apiFetch<{
+        pending: number;
+        target: string;
+        executions_created: number;
+        workflow_triggered: boolean;
+        workflow_error: string | null;
+        message?: string | null;
+      }>("/api/admin/postulations/execute-pending", {
+        method: "POST",
+        body: JSON.stringify({ target }),
+      });
+      setExecPendingOpen(false);
+
+      if (data.pending === 0) {
+        toast({ title: t("admin.executePendingNone") });
+      } else if (target === "server") {
+        if (data.executions_created > 0) {
+          toast({
+            title: t("admin.executePendingStarted", { count: data.executions_created }),
+          });
+        } else {
+          await alertApp(
+            `${data.pending} · ${t("statuses.en_attente")}\n\n` + t("admin.noSendersAlert"),
+            t("admin.executePendingTitle")
+          );
+        }
+      } else {
+        if (data.workflow_triggered) {
+          toast({ title: t("admin.reExecuteTriggered") });
+          toast({ title: t("admin.reExecuteCount", { count: data.pending }) });
+        } else {
+          await alertApp(
+            `${data.pending} · ${t("statuses.en_attente")}\n\n` +
+              t("admin.workflowLaunchError", { error: data.workflow_error || "" }),
+            t("admin.executePendingTitle")
           );
         }
       }
@@ -220,7 +301,28 @@ export default function AdminPostulationsPage() {
     } catch (err) {
       await alertApp(err instanceof Error ? err.message : "Erreur");
     } finally {
-      setReExecuting(false);
+      setExecPendingRunning(false);
+    }
+  };
+
+  // ── Cancel by admin - never executed, kept for history ─────────────────
+
+  const handleCancelByAdmin = async (row: PostulationRow) => {
+    const ok = await confirmApp(t("admin.cancelPostulationConfirm"), {
+      title: t("admin.cancelPostulationTitle"),
+      destructive: true,
+      confirmLabel: t("admin.cancelPostulation"),
+    });
+    if (!ok) return;
+    try {
+      await apiFetch(`/api/admin/postulations/${row._id}`, {
+        method: "PUT",
+        body: JSON.stringify({ status: "annulee_admin" }),
+      });
+      toast({ title: t("common.operationSuccess") });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      await alertApp(err instanceof Error ? err.message : "Erreur");
     }
   };
 
@@ -266,7 +368,7 @@ export default function AdminPostulationsPage() {
           t("admin.executeTitle")
         );
       } else {
-        await alertApp(data.error || "Échec de l'exécution", t("admin.executeTitle"));
+        await alertApp(data.error || t("admin.executeFailedFallback"), t("admin.executeTitle"));
       }
       setExecOpen(false);
       setRefreshKey((k) => k + 1);
@@ -330,7 +432,7 @@ export default function AdminPostulationsPage() {
       header: t("admin.colName"),
       render: (row) => (
         <div>
-          <p className="font-medium">{row.user?.full_name || "—"}</p>
+          <p className="font-medium">{row.user?.full_name || "-"}</p>
           <p className="aktenzeichen">{row.user?.email}</p>
         </div>
       ),
@@ -340,10 +442,22 @@ export default function AdminPostulationsPage() {
       header: t("postulations.company"),
       render: (row) => (
         <div>
-          <p className="font-medium">{row.company?.name || "—"}</p>
+          <p className="font-medium">{row.company?.name || "-"}</p>
           <p className="aktenzeichen">{row.company?.email}</p>
         </div>
       ),
+    },
+    {
+      key: "origin",
+      header: t("admin.colOrigin"),
+      render: (row) =>
+        row.created_by_admin ? (
+          <span className="stamp stamp-ink stamp-flat !text-[10px]">{t("admin.originManual")}</span>
+        ) : row.demande_ref ? (
+          <span className="aktenzeichen">{t("admin.originAuto", { ref: row.demande_ref })}</span>
+        ) : (
+          <span className="aktenzeichen">{t("admin.originAuto", { ref: "-" })}</span>
+        ),
     },
     {
       key: "scheduled_at",
@@ -365,7 +479,7 @@ export default function AdminPostulationsPage() {
             {new Date(row.posted_at).toLocaleDateString("fr-FR")}
           </span>
         ) : (
-          <span className="aktenzeichen text-muted-foreground/50">—</span>
+          <span className="aktenzeichen text-muted-foreground/50">-</span>
         ),
     },
     {
@@ -393,7 +507,7 @@ export default function AdminPostulationsPage() {
       header: t("admin.colExecutions"),
       render: (row) => {
         if (!row.executions || row.executions.length === 0) {
-          return <span className="aktenzeichen text-muted-foreground/50">—</span>;
+          return <span className="aktenzeichen text-muted-foreground/50">-</span>;
         }
         const failed = row.executions.filter((e) => e.status === "failed").length;
         return (
@@ -419,8 +533,20 @@ export default function AdminPostulationsPage() {
       },
     },
     {
+      key: "createdAt",
+      header: t("common.createdAt"),
+      sortable: true,
+      defaultHidden: true,
+      render: (row) => (
+        <span className="aktenzeichen">
+          {new Date(row.createdAt || row.scheduled_at).toLocaleDateString("fr-FR")}
+        </span>
+      ),
+    },
+    {
       key: "actions",
       header: t("common.actions"),
+      alwaysVisible: true,
       render: (row) => (
         <div className="flex gap-1">
           {(row.status === "en_attente" || row.status === "re_execute") && (
@@ -445,6 +571,18 @@ export default function AdminPostulationsPage() {
           >
             <PenLine className="h-3.5 w-3.5" />
           </Button>
+          {(row.status === "en_attente" || row.status === "re_execute") && (
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-7 w-7 text-destructive hover:bg-destructive/10"
+              title={t("admin.cancelPostulation")}
+              aria-label={t("admin.cancelPostulation")}
+              onClick={() => handleCancelByAdmin(row)}
+            >
+              <Ban className="h-3.5 w-3.5" />
+            </Button>
+          )}
         </div>
       ),
     },
@@ -465,9 +603,27 @@ export default function AdminPostulationsPage() {
         subtitle={t("admin.postulationsSubtitle")}
         actions={
           <>
-            <Button variant="outline" onClick={() => setRelanceOpen(true)} disabled={reExecuting} className="gap-1.5">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setRelanceFrom("");
+                setRelanceTo("");
+                setRelanceOpen(true);
+              }}
+              disabled={reExecuting}
+              className="gap-1.5"
+            >
               <RefreshCcw className={`h-4 w-4 ${reExecuting ? "animate-spin" : ""}`} />
               {t("admin.reExecuteCta")}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setExecPendingOpen(true)}
+              disabled={execPendingRunning}
+              className="gap-1.5"
+            >
+              <Zap className={`h-4 w-4 ${execPendingRunning ? "animate-pulse" : ""}`} />
+              {t("admin.executePendingCta")}
             </Button>
             <Button onClick={() => setAddOpen(true)} className="font-semibold">
               <Plus className="mr-1.5 h-4 w-4" />
@@ -481,6 +637,12 @@ export default function AdminPostulationsPage() {
         endpoint="/api/admin/postulations"
         columns={columns}
         refreshKey={refreshKey}
+        columnToggle
+        storageKey="admin-postulations"
+        dateFilters={[
+          { prefix: "scheduled", label: t("postulations.scheduledAt") },
+          { prefix: "posted", label: t("postulations.postedAt") },
+        ]}
         statusFilter={{
           key: "status",
           label: t("common.status"),
@@ -491,7 +653,7 @@ export default function AdminPostulationsPage() {
         }}
       />
 
-      {/* ── Relance target chooser ─────────────────────────────── */}
+      {/* ── Relance target chooser + date interval ─────────────── */}
       <Dialog open={relanceOpen} onOpenChange={setRelanceOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -499,10 +661,33 @@ export default function AdminPostulationsPage() {
             <DialogDescription>{t("admin.reExecuteDesc")}</DialogDescription>
           </DialogHeader>
 
+          {/* Date interval : same custom popup picker as /register, max = today */}
+          <div className="space-y-2.5 rounded-sm border border-border bg-paper p-3.5">
+            <div>
+              <p className="eyebrow">{t("admin.relanceIntervalTitle")}</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                {t("admin.relanceIntervalDesc")}
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="space-y-1">
+                <Label className="text-xs">{t("admin.relanceDateFrom")}</Label>
+                <DatePicker value={relanceFrom} onChange={setRelanceFrom} compact />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("admin.relanceDateTo")}</Label>
+                <DatePicker value={relanceTo} onChange={setRelanceTo} compact />
+              </div>
+            </div>
+            {!relanceIntervalValid && (
+              <p className="text-xs text-destructive">{t("admin.relanceDateError")}</p>
+            )}
+          </div>
+
           <div className="grid gap-3 sm:grid-cols-2">
             <button
               type="button"
-              disabled={reExecuting}
+              disabled={reExecuting || !relanceIntervalValid}
               onClick={() => handleRelance("github")}
               className="form-sheet group flex flex-col items-start gap-2 p-4 text-left transition-shadow hover:shadow-md disabled:opacity-60"
             >
@@ -515,7 +700,7 @@ export default function AdminPostulationsPage() {
             </button>
             <button
               type="button"
-              disabled={reExecuting}
+              disabled={reExecuting || !relanceIntervalValid}
               onClick={() => handleRelance("server")}
               className="form-sheet group flex flex-col items-start gap-2 p-4 text-left transition-shadow hover:shadow-md disabled:opacity-60"
             >
@@ -530,13 +715,52 @@ export default function AdminPostulationsPage() {
         </DialogContent>
       </Dialog>
 
+      {/* ── Execute pending postulations (manual daily wave) ────── */}
+      <Dialog open={execPendingOpen} onOpenChange={setExecPendingOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display">{t("admin.executePendingCta")}</DialogTitle>
+            <DialogDescription>{t("admin.executePendingDesc")}</DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <button
+              type="button"
+              disabled={execPendingRunning}
+              onClick={() => handleExecutePending("github")}
+              className="form-sheet group flex flex-col items-start gap-2 p-4 text-left transition-shadow hover:shadow-md disabled:opacity-60"
+            >
+              <Github className="h-6 w-6 text-foreground" />
+              <span className="font-display text-sm font-bold">{t("admin.relanceGithub")}</span>
+              <span className="text-xs leading-relaxed text-muted-foreground">
+                {t("admin.executePendingGithubDesc")}
+              </span>
+              {execPendingRunning && <Loader2 className="h-4 w-4 animate-spin" />}
+            </button>
+            <button
+              type="button"
+              disabled={execPendingRunning}
+              onClick={() => handleExecutePending("server")}
+              className="form-sheet group flex flex-col items-start gap-2 p-4 text-left transition-shadow hover:shadow-md disabled:opacity-60"
+            >
+              <Server className="h-6 w-6 text-primary" />
+              <span className="font-display text-sm font-bold">{t("admin.relanceServer")}</span>
+              <span className="text-xs leading-relaxed text-muted-foreground">
+                {t("admin.executePendingServerDesc")}
+              </span>
+              {execPendingRunning && <Loader2 className="h-4 w-4 animate-spin" />}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* ── Execute one postulation (mail sender selection) ────── */}
       <Dialog open={execOpen} onOpenChange={setExecOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display">{t("admin.executeTitle")}</DialogTitle>
             <DialogDescription>
-              {t("admin.executeDesc")} —{" "}
+              {t("admin.executeDesc")} ·{" "}
               <span className="aktenzeichen">
                 {execTarget?.user?.full_name} → {execTarget?.company?.name}
               </span>
@@ -557,7 +781,7 @@ export default function AdminPostulationsPage() {
             ) : (
               <Select value={execSenderId} onValueChange={setExecSenderId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="—" />
+                  <SelectValue placeholder="-" />
                 </SelectTrigger>
                 <SelectContent>
                   {execSenders.map((s) => (
@@ -601,7 +825,7 @@ export default function AdminPostulationsPage() {
           <DialogHeader>
             <DialogTitle className="font-display">{t("admin.modifyStatusTitle")}</DialogTitle>
             <DialogDescription>
-              {t("admin.modifyStatusDesc")} —{" "}
+              {t("admin.modifyStatusDesc")} ·{" "}
               <span className="aktenzeichen">
                 {statusTarget?.user?.full_name} → {statusTarget?.company?.name}
               </span>
@@ -711,7 +935,7 @@ export default function AdminPostulationsPage() {
               />
               <Select value={userId} onValueChange={setUserId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="—" />
+                  <SelectValue placeholder="-" />
                 </SelectTrigger>
                 <SelectContent>
                   {filteredUsers.slice(0, 100).map((u) => (
@@ -732,7 +956,7 @@ export default function AdminPostulationsPage() {
               />
               <Select value={companyId} onValueChange={setCompanyId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="—" />
+                  <SelectValue placeholder="-" />
                 </SelectTrigger>
                 <SelectContent>
                   {filteredCompanies.slice(0, 100).map((c) => (

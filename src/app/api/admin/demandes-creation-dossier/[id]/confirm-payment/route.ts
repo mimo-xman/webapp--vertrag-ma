@@ -10,7 +10,7 @@ const schema = z.object({
   traduction_price: z.number().min(0).optional(),
 });
 
-// POST — confirm payment: status → payed, optionally set the ready date
+// POST - confirm payment: status → payed, optionally set the ready date
 // and/or the diploma translation price paid by the user.
 export async function POST(
   request: NextRequest,

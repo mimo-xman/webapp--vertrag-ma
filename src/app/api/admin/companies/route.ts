@@ -4,10 +4,11 @@ import { connectDB } from "@/lib/mongodb";
 import { requireAdmin } from "@/lib/auth";
 import { Company } from "@/models/Company";
 import { Category } from "@/models/Category";
-import { logAdminAction } from "@/lib/audit";
+import { logAdminAction } from "@/lib/audit";import { applyDateRange } from "@/lib/api-filters";
+
 import { EmailVerifier } from "@el-zazo/email-verifier";
 
-// GET — companies list with category names, search/sort/pagination.
+// GET - companies list with category names, search/sort/pagination.
 // ?status=active|inactive filters on the activation state.
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
@@ -35,6 +36,8 @@ export async function GET(request: NextRequest) {
   }
   if (statusFilter === "active") filter.active = true;
   else if (statusFilter === "inactive") filter.active = false;
+  // Date-range filter on the creation date.
+  applyDateRange(filter, params, "created", "createdAt");
 
   const allowedSorts = ["name", "email", "active", "createdAt", "updatedAt"];
   const sort: Record<string, 1 | -1> = {
@@ -75,7 +78,7 @@ const createSchema = z.object({
   force_invalid_email: z.boolean().optional(),
 });
 
-// POST — create a company. Email is verified via @el-zazo/email-verifier
+// POST - create a company. Email is verified via @el-zazo/email-verifier
 // (skippable with force_invalid_email=true for special cases).
 export async function POST(request: NextRequest) {
   const auth = await requireAdmin(request);

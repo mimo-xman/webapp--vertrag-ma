@@ -60,10 +60,10 @@
 }
 
 /*
- * VERTRAG.MA — "Das Amt" design system
+ * VERTRAG.MA - "Das Amt" design system
  * German official registry aesthetic: paper, ink, rubber stamps, file numbers.
- * Light — "Papier" : the classic registry desk.
- * Dark  — "Nachtdienst" : the same office at night — deep ink paper, softer
+ * Light - "Papier" : the classic registry desk.
+ * Dark  - "Nachtdienst" : the same office at night - deep ink paper, softer
  *         stamps, identical layout and hierarchy. All semantic tokens swap.
  * Palette: Papier #F4F2EC · Tinte #1A1D21 · Behördenblau #1E4475 ·
  *          Stempelrot #B3391F · Genehmigtgrün #2F6B4A · Hilfsgrau #75797F
@@ -105,7 +105,7 @@
   --stempelrot: #b3391f;
   --genehmigtgrun: #2f6b4a;
   --behordenblau: #1e4475;
-  /* Semantic extras — alternate "paper" tint for banded sections, success
+  /* Semantic extras - alternate "paper" tint for banded sections, success
      and warning hues, the dark ink CTA band and the graph-paper grid. */
   --paper: #fafaf6;
   --paper-foreground: #1a1d21;
@@ -156,7 +156,7 @@
   --stempelrot: #d95c3f;
   --genehmigtgrun: #58a17c;
   --behordenblau: #7ba3d9;
-  /* Semantic extras — darker "paper", luminous success/warning, ink band. */
+  /* Semantic extras - darker "paper", luminous success/warning, ink band. */
   --paper: #1f2226;
   --paper-foreground: #f4f2ec;
   --success: #58a17c;
@@ -188,7 +188,7 @@
   }
 }
 
-/* Smooth theme transition — the class is added to <html> right before the
+/* Smooth theme transition - the class is added to <html> right before the
    theme switch and removed just after, so the very first paint never
    animates (no flash on load), only explicit user toggles do. */
 @media (prefers-reduced-motion: no-preference) {
@@ -352,7 +352,7 @@
   }
 
   /* ─── The paper document (Bewerbung visual) ──────────────── */
-  /* A physical sheet of paper stays white in BOTH themes — it is a scanned
+  /* A physical sheet of paper stays white in BOTH themes - it is a scanned
      document, not a UI surface. Only its shadow adapts to the night office. */
   .doc-paper {
     background: #ffffff;
@@ -362,6 +362,20 @@
   .dark .doc-paper {
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
     border-color: #3a3f46;
+    /* The sheet itself is always white: pin the semantic tokens to their
+       light-theme values so every child element (title, file numbers, bars,
+       placeholder boxes) renders exactly like in daylight mode. Without
+       this, dark-mode text colors (cream / pale gray) land on the white
+       sheet and become unreadable. */
+    --foreground: #1a1d21;
+    --muted-foreground: #75797f;
+    --primary: #1e4475;
+    --secondary: #e9e6dd;
+    --secondary-foreground: #1a1d21;
+    --border: #d8d5cc;
+    --input: #c9c6bc;
+    --paper: #fafaf6;
+    --paper-foreground: #1a1d21;
   }
 
   /* ─── Misc ───────────────────────────────────────────────── */
@@ -395,7 +409,7 @@
   }
 }
 
-/* Focus visibility — quality floor */
+/* Focus visibility - quality floor */
 :focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;

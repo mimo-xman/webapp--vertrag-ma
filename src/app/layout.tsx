@@ -26,8 +26,8 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Vertrag.ma — Postulez en Allemagne sans lever le petit doigt",
-    template: "%s — Vertrag.ma",
+    default: "Vertrag.ma · Postulez en Allemagne sans lever le petit doigt",
+    template: "%s · Vertrag.ma",
   },
   description:
     "Vertrag.ma envoie vos candidatures aux entreprises allemandes automatiquement, prépare votre dossier complet et traduit vos diplômes.",

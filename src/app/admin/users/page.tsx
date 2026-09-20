@@ -32,17 +32,30 @@ export default function AdminUsersPage() {
 
   const handleTransferRole = async (row: UserRow) => {
     const newRole = row.role === "admin" ? "user" : "admin";
+    // Demoting an admin is a two-step flow: confirmation, then an approval
+    // email is sent to the creator - the role is NOT changed here.
     const ok = await confirmApp(
       t("admin.transferConfirmMessage", { name: row.full_name, role: newRole }),
       { title: t("admin.transferConfirmTitle") }
     );
     if (!ok) return;
     try {
-      await apiFetch(`/api/admin/users/${row._id}/transfer-role`, {
+      const data = await apiFetch<{
+        success: boolean;
+        approval_required?: boolean;
+        message?: string;
+      }>(`/api/admin/users/${row._id}/transfer-role`, {
         method: "POST",
         body: JSON.stringify({ role: newRole }),
       });
-      toast({ title: t("common.operationSuccess") });
+      if (data.approval_required) {
+        toast({
+          title: t("admin.transferRequestSentTitle"),
+          description: data.message || t("admin.transferRequestSent"),
+        });
+      } else {
+        toast({ title: t("common.operationSuccess") });
+      }
       setRefreshKey((k) => k + 1);
     } catch (err) {
       await alertApp(err instanceof Error ? err.message : "Erreur");
@@ -153,7 +166,7 @@ export default function AdminUsersPage() {
       header: t("nav.dossier"),
       render: (row) => (
         <span className="text-xs">
-          {row.has_dossier ? "✓" : "—"}
+          {row.has_dossier ? "✓" : "-"}
           {row.two_factor_enabled && <span className="ml-2 text-primary">2FA</span>}
         </span>
       ),
@@ -240,6 +253,9 @@ export default function AdminUsersPage() {
         endpoint="/api/admin/users"
         columns={columns}
         refreshKey={refreshKey}
+        columnToggle
+        storageKey="admin-users"
+        dateFilters={[{ prefix: "created", label: t("common.createdAt") }]}
         statusFilter={{
           key: "role",
           label: t("admin.colRole"),

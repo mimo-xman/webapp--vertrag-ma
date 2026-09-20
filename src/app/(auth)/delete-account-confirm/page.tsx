@@ -40,7 +40,7 @@ function DeleteAccountConfirmContent() {
         await alertApp(data.error || "Erreur");
       }
     } catch {
-      await alertApp("Erreur réseau");
+      await alertApp(t("common.networkError"));
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ function DeleteAccountConfirmContent() {
   if (done) {
     return (
       <div className="form-sheet p-8 text-center">
-        <h1 className="font-display text-xl font-bold">Compte supprimé</h1>
+        <h1 className="font-display text-xl font-bold">{t("auth.accountDeleted")}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Toutes vos données ont été effacées. Redirection…
         </p>

@@ -6,7 +6,7 @@ import { SupportMessage, SUPPORT_REASONS } from "@/models/SupportMessage";
 import { createWithUniqueRef } from "@/lib/ref-number";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
-// POST /api/contact — public support form submission.
+// POST /api/contact - public support form submission.
 // Each message gets a unique reference id (VT-S-…) the user can quote.
 const schema = z.object({
   full_name: z.string().trim().min(3).max(80),

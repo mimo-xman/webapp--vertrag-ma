@@ -7,7 +7,7 @@ import { Postulation } from "@/models/Postulation";
 import { User } from "@/models/User";
 import { Company } from "@/models/Company";
 
-// GET /api/admin/executions — workflow execution registry.
+// GET /api/admin/executions - workflow execution registry.
 //
 // Modes (mutually exclusive query params):
 //   ?date=YYYY-MM-DD   → paginated list of that day + counts (live polling)

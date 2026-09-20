@@ -8,9 +8,9 @@ import mongoose, { Schema } from "mongoose";
 //   execution → many postulations, postulation → many executions (m:n).
 //
 // Triggers:
-//   github — GitHub Actions workflow (cron or manual dispatch)
-//   server — backend API route (Oracle Cloud VM, admin "Lancer la relance")
-//   admin  — admin executing ONE postulation manually from the postulations page
+//   github - GitHub Actions workflow (cron or manual dispatch)
+//   server - backend API route (Oracle Cloud VM, admin "Lancer la relance")
+//   admin  - admin executing ONE postulation manually from the postulations page
 
 export type ExecutionTrigger = "github" | "server" | "admin";
 

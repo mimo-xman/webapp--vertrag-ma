@@ -63,7 +63,7 @@ export default function AdminAuditLogsPage() {
       key: "details",
       header: t("common.details"),
       render: (row) => (
-        <span className="text-xs">{row.details || "—"}</span>
+        <span className="text-xs">{row.details || "-"}</span>
       ),
     },
   ];
@@ -75,7 +75,13 @@ export default function AdminAuditLogsPage() {
         title={t("admin.auditLogs")}
         subtitle={t("admin.auditLogsSubtitle")}
       />
-      <DataTable endpoint="/api/admin/audit-logs" columns={columns} />
+      <DataTable
+        endpoint="/api/admin/audit-logs"
+        columns={columns}
+        columnToggle
+        storageKey="admin-audit-logs"
+        dateFilters={[{ prefix: "created", label: t("common.date") }]}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-# Workflows de postulations — Guide complet
+# Workflows de postulations - Guide complet
 
 Ce document explique comment les postulations sont envoyées, et comment
 lancer les exécutions de **trois façons** : en ligne de commande (VM Oracle
@@ -44,7 +44,7 @@ Points clés :
   traite plusieurs postulations ; une postulation peut être exécutée
   plusieurs fois (N1 échouée, N2 échouée, … N~ réussie).
 - **Anti-double-exécution** : une postulation en cours d'exécution a le
-  statut `executing` — impossible de la reprendre (bouton admin compris).
+  statut `executing` : impossible de la reprendre (bouton admin compris).
 - **Récupération des crashes** : au démarrage de chaque vague, les
   exécutions bloquées (> 1 h) sont clôturées, les postulations abandonnées
   (> 10 min en `executing`) sont remises en attente, les senders coincés
@@ -81,7 +81,7 @@ MONGO_URI="..." MONGO_DB_NAME="vertrag_ma" npx tsx send-postulations.ts
 
 Codes de sortie : `0` = il reste des postulations à traiter (relancer),
 `1` = file vide. Les exécutions créées portent le trigger `github` (mode
-script autonome) — à ajuster via le champ trigger si besoin.
+script autonome) : à ajuster via le champ trigger si besoin.
 
 ### Relance des postulations échouées
 
@@ -136,7 +136,7 @@ Deux workflows (`.github/workflows/`) :
 
 | Secret | Valeur |
 |---|---|
-| `MONGO_URI` | URI MongoDB (accessible depuis GitHub — Atlas recommandé) |
+| `MONGO_URI` | URI MongoDB (accessible depuis GitHub · Atlas recommandé) |
 | `MONGO_DB_NAME` | `vertrag_ma` |
 
 Chaque run crée une vague : une exécution parallèle par mail sender
@@ -197,7 +197,7 @@ Admin → Postulations → bouton ▶ (visible quand le statut est
 ### Jeu de données volumétrique
 
 ```bash
-# 1. Générer les JSON (déjà commités dans seed/) — déterministe
+# 1. Générer les JSON (déjà commités dans seed/) - déterministe
 node scripts/generate-seed-data.mjs
 #    → seed/categories.json  (1 000 catégories)
 #    → seed/companies.json   (20 000 entreprises, emails de test rotatifs
@@ -213,7 +213,7 @@ Le script est idempotent (relancer ne crée pas de doublons).
 ### Test du moteur d'exécution (sans base ni emails réels)
 
 ```bash
-# Depuis la racine du repo — MongoDB en mémoire + faux serveur SMTP.
+# Depuis la racine du repo - MongoDB en mémoire + faux serveur SMTP.
 npx tsx workflow/test-executor.ts
 # → 39 vérifications : parallélisme, anti-double-envoi, désactivation
 #   sender en échec, exécution manuelle, récupération de crashes,

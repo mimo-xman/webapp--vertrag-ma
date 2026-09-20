@@ -26,7 +26,7 @@ function ResetPasswordContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      await alertApp("Les mots de passe ne correspondent pas.");
+      await alertApp(t("common.passwordsMismatch"));
       return;
     }
     setLoading(true);

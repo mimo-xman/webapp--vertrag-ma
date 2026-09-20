@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-// Support messages — sent from the public /contact page.
+// Support messages - sent from the public /contact page.
 // Each message carries a unique reference id the user can quote when
 // communicating with the team. Admins view them in Admin → Messages and
 // toggle them between "active" and "closed":

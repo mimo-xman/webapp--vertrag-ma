@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
   const hasReason = searchParams.has("reason");
 
-  // Logged-in users are pushed away from auth-only pages — EXCEPT when the
+  // Logged-in users are pushed away from auth-only pages - EXCEPT when the
   // visit carries a reason flag (session_expired / auth_required). In that
   // case the cookie is stale or the session was invalidated (password
   // changed, account deleted): clear it and show the login page instead of

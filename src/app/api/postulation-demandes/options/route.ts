@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
   });
 }
 
-// POST /api/postulation-demandes/options — validate + price a specific selection.
+// POST /api/postulation-demandes/options - validate + price a specific selection.
 export async function POST(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;

@@ -1,4 +1,4 @@
-// Admin action audit logging — write-only from the app, consultable by all admins.
+// Admin action audit logging - write-only from the app, consultable by all admins.
 
 import { AuditLog } from "@/models/AuditLog";
 import type mongoose from "mongoose";
@@ -25,6 +25,6 @@ export async function logAdminAction(params: {
   }
 }
 
-// Aktenzeichen-style reference numbers — shared implementation in ref-number.ts
+// Aktenzeichen-style reference numbers - shared implementation in ref-number.ts
 // (kept alias-free so the workflow scripts can use it too).
 export { generateRefNumber } from "./ref-number";

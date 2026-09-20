@@ -20,6 +20,8 @@ const updateSchema = z.object({
     .optional()
     .nullable(),
   active: z.boolean().optional(),
+  // Max sends per UTC day - 0 = unlimited.
+  daily_limit: z.number().int().min(0).max(1000000).optional(),
 });
 
 export async function PUT(
@@ -42,7 +44,7 @@ export async function PUT(
     return NextResponse.json({ success: false, error: "Service introuvable" }, { status: 404 });
   }
 
-  const { name, type, sender_email, api_key, smtp_config, active } = parsed.data;
+  const { name, type, sender_email, api_key, smtp_config, active, daily_limit } = parsed.data;
   const finalType = type || sender.type;
 
   if (finalType === "api") {
@@ -67,6 +69,7 @@ export async function PUT(
   if (name) sender.name = name;
   if (type) sender.type = type;
   if (active !== undefined) sender.active = active;
+  if (daily_limit !== undefined) sender.daily_limit = daily_limit;
   if (sender_email !== undefined) {
     sender.sender_email =
       finalType === "api" ? (sender_email && sender_email !== "" ? sender_email.toLowerCase() : null) : null;

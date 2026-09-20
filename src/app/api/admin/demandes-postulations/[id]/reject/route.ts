@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 import { PostulationDemande } from "@/models/PostulationDemande";
 import { logAdminAction } from "@/lib/audit";
 
-// POST — reject a pending demande.
+// POST - reject a pending demande.
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

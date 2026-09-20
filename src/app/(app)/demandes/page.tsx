@@ -63,6 +63,8 @@ interface OptionsResponse {
 
 interface PriceBreakdown {
   total_price: number;
+  total_full_price: number;
+  total_discount: number;
   per_day_price: number;
   per_day_discount: number;
   per_day_price_after_discount: number;
@@ -164,7 +166,7 @@ export default function DemandesPage() {
                 toast({ title: t("common.operationSuccess") });
                 setRefreshKey((k) => k + 1);
               } catch (err) {
-                await alertApp(err instanceof Error ? err.message : "Erreur");
+                await alertApp(err instanceof Error ? err.message : t("common.errorFallback"));
               }
             }}
           >
@@ -178,7 +180,7 @@ export default function DemandesPage() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="eyebrow mb-1">Vertrag.ma — {t("demandes.title")}</p>
+          <p className="eyebrow mb-1">Vertrag.ma · {t("demandes.title")}</p>
           <h1 className="font-display text-2xl font-bold tracking-tight">{t("demandes.title")}</h1>
           <p className="mt-0.5 text-sm text-muted-foreground">{t("demandes.subtitle")}</p>
         </div>
@@ -192,6 +194,7 @@ export default function DemandesPage() {
         endpoint="/api/postulation-demandes"
         columns={columns}
         refreshKey={refreshKey}
+        storageKey="user-demandes"
         emptyMessage={t("postulations.empty")}
         statusFilter={{
           key: "status",
@@ -210,7 +213,7 @@ export default function DemandesPage() {
         onCreated={() => setRefreshKey((k) => k + 1)}
       />
 
-      {/* Price details — parameters frozen at creation time */}
+      {/* Price details : parameters frozen at creation time */}
       <PriceDetailsDialog
         open={detailsTarget !== null}
         onOpenChange={(o) => !o && setDetailsTarget(null)}
@@ -224,7 +227,7 @@ export default function DemandesPage() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// Create demande dialog — dynamic options + live price
+// Create demande dialog - dynamic options + live price
 // ═══════════════════════════════════════════════════════════
 function CreateDemandeDialog({
   open,
@@ -255,7 +258,7 @@ function CreateDemandeDialog({
     const params = categories.length ? `?categories=${categories.join(",")}` : "";
     const data = await apiFetch<OptionsResponse>(`/api/postulation-demandes/options${params}`);
     setOptions(data);
-    // A selected category may have been deactivated meanwhile — prune it
+    // A selected category may have been deactivated meanwhile - prune it
     // so the selection always matches what is actually offered.
     const visibleIds = new Set(data.categories.map((c) => c._id));
     setSelectedCategories((prev) => {
@@ -360,9 +363,10 @@ function CreateDemandeDialog({
 
             {options && options.companies_available < minTotal && (
               <div className="rounded-sm border border-warning/40 bg-warning/10 px-3 py-2.5 text-sm text-warning">
-                Pas assez d&apos;entreprises disponibles ({options.companies_available}) — le minimum est{" "}
-                {minTotal}. Élargissez vos catégories ou n&apos;en sélectionnez aucune
-                pour cibler toutes les entreprises.
+                {t("demandes.notEnoughCompanies", {
+                  count: options.companies_available,
+                  min: minTotal,
+                })}
               </div>
             )}
 
@@ -388,7 +392,7 @@ function CreateDemandeDialog({
                     </button>
                   ))}
                   {options && options.categories.length === 0 && (
-                    <p className="text-xs text-muted-foreground">—</p>
+                    <p className="text-xs text-muted-foreground">-</p>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -413,7 +417,7 @@ function CreateDemandeDialog({
                     disabled={!options || options.total_options.length === 0}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="—" />
+                      <SelectValue placeholder="-" />
                     </SelectTrigger>
                     <SelectContent>
                       {options?.total_options.map((v) => (
@@ -432,7 +436,7 @@ function CreateDemandeDialog({
                     disabled={!nmbrTotal}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="—" />
+                      <SelectValue placeholder="-" />
                     </SelectTrigger>
                     <SelectContent>
                       {perDayOptions.map((v) => (
@@ -450,13 +454,30 @@ function CreateDemandeDialog({
                 <div className="form-sheet border-primary/30 bg-paper p-4">
                   <p className="eyebrow mb-3">{t("demandes.priceTitle")}</p>
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">{t("demandes.priceTotalLabel")}</span>
-                      <span className="num font-medium">{breakdown.total_price} $</span>
+                    <div className="flex items-center justify-between gap-3 text-sm">
+                      <span className="min-w-0 text-muted-foreground">{t("demandes.priceTotalLabel")}</span>
+                      <span className="num flex shrink-0 items-center gap-2">
+                        {breakdown.total_discount > 0 && (
+                          <span className="relative text-muted-foreground">
+                            {breakdown.total_full_price} $
+                            <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 rotate-[-6deg] bg-destructive" />
+                          </span>
+                        )}
+                        <span className="font-medium">{breakdown.total_price} $</span>
+                      </span>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">{t("demandes.pricePerDayLabel")}</span>
-                      <span className="num flex items-center gap-2">
+                    {breakdown.total_discount > 0 && (options?.pricing.total.free_amount ?? 0) > 0 && (
+                      <div className="flex items-center justify-between gap-3 text-xs">
+                        <span className="flex min-w-0 items-center gap-1 text-success">
+                          <TrendingDown className="h-3 w-3 shrink-0" />
+                          {t("admin.freeTotal")}
+                        </span>
+                        <span className="num shrink-0 text-success">−{breakdown.total_discount} $</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between gap-3 text-sm">
+                      <span className="min-w-0 text-muted-foreground">{t("demandes.pricePerDayLabel")}</span>
+                      <span className="num flex shrink-0 items-center gap-2">
                         {breakdown.per_day_discount > 0 && (
                           <span className="relative text-muted-foreground">
                             {breakdown.per_day_price} $
@@ -471,12 +492,12 @@ function CreateDemandeDialog({
                       </span>
                     </div>
                     {breakdown.per_day_discount > 0 && (
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="flex items-center gap-1 text-success">
-                          <TrendingDown className="h-3 w-3" />
+                      <div className="flex items-center justify-between gap-3 text-xs">
+                        <span className="flex min-w-0 items-center gap-1 text-success">
+                          <TrendingDown className="h-3 w-3 shrink-0" />
                           {t("admin.freePerDay")}
                         </span>
-                        <span className="num text-success">−{breakdown.per_day_discount} $</span>
+                        <span className="num shrink-0 text-success">−{breakdown.per_day_discount} $</span>
                       </div>
                     )}
                     <div className="rule-dashed" />

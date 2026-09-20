@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { requireAdmin } from "@/lib/auth";
 import { AuditLog } from "@/models/AuditLog";
+import { applyDateRange } from "@/lib/api-filters";
 
-// GET — audit log entries (read-only for all admins).
+// GET - audit log entries (read-only for all admins).
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
@@ -26,6 +27,8 @@ export async function GET(request: NextRequest) {
     ];
   }
   if (actionFilter && actionFilter !== "all") filter.action = actionFilter;
+  // Date-range filter on the entry date (inclusive whole days, UTC).
+  applyDateRange(filter, params, "created", "createdAt");
 
   const allowedSorts = ["createdAt", "action", "admin_email", "entity_type"];
   const sort: Record<string, 1 | -1> = {

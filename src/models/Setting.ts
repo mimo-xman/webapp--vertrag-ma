@@ -43,7 +43,7 @@ const pricingAxisDefaults = {
 
 const SettingSchema = new Schema<ISetting>(
   {
-    // Pricing v2 — two independent axes (total / per day), each configured
+    // Pricing v2 - two independent axes (total / per day), each configured
     // with its own step, step price, min, max and free amount.
     postulation_pricing: {
       total: { ...pricingAxisDefaults, free_amount: { type: Number, default: 0 } },
@@ -83,14 +83,14 @@ export const Setting = mongoose.models.Setting || mongoose.model<ISetting>("Sett
 // exact OLD defaults are upgraded).
 const round2 = (v: number) => Math.round(v * 100) / 100;
 
-// v2 — pricing model restructured into two independent axes.
+// v2 - pricing model restructured into two independent axes.
 // The legacy block `postulation_demandes` is no longer part of the mongoose
 // schema, so the migration reads the RAW document (native driver) to keep
 // the admin's customized values. Conversion:
 //   axis.step       = legacy.step_{axis}
 //   axis.step_price = legacy.price_of_hundred_{axis} * legacy.step_{axis} / 100
 //   axis.min        = legacy.min_{axis} (with the v1 lowering 500→100 / 300→100)
-//   axis.max        = 100000 (new ceiling — availability still applies on top)
+//   axis.max        = 100000 (new ceiling - availability still applies on top)
 //   axis.free       = per_day: legacy.free_per_day_amount · total: 0
 async function migratePricingV2(doc: ISetting): Promise<string[]> {
   // Already migrated (idempotent guard).

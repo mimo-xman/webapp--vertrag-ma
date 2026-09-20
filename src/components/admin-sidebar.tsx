@@ -1,6 +1,6 @@
 "use client";
 
-// Admin navigation — dark "file cabinet" sidebar with the Amt aesthetic.
+// Admin navigation - dark "file cabinet" sidebar with the Amt aesthetic.
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";

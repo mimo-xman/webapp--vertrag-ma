@@ -17,7 +17,7 @@ import {
 import { generateRefNumber } from "@/lib/audit";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
-// GET — user's demandes history.
+// GET - user's demandes history.
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
       nmbr_total: d.nmbr_total,
       nmbr_per_day: d.nmbr_per_day,
       price: d.price,
-      // Pricing parameters in effect when this demande was created —
+      // Pricing parameters in effect when this demande was created -
       // displayed to the user so he can see how his price was computed.
       pricing_snapshot: d.pricing_snapshot || null,
       status: d.status,
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
   });
 }
 
-// POST — create a new demande (requires active dossier, no pending demande).
+// POST - create a new demande (requires active dossier, no pending demande).
 export async function POST(request: NextRequest) {
   try {
     const rl = rateLimit(request, "create-demande", 10, 60 * 1000);
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
     const nmbrPerDay = Number(body.nmbr_per_day || 0);
 
     // Strict category validation: every selected category must exist and be
-    // ACTIVE (a deactivated category is no longer selectable — the user must
+    // ACTIVE (a deactivated category is no longer selectable - the user must
     // refresh his selection, otherwise he would pay for companies that are
     // no longer offered).
     if (categoryIds.some((id) => typeof id !== "string" || !mongoose.isValidObjectId(id))) {
@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: validationError }, { status: 400 });
     }
 
-    // SNAPSHOT — select NOW the exact companies that will be used when the
+    // SNAPSHOT - select NOW the exact companies that will be used when the
     // admin confirms the payment, and store them on the demande. Later
     // deactivations can no longer reduce what the user paid for: the
     // confirmation creates the postulations from this saved list.
@@ -187,7 +187,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: `Pas assez d'entreprises disponibles (${snapshotCompanies.length}) — la disponibilité vient de changer. Fermez la fenêtre et réessayez.`,
+          error: `Pas assez d'entreprises disponibles (${snapshotCompanies.length}) : la disponibilité vient de changer. Fermez la fenêtre et réessayez.`,
         },
         { status: 400 }
       );
@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
 
     const breakdown = computePrice(nmbrTotal, nmbrPerDay, pricing);
 
-    // SNAPSHOT — store the pricing parameters in effect RIGHT NOW with the
+    // SNAPSHOT - store the pricing parameters in effect RIGHT NOW with the
     // demande, so the exact computation stays visible forever (params can
     // change later, the stored price is never recomputed).
     const pricing_snapshot = {
@@ -203,6 +203,8 @@ export async function POST(request: NextRequest) {
       per_day: pricing.per_day,
       breakdown: {
         total_price: breakdown.total_price,
+        total_full_price: breakdown.total_full_price,
+        total_discount: breakdown.total_discount,
         per_day_price: breakdown.per_day_price,
         per_day_discount: breakdown.per_day_discount,
         per_day_price_after_discount: breakdown.per_day_price_after_discount,

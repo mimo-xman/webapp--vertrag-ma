@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { requireAdmin } from "@/lib/auth";
-import { User } from "@/models/User";
+import { User } from "@/models/User";import { applyDateRange } from "@/lib/api-filters";
 
-// GET — all users + admins, EXCLUDING the currently connected admin
+
+// GET - all users + admins, EXCLUDING the currently connected admin
 // (their own account is managed from their profile page).
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
@@ -26,6 +27,8 @@ export async function GET(request: NextRequest) {
     ];
   }
   if (roleFilter && roleFilter !== "all") filter.role = roleFilter;
+  // Date-range filter on the account creation date.
+  applyDateRange(filter, params, "created", "createdAt");
 
   const allowedSorts = ["full_name", "email", "role", "createdAt", "active"];
   const sort: Record<string, 1 | -1> = {

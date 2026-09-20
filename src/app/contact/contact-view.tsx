@@ -58,11 +58,11 @@ export function ContactView({ defaultName, defaultEmail }: { defaultName: string
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok || !data.success) {
-        throw new Error(data.error || "Une erreur est survenue");
+        throw new Error(data.error || t("common.unknownError"));
       }
       setSentRef(data.ref_id);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur est survenue");
+      setError(err instanceof Error ? err.message : t("common.unknownError"));
     } finally {
       setSending(false);
     }
@@ -123,7 +123,7 @@ export function ContactView({ defaultName, defaultEmail }: { defaultName: string
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="vous@exemple.com"
+            placeholder={t("common.emailPlaceholder")}
             maxLength={200}
           />
         </div>

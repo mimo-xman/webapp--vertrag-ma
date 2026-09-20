@@ -137,7 +137,7 @@ export async function GET(request: NextRequest) {
     upcoming: upcoming.map((p) => ({
       _id: String(p._id),
       scheduled_at: p.scheduled_at,
-      company_name: (p.company_id as { name?: string })?.name || "—",
+      company_name: (p.company_id as { name?: string })?.name || "-",
     })),
   });
 }

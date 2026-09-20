@@ -8,7 +8,7 @@ import { User } from "@/models/User";
 import { generateRefNumber } from "@/lib/audit";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
-// POST /api/dossier/request-creation — user requests the paid dossier creation (20 $ default).
+// POST /api/dossier/request-creation - user requests the paid dossier creation (20 $ default).
 export async function POST(request: NextRequest) {
   try {
     const rl = rateLimit(request, "dossier-create-req", 5, 15 * 60 * 1000);

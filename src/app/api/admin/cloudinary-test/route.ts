@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { testCloudinaryPdfDelivery } from "@/lib/cloudinary";
 import { rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
-// POST /api/admin/cloudinary-test — self-diagnostic of the PDF hosting:
+// POST /api/admin/cloudinary-test - self-diagnostic of the PDF hosting:
 // uploads a tiny test PDF to Cloudinary, verifies that its delivery link is
 // publicly reachable, then destroys the test asset.
 // Detects: missing configuration / account-level PDF delivery block

@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TriangleAlert, CircleHelp } from "lucide-react";
+import { useI18n } from "@/components/language-provider";
 
 type PopupKind = "alert" | "confirm" | "destructive" | "prompt";
 
@@ -54,6 +55,7 @@ interface AppPopupContextValue {
 const AppPopupContext = createContext<AppPopupContextValue | null>(null);
 
 export function AppPopupProvider({ children }: { children: ReactNode }) {
+  const { t } = useI18n();
   const [request, setRequest] = useState<PopupRequest | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [open, setOpen] = useState(false);
@@ -65,7 +67,7 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
       setOpen(false);
       resolveRef.current?.(value);
       resolveRef.current = null;
-      // Clear the request after the close animation — but cancel this timer
+      // Clear the request after the close animation - but cancel this timer
       // if a new popup is opened in the meantime (alert right after confirm).
       if (clearTimerRef.current) clearTimeout(clearTimerRef.current);
       clearTimerRef.current = setTimeout(() => {
@@ -93,9 +95,9 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
     (message: string, title?: string) =>
       new Promise<void>((resolve) => {
         resolveRef.current = resolve as (value: unknown) => void;
-        openPopup({ kind: "alert", title: title || "Information", message, resolve: resolve as never });
+        openPopup({ kind: "alert", title: title || t("common.information"), message, resolve: resolve as never });
       }),
-    [openPopup]
+    [openPopup, t]
   );
 
   const confirmApp = useCallback(
@@ -112,14 +114,14 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
         resolveRef.current = resolve as (value: unknown) => void;
         openPopup({
           kind: options?.destructive ? "destructive" : "confirm",
-          title: options?.title || "Confirmation",
+          title: options?.title || t("common.confirmTitle"),
           message,
           confirmLabel: options?.confirmLabel,
           cancelLabel: options?.cancelLabel,
           resolve: resolve as never,
         });
       }),
-    [openPopup]
+    [openPopup, t]
   );
 
   const promptApp = useCallback(
@@ -132,14 +134,14 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
         setInputValue(options?.defaultValue || "");
         openPopup({
           kind: "prompt",
-          title: options?.title || "Saisie",
+          title: options?.title || t("common.inputTitle"),
           message,
           placeholder: options?.placeholder,
           defaultValue: options?.defaultValue,
           resolve: resolve as never,
         });
       }),
-    [openPopup]
+    [openPopup, t]
   );
 
   const isDestructive = request?.kind === "destructive";
@@ -194,7 +196,7 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
           <DialogFooter className="mt-2 gap-2">
             {request?.kind !== "alert" && (
               <Button variant="outline" onClick={() => close(isPrompt ? null : false)}>
-                {request?.cancelLabel || "Annuler"}
+                {request?.cancelLabel || t("common.cancel")}
               </Button>
             )}
             <Button
@@ -202,7 +204,11 @@ export function AppPopupProvider({ children }: { children: ReactNode }) {
               onClick={() => close(isPrompt ? inputValue : true)}
             >
               {request?.confirmLabel ||
-                (request?.kind === "alert" ? "OK" : isDestructive ? "Supprimer" : "Confirmer")}
+                (request?.kind === "alert"
+                  ? "OK"
+                  : isDestructive
+                    ? t("common.delete")
+                    : t("common.confirm"))}
             </Button>
           </DialogFooter>
         </DialogContent>

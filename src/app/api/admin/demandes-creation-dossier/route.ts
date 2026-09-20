@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { requireAdmin } from "@/lib/auth";
 import { DossierDemandeForCreate } from "@/models/DossierDemandeForCreate";
-import { User } from "@/models/User";
+import { User } from "@/models/User";import { applyDateRange } from "@/lib/api-filters";
 
-// GET — all creation demandes with user info.
+
+// GET - all creation demandes with user info.
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
@@ -20,6 +21,8 @@ export async function GET(request: NextRequest) {
 
   const filter: Record<string, unknown> = {};
   if (status && status !== "all") filter.status = status;
+  // Date-range filter on the demande creation date.
+  applyDateRange(filter, params, "created", "createdAt");
   if (search) {
     const users = await User.find({
       $or: [

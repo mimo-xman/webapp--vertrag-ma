@@ -18,9 +18,9 @@ function TwoFADisableContent() {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sm border-2 border-success text-success stamp-anim">
             <CheckCircle2 className="h-7 w-7" />
           </div>
-          <h1 className="font-display text-xl font-bold">2FA désactivé</h1>
+          <h1 className="font-display text-xl font-bold">{t("auth.2faDisableTitle")}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            La double authentification a été désactivée. Vous pouvez vous reconnecter normalement.
+            {t("auth.2faDisabledSuccess")}
           </p>
         </>
       ) : (
@@ -29,12 +29,12 @@ function TwoFADisableContent() {
             {status === "invalid" ? <XCircle className="h-7 w-7" /> : <ShieldOff className="h-7 w-7" />}
           </div>
           <h1 className="font-display text-xl font-bold">
-            {status === "invalid" ? "Lien invalide ou expiré" : "Désactivation du 2FA"}
+            {status === "invalid" ? t("auth.2faLinkInvalid") : t("auth.2faDisableTitle")}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {status === "invalid"
-              ? "Ce lien de désactivation est invalide ou a expiré."
-              : "Une erreur est survenue. Réessayez depuis votre profil."}
+              ? t("auth.2faLinkInvalidDesc")
+              : t("auth.2faErrorRetry")}
           </p>
         </>
       )}

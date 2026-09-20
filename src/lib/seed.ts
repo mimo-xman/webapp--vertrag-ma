@@ -1,4 +1,4 @@
-// Demo data seeding — runs automatically when the in-memory dev database
+// Demo data seeding - runs automatically when the in-memory dev database
 // is used (no MONGODB_URI configured). Gives a fully working preview with
 // realistic German companies, categories, users and activity.
 // Idempotent: each collection is only seeded when empty.

@@ -5,7 +5,7 @@ import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
 import { User } from "@/models/User";
 import { logAdminAction } from "@/lib/audit";
 
-// POST — approve the uploaded dossier: link saved into user doc,
+// POST - approve the uploaded dossier: link saved into user doc,
 // demande marked confirmed.
 export async function POST(
   request: NextRequest,

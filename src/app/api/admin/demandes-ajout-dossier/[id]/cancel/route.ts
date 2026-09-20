@@ -5,10 +5,10 @@ import { requireAdmin } from "@/lib/auth";
 import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
 import { logAdminAction } from "@/lib/audit";
 
-// POST — admin cancels an add-dossier demande.
+// POST - admin cancels an add-dossier demande.
 // Allowed while the demande is still active (not confirmed/rejected/cancelled).
 // When the payment has already been validated (payed_* statuses), a message
-// is REQUIRED — it explains the cancellation to the user (e.g. refund).
+// is REQUIRED - it explains the cancellation to the user (e.g. refund).
 const cancelSchema = z.object({
   message: z.string().trim().max(2000).optional(),
 });
@@ -76,7 +76,7 @@ export async function POST(
     action: "dossier_add.cancel",
     entity_type: "dossier_demande_for_add",
     entity_id: id,
-    details: `Demande annulée par l'admin — ${demande.ref_number}${isPayed ? " (après paiement, message fourni)" : ""}`,
+    details: `Demande annulée par l'admin · ${demande.ref_number}${isPayed ? " (après paiement, message fourni)" : ""}`,
   });
 
   return NextResponse.json({ success: true });

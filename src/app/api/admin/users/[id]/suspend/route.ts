@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/auth";
 import { User } from "@/models/User";
 import { logAdminAction } from "@/lib/audit";
 
-// POST /api/admin/users/[id]/suspend — suspend a user account.
+// POST /api/admin/users/[id]/suspend - suspend a user account.
 // Suspended users can still log in but only see the /suspended page and
 // can contact the support. Rules: admins cannot be suspended, and no
 // self-suspension (the current admin is already excluded from the list).
@@ -61,7 +61,7 @@ export async function POST(
     action: "user.suspend",
     entity_type: "user",
     entity_id: id,
-    details: `Compte ${user.email} suspendu${parsed.data.reason ? ` — motif : ${parsed.data.reason}` : ""}`,
+    details: `Compte ${user.email} suspendu${parsed.data.reason ? ` : motif : ${parsed.data.reason}` : ""}`,
   });
 
   return NextResponse.json({ success: true });

@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { requireAuth } from "@/lib/auth";
 import { DossierDemandeForAdd } from "@/models/DossierDemandeForAdd";
 
-// Cancel a pending add-demande — allowed while en_attente (free) OR
+// Cancel a pending add-demande - allowed while en_attente (free) OR
 // waiting_payment (priced, before the admin validates the payment).
 export async function POST(
   request: NextRequest,

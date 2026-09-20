@@ -202,7 +202,7 @@ export default function DossierPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="eyebrow mb-1">Vertrag.ma — {t("dossier.title")}</p>
+        <p className="eyebrow mb-1">Vertrag.ma · {t("dossier.title")}</p>
         <h1 className="font-display text-2xl font-bold tracking-tight">{t("dossier.title")}</h1>
         <p className="mt-0.5 text-sm text-muted-foreground">{t("dossier.subtitle")}</p>
       </div>
@@ -295,7 +295,7 @@ export default function DossierPage() {
                       ).toLocaleDateString("fr-FR")}
                     </p>
                   )}
-                {/* Priced add demande — payment instructions */}
+                {/* Priced add demande : payment instructions */}
                 {activeRequest.type === "ajout" && activeRequest.demande.status === "waiting_payment" && (
                   <p className="mt-1 max-w-md text-xs leading-snug text-muted-foreground">
                     {t("dossier.payViaWhatsappHint", { price: activeRequest.demande.price })}
@@ -512,7 +512,7 @@ export default function DossierPage() {
                 <li key={d._id} className="space-y-1.5 px-5 py-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-sm font-medium text-destructive">
-                      {t("dossier.deleteDossier")} —{" "}
+                      {t("dossier.deleteDossier")} ·{" "}
                       {new Date(d.deleted_at).toLocaleDateString("fr-FR", {
                         day: "2-digit",
                         month: "short",
@@ -525,9 +525,9 @@ export default function DossierPage() {
                   <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
                     <span>
                       {d.source_type === "ajout"
-                        ? `${t("dossier.sourceAdd")} : ${d.source_ref_number || "—"}`
+                        ? `${t("dossier.sourceAdd")} : ${d.source_ref_number || "-"}`
                         : d.source_type === "creation"
-                          ? `${t("dossier.sourceCreation")} : ${d.source_ref_number || "—"}`
+                          ? `${t("dossier.sourceCreation")} : ${d.source_ref_number || "-"}`
                           : t("common.noData")}
                     </span>
                   </div>
@@ -617,9 +617,9 @@ function UploadDossierDialog({
       });
       const data = await response
         .json()
-        .catch(() => ({ success: false, error: `Erreur serveur (${response.status})` }));
+        .catch(() => ({ success: false, error: t("common.serverError", { status: response.status }) }));
       if (!response.ok || !data.success) {
-        throw new Error(data.error || "Erreur d'envoi");
+        throw new Error(data.error || t("common.uploadSendError"));
       }
       onOpenChange(false);
       setFile(null);
@@ -668,7 +668,7 @@ function UploadDossierDialog({
                 {t("dossier.uploadSelected", {
                   name: "",
                   size: Math.round(file.size / 1024).toLocaleString("fr-FR"),
-                }).replace(/^ — /, "")}
+                }).replace(/^ · /, "")}
               </p>
             </div>
           ) : (

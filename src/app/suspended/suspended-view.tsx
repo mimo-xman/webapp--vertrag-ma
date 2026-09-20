@@ -15,7 +15,7 @@ export function SuspendedView({ email, reason }: { email: string; reason: string
     try {
       await fetch("/api/auth/logout", { method: "POST" });
     } catch {
-      // ignore — clear the cookie client-side anyway
+      // ignore - clear the cookie client-side anyway
     }
     document.cookie = "vertrag_token=; path=/; max-age=0";
     window.location.href = "/login";

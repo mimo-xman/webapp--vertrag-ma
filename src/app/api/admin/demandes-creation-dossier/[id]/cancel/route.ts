@@ -7,7 +7,7 @@ import { logAdminAction } from "@/lib/audit";
 
 const schema = z.object({ message: z.string().trim().min(5).max(2000) });
 
-// POST — cancel a creation demande (by admin)
+// POST - cancel a creation demande (by admin)
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

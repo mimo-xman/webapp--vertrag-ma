@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 import { User } from "@/models/User";
 import { logAdminAction } from "@/lib/audit";
 
-// POST /api/admin/users/[id]/unsuspend — re-activate a suspended account.
+// POST /api/admin/users/[id]/unsuspend - re-activate a suspended account.
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

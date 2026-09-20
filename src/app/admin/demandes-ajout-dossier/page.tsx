@@ -119,10 +119,10 @@ export default function AdminDemandesAjoutDossierPage() {
 
   const handleMarkInReview = async (row: DemandeRow) => {
     const ok = await confirmApp(
-      "Marquer ce dossier comme en cours de révision ? L'utilisateur ne pourra plus l'annuler.",
+      t("admin.markInReviewConfirm"),
       {
-        title: "En cours de révision",
-        confirmLabel: "Confirmer",
+        title: t("admin.markInReviewTitle"),
+        confirmLabel: t("common.confirm"),
       }
     );
     if (!ok) return;
@@ -172,7 +172,7 @@ export default function AdminDemandesAjoutDossierPage() {
       header: t("admin.colName"),
       render: (row) => (
         <div>
-          <p className="font-medium">{row.user?.full_name || "—"}</p>
+          <p className="font-medium">{row.user?.full_name || "-"}</p>
           <p className="aktenzeichen">{row.user?.email}</p>
         </div>
       ),
@@ -341,6 +341,9 @@ export default function AdminDemandesAjoutDossierPage() {
         endpoint="/api/admin/demandes-ajout-dossier"
         columns={columns}
         refreshKey={refreshKey}
+        columnToggle
+        storageKey="admin-demandes-ajout"
+        dateFilters={[{ prefix: "created", label: t("common.createdAt") }]}
         statusFilter={{
           key: "status",
           label: t("common.status"),
@@ -363,7 +366,7 @@ export default function AdminDemandesAjoutDossierPage() {
           <DialogHeader>
             <DialogTitle className="font-display">{t("admin.rejectDossier")}</DialogTitle>
             <DialogDescription>
-              {rejectTarget?.ref_number} — {t("admin.rejectMessageLabel")}
+              {rejectTarget?.ref_number} · {t("admin.rejectMessageLabel")}
             </DialogDescription>
           </DialogHeader>
           <Textarea
@@ -389,7 +392,7 @@ export default function AdminDemandesAjoutDossierPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Admin cancellation dialog — message required when already payed */}
+      {/* Admin cancellation dialog : message required when already payed */}
       <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>

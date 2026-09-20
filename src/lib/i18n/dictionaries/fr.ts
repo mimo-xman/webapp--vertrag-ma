@@ -23,6 +23,10 @@ export default {
     perPage: "Par page",
     of: "sur",
     page: "Page",
+    columns: "Colonnes",
+    dateFrom: "Du",
+    dateTo: "Au",
+    clearFilter: "Effacer le filtre",
     noData: "Aucune donnée",
     createdAt: "Créé le",
     confirmDeleteTitle: "Confirmer la suppression",
@@ -44,6 +48,16 @@ export default {
     themeDark: "Sombre",
     themeSystem: "Système",
     toggleTheme: "Changer de thème",
+    networkError: "Erreur réseau",
+    serverError: "Erreur serveur ({status})",
+    unknownError: "Une erreur est survenue",
+    errorFallback: "Erreur",
+    passwordsMismatch: "Les mots de passe ne correspondent pas.",
+    uploadSendError: "Erreur d'envoi",
+    emailPlaceholder: "vous@exemple.com",
+    information: "Information",
+    confirmTitle: "Confirmation",
+    inputTitle: "Saisie",
   },
   nav: {
     home: "Accueil",
@@ -58,7 +72,7 @@ export default {
     logout: "Déconnexion",
   },
   home: {
-    heroEyebrow: "Service de postulation — Allemagne",
+    heroEyebrow: "Service de postulation · Allemagne",
     heroTitle: "Postulez à des centaines d'entreprises allemandes.",
     heroTitleAccent: "Sans lever le petit doigt.",
     heroSubtitle:
@@ -81,7 +95,7 @@ export default {
     service2Price: "20 $",
     service3Title: "Traduction des diplômes",
     service3Desc:
-      "Vos diplômes traduits en allemand par nos traducteurs — un document requis pour toute candidature sérieuse. Prix selon le type et le nombre de diplômes.",
+      "Vos diplômes traduits en allemand par nos traducteurs : un document requis pour toute candidature sérieuse. Prix selon le type et le nombre de diplômes.",
     service3Price: "sur devis",
     howTitle: "Comment ça marche",
     howSubtitle: "Quatre étapes simples entre vous et votre emploi en Allemagne.",
@@ -148,7 +162,7 @@ export default {
     footerServices: "Services",
     footerSupport: "Support",
     footerContact: "Contact",
-    footerLegal: "© {year} Vertrag.ma — Tous droits réservés.",
+    footerLegal: "© {year} Vertrag.ma · Tous droits réservés.",
   },
   auth: {
     loginTitle: "Connexion",
@@ -231,6 +245,7 @@ export default {
     category: "Catégorie",
     scheduledAt: "Programmée le",
     postedAt: "Envoyée le",
+    perDayUnit: "jour",
     status: "Statut",
     failedReason: "Motif d'échec",
     failedReasonUser: "Cette candidature a échoué. Elle sera relancée après résolution du problème.",
@@ -252,7 +267,7 @@ export default {
       "Voulez-vous vraiment annuler cette demande ? Cette action est définitive.",
     newTitle: "Nouvelle demande de postulation",
     newSubtitle:
-      "Le dossier actif est obligatoire. Une seule demande en attente à la fois — après confirmation du paiement, vous pourrez en créer une nouvelle.",
+      "Le dossier actif est obligatoire. Une seule demande en attente à la fois : après confirmation du paiement, vous pourrez en créer une nouvelle.",
     categoriesLabel: "Catégories d'entreprises",
     categoriesPlaceholder: "Sélectionnez des catégories (ou aucune pour toutes)",
     companiesAvailable: "{count} entreprises disponibles",
@@ -264,6 +279,8 @@ export default {
     priceFree: "offert",
     priceTotal: "Total à payer",
     daysEstimate: "Durée estimée : {days} jours",
+    notEnoughCompanies:
+      "Pas assez d'entreprises disponibles ({count}) : le minimum est {min}. Élargissez vos catégories ou n'en sélectionnez aucune pour cibler toutes les entreprises.",
     submit: "Créer la demande",
     created: "Demande créée !",
     createdWhaTitle: "Paiement via WhatsApp",
@@ -275,7 +292,7 @@ export default {
     allCategories: "Toutes les catégories",
     // ── Détail du prix figé sur la demande (paramètres à la création) ──
     viewPriceDetails: "Détail du prix",
-    priceDetailsTitle: "Détail du prix — {ref}",
+    priceDetailsTitle: "Détail du prix · {ref}",
     priceDetailsParamsTitle: "Paramètres à la création",
     priceDetailsAxisTotal: "Postulations totales",
     priceDetailsAxisPerDay: "Par jour",
@@ -287,8 +304,10 @@ export default {
     priceDetailsBreakdownTitle: "Calcul du prix",
     priceDetailsPerDayFull: "Prix plein (barré)",
     priceDetailsDiscount: "Remise",
+    priceDetailsLegacy:
+      "Les paramètres de prix n'ont pas été enregistrés pour cette demande (ancienne demande antérieure à l'enregistrement automatique).",
     priceDetailsSnapshotNote:
-      "Ces paramètres étaient en vigueur lors de la création de la demande — les réglages actuels peuvent être différents.",
+      "Ces paramètres étaient en vigueur lors de la création de la demande : les réglages actuels peuvent être différents.",
   },
   dossier: {
     title: "Mon dossier",
@@ -354,7 +373,7 @@ export default {
     payViaWhatsapp: "Payer via WhatsApp",
     payViaWhatsappHint:
       "Contactez l'équipe sur WhatsApp pour régler {price} $. Une fois le paiement validé, la vérification de votre dossier commencera.",
-    cancelMessageTitle: "Motif de l'annulation — {ref}",
+    cancelMessageTitle: "Motif de l'annulation · {ref}",
     priceToPay: "à payer",
     pricePaid: "payé",
     sourceAdd: "Ajout",
@@ -405,6 +424,15 @@ export default {
     deleteAccountFinalMessage:
       "Cette action est IRRÉVERSIBLE. Toutes vos données seront effacées définitivement. Confirmer ?",
     emailUnchangeable: "L'email ne peut pas être modifié.",
+    registerSuccessDesc:
+      "Cliquez sur le lien d'activation reçu par email pour activer votre compte. Le lien expire dans 24 heures.",
+    accountDeleted: "Compte supprimé",
+    "2faDisableTitle": "Désactivation du 2FA",
+    "2faDisabledSuccess":
+      "La double authentification a été désactivée. Vous pouvez vous reconnecter normalement.",
+    "2faLinkInvalid": "Lien invalide ou expiré",
+    "2faLinkInvalidDesc": "Ce lien de désactivation est invalide ou a expiré.",
+    "2faErrorRetry": "Une erreur est survenue. Réessayez depuis votre profil.",
   },
   statuses: {
     en_attente: "En attente",
@@ -412,6 +440,7 @@ export default {
     echouee: "Échouée",
     re_execute: "À relancer",
     executing: "En cours d'exécution",
+    annulee_admin: "Annulée par admin",
     payed: "Payée",
     canceled: "Annulée",
     confirmed: "Confirmée",
@@ -440,7 +469,7 @@ export default {
   contact: {
     title: "Contacter le support",
     subtitle:
-      "Une question, un problème ou une demande ? Écrivez-nous — notre équipe vous répond par email.",
+      "Une question, un problème ou une demande ? Écrivez-nous : notre équipe vous répond par email.",
     fullName: "Nom complet",
     email: "Adresse email",
     reason: "Raison du message",
@@ -477,7 +506,7 @@ export default {
     demandesCreation: "Demandes de création de dossier",
     demandesCreationSubtitle: "Suivi des créations de dossier payées",
     mailSenders: "Services email",
-    mailSendersSubtitle: "Envoi des postulations — API et SMTP",
+    mailSendersSubtitle: "Envoi des postulations · API et SMTP",
     settings: "Paramètres",
     settingsSubtitle: "Prix, messages et configuration globale",
     auditLogs: "Journal d'audit",
@@ -502,11 +531,29 @@ export default {
     colEntity: "Entité",
     colType: "Type",
     categoryName: "Nom de la catégorie",
+    categoryNamePlaceholder: "Santé, IT, BTP…",
+    markInReviewConfirm:
+      "Marquer ce dossier comme en cours de révision ? L'utilisateur ne pourra plus l'annuler.",
+    markInReviewTitle: "En cours de révision",
+    markInCreationConfirm: "Marquer cette demande comme en cours de création ?",
+    markInCreationTitle: "En cours de création",
+    cancelDemandeTitle: "Annuler la demande",
+    cancelDemandeDesc:
+      "{ref} : la demande sera marquée « annulée par l'admin » et l'utilisateur pourra en créer une nouvelle.",
+    cancelMessageLabel: "Message d'annulation (visible par l'utilisateur)",
+    cancelMessagePlaceholder: "Expliquez la raison de l'annulation…",
+    noSendersAlert:
+      "Aucun mail sender actif disponible : ajoutez ou ré-activez un service email, puis relancez.",
+    executeFailedFallback: "Échec de l'exécution",
+    testFailed: "Échec du test",
+    testErrorMessage: "Erreur lors du test.",
+    workflowLaunchError:
+      "Le workflow GitHub Actions n'a pas pu être lancé automatiquement : {error}. Vous pouvez le lancer manuellement depuis GitHub.",
     categoryCount: "{count} entreprise(s)",
     deleteCategoryWarning:
       "Supprimer cette catégorie retirera {count} entreprise(s) de cette catégorie. Continuer ?",
     deleteCategoryBlocked:
-      "Impossible de supprimer cette catégorie : elle contient {count} entreprise(s). Déplacez ou supprimez d'abord ses entreprises — ou désactivez simplement la catégorie : elle ne sera plus proposée aux utilisateurs et ses entreprises ne seront plus ciblées par les nouvelles demandes.",
+      "Impossible de supprimer cette catégorie : elle contient {count} entreprise(s). Déplacez ou supprimez d'abord ses entreprises : ou désactivez simplement la catégorie : elle ne sera plus proposée aux utilisateurs et ses entreprises ne seront plus ciblées par les nouvelles demandes.",
     activateCompany: "Activer",
     deactivateCompany: "Désactiver",
     activateCompanyConfirm:
@@ -534,6 +581,9 @@ export default {
     transferToUser: "Rétrograder user",
     transferConfirmTitle: "Changer le rôle",
     transferConfirmMessage: "Changer le rôle de {name} vers {role} ?",
+    transferRequestSentTitle: "Demande envoyée au créateur",
+    transferRequestSent:
+      "Le passage d'admin vers user requiert la décision du créateur. Un email lui a été envoyé : le rôle ne sera modifié qu'après sa décision.",
     deleteUserConfirmTitle: "Supprimer l'utilisateur",
     deleteUserConfirmMessage:
       "Ceci supprimera définitivement {name} et TOUTES ses données (postulations, demandes, dossier). Continuer ?",
@@ -547,10 +597,33 @@ export default {
       "Cet utilisateur a déjà postulé à cette entreprise. Créer quand même la postulation ?",
     reExecuteTitle: "Relancer les postulations échouées",
     reExecuteDesc:
-      "Lance le workflow GitHub Actions qui re-traite toutes les postulations avec le statut « À relancer ».",
+      "Lance le workflow GitHub Actions qui re-traite toutes les postulations avec le statut « À relancer » : uniquement celles programmées aujourd'hui ou passées.",
     reExecuteCta: "Lancer la relance",
     reExecuteTriggered: "Workflow de relance lancé !",
     reExecuteCount: "{count} postulation(s) seront relancées",
+    relanceIntervalTitle: "Intervalle de relance (optionnel)",
+    relanceIntervalDesc:
+      "Par défaut, seules les postulations programmées aujourd'hui ou passées sont relancées. Sélectionnez un intervalle pour cibler une période précise.",
+    relanceDateFrom: "Date de début",
+    relanceDateTo: "Date de fin",
+    relanceDateError: "La date de début doit être antérieure ou égale à la date de fin.",
+    executePendingCta: "Lancer l'exécution",
+    executePendingTitle: "Exécuter les postulations en attente",
+    executePendingDesc:
+      "Le même processus que le workflow quotidien automatique : traite les postulations en attente et à relancer programmées aujourd'hui (ou en retard), une exécution parallèle par service email.",
+    executePendingGithubDesc:
+      "Déclenche le workflow GitHub Actions quotidien « send-postulations » (asynchrone).",
+    executePendingServerDesc:
+      "Exécute la vague directement sur ce serveur, une exécution parallèle par service email.",
+    executePendingStarted: "Exécution lancée · {count} exécution(s) en direct",
+    executePendingNone: "Aucune postulation à exécuter aujourd'hui.",
+    cancelPostulation: "Annuler (admin)",
+    cancelPostulationTitle: "Annuler la postulation",
+    cancelPostulationConfirm:
+      "Annuler cette postulation ? Elle sera marquée « Annulée par admin » et ne sera jamais exécutée (conservée pour l'historique).",
+    colOrigin: "Origine",
+    originManual: "Manuelle (admin)",
+    originAuto: "Auto · demande {ref}",
     failedReasonLabel: "Motif (visible admin)",
     confirmPayment: "Confirmer le paiement",
     confirmPaymentTitle: "Confirmer le paiement",
@@ -559,7 +632,7 @@ export default {
     rejectDemande: "Rejeter",
     rejectConfirmTitle: "Rejeter la demande",
     rejectConfirmMessage: "Voulez-vous vraiment rejeter la demande {ref} ?",
-    paymentConfirmed: "Paiement confirmé — {count} postulation(s) créée(s)",
+    paymentConfirmed: "Paiement confirmé · {count} postulation(s) créée(s)",
     paymentRejected: "Demande rejetée",
     previewDossier: "Prévisualiser le dossier",
     confirmDossier: "Valider le dossier",
@@ -567,8 +640,8 @@ export default {
     rejectMessageLabel: "Message de rejet (visible par l'utilisateur)",
     rejectMessagePlaceholder: "Expliquez pourquoi le dossier est rejeté…",
     viewMessage: "Message",
-    rejectMessageTitle: "Motif du rejet — {ref}",
-    cancelMessageTitle: "Motif de l'annulation — {ref}",
+    rejectMessageTitle: "Motif du rejet · {ref}",
+    cancelMessageTitle: "Motif de l'annulation · {ref}",
     dossierConfirmed: "Dossier validé et activé",
     dossierRejected: "Dossier rejeté",
     confirmPayed: "Confirmer paiement",
@@ -579,7 +652,7 @@ export default {
     replacePdfHint: "Remplacement du PDF : l'ancien lien sera remplacé par le nouveau.",
     setTraductionPrice: "Prix de traduction",
     traductionPriceLabel: "Prix de traduction payé ($)",
-    completedSuccess: "Demande marquée comme terminée — dossier livré",
+    completedSuccess: "Demande marquée comme terminée : dossier livré",
     senderName: "Nom",
     senderType: "Type",
     apiKeyLabel: "Clé API (Brevo)",
@@ -595,10 +668,23 @@ export default {
     testMessagePlaceholder: "Message de test à envoyer…",
     testSend: "Envoyer le test",
     testSuccess: "Email de test envoyé !",
+    dailyLimit: "Limite par jour",
+    dailyLimitHint:
+      "Nombre maximum d'envois par jour (0 = illimité). L'utilisation du service s'arrête automatiquement quand la limite est atteinte, les autres services prennent le relais.",
+    unlimited: "Illimité",
+    todayUsage: "Aujourd'hui",
+    usageHistory: "Historique des utilisations",
+    usageDialogTitle: "Utilisations du service « {name} »",
+    usageDialogDesc: "Chaque envoi est enregistré à l'instant exact de son exécution.",
+    usageNoData: "Aucune utilisation enregistrée pour ce service.",
+    usageLifetime: "Total cumulé",
+    usageTimesCount: "{count} utilisation(s)",
+    usageTimesUtc: "Heures en UTC.",
     sortUsage: "Trier par utilisation",
     priceHundredTotal: "Prix de 100 postulations totales ($)",
     priceHundredPerDay: "Prix de 100 postulations/jour ($)",
     freePerDay: "Premières postulations/jour gratuites",
+    freeTotal: "Premières postulations gratuites",
     // ── Pricing v2 : sections organisées (Postulations → total / par jour) ──
     pricingSectionPostulations: "Postulations",
     pricingSectionPostulationsHint:
@@ -608,7 +694,7 @@ export default {
     stepOptionsLabel: "Pas des options",
     stepPriceLabel: "Prix du pas de postulations ($)",
     stepPriceHint:
-      "Prix d'UN pas de {step} postulations — le pas est celui défini dans « Pas des options » ci-dessus.",
+      "Prix d'UN pas de {step} postulations : le pas est celui défini dans « Pas des options » ci-dessus.",
     minLabel: "Minimum",
     maxLabel: "Maximum",
     maxLabelHint: "Plafond au-delà des entreprises disponibles (les deux limites s'appliquent).",
@@ -642,7 +728,7 @@ export default {
       "Obligatoire après paiement : expliquez l'annulation à l'utilisateur (remboursement, etc.).",
     cancelMessagePlaceholderAdd: "Ex. : paiement non concordant, remboursement en cours…",
     viewCancelMessage: "Motif de l'annulation",
-    cancelMessageTitleAdd: "Motif de l'annulation — {ref}",
+    cancelMessageTitleAdd: "Motif de l'annulation · {ref}",
     demandeCancelledSuccess: "Demande annulée",
     markInReview: "En cours de révision",
     // ── Mail senders activate/deactivate ──
@@ -656,7 +742,7 @@ export default {
     senderDeactivated: "Service email désactivé",
     // ── Pricing snapshot details (user + admin) ──
     viewPriceDetails: "Détail du prix",
-    priceDetailsTitle: "Détail du prix — {ref}",
+    priceDetailsTitle: "Détail du prix · {ref}",
     settingsSaved: "Paramètres enregistrés",
     cloudinaryTitle: "Hébergement des fichiers (Cloudinary)",
     cloudinaryHint:
@@ -669,13 +755,13 @@ export default {
     messages: "Messages support",
     messagesSubtitle: "Messages reçus via le formulaire de contact public",
     executions: "Exécutions",
-    executionsSubtitle: "Exécutions du workflow de postulations — vue en direct",
+    executionsSubtitle: "Exécutions du workflow de postulations : vue en direct",
     colRef: "Référence",
     colReason: "Raison",
     colExecutions: "Exécutions",
     colSender: "Mail sender",
     colOutcome: "Résultat",
-    messageViewTitle: "Message support — {ref}",
+    messageViewTitle: "Message support · {ref}",
     messageToggleClosed: "Message clôturé",
     messageToggleActive: "Message ré-activé",
     messageCloseHint:
@@ -702,7 +788,7 @@ export default {
     executeNoSenders: "Aucun mail sender disponible (actif et non utilisé par une exécution).",
     executeSuccess: "Postulation envoyée avec succès",
     executeFailedSenderDisabled:
-      "Échec de l'envoi — le mail sender a été désactivé et l'erreur enregistrée (voir Services email).",
+      "Échec de l'envoi : le mail sender a été désactivé et l'erreur enregistrée (voir Services email).",
     modifyStatus: "Modifier le statut",
     modifyStatusTitle: "Modifier le statut de la postulation",
     modifyStatusDesc: "Correction manuelle du statut (à utiliser avec prudence).",
@@ -712,8 +798,8 @@ export default {
     relanceGithubDesc: "Lance le workflow GitHub Actions « re-execute-postulations » (asynchrone).",
     relanceServer: "Serveur backend",
     relanceServerDesc:
-      "Exécute la relance directement sur ce serveur — une exécution parallèle par mail sender, visible en direct dans la page Exécutions.",
-    relanceServerStarted: "Relance serveur lancée — {count} exécution(s) en direct",
+      "Exécute la relance directement sur ce serveur : une exécution parallèle par mail sender, visible en direct dans la page Exécutions.",
+    relanceServerStarted: "Relance serveur lancée · {count} exécution(s) en direct",
     viewExecutions: "Voir les exécutions",
     executionsOfPostulation: "Exécutions de la postulation",
     noExecutions: "Aucune exécution pour cette postulation.",

@@ -1,13 +1,20 @@
 name: Re-execute Postulations
 
 # Manual-trigger-only workflow: relaunches all postulations with status
-# re_execute. Launched from the admin panel (via GitHub API — « Lancer la
+# re_execute. Launched from the admin panel (via GitHub API - « Lancer la
 # relance » → Workflow GitHub) or from the Actions tab. One parallel
 # Execution per available mail sender; failures disable the sender with the
 # error saved (visible in Admin → Services email).
 
 on:
   workflow_dispatch:
+    inputs:
+      date_from:
+        description: "Début de l'intervalle de relance (YYYY-MM-DD, optionnel)"
+        required: false
+      date_to:
+        description: "Fin de l'intervalle de relance (YYYY-MM-DD, optionnel)"
+        required: false
 
 jobs:
   re-execute:
@@ -36,6 +43,8 @@ jobs:
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+          DATE_FROM: ${{ github.event.inputs.date_from }}
+          DATE_TO: ${{ github.event.inputs.date_to }}
         run: npx tsx re-execute-postulations.ts || test $? -eq 1
 
   re-trigger:

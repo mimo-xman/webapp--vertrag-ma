@@ -3,8 +3,10 @@ import { connectDB } from "@/lib/mongodb";
 import { requireAuth } from "@/lib/auth";
 import { Postulation } from "@/models/Postulation";
 import { Company } from "@/models/Company";
+import { applyDateRange } from "@/lib/api-filters";
 
-// GET /api/postulations — user's own postulations, paginated with filters.
+// GET /api/postulations - user's own postulations, paginated with filters.
+// Date-range filters: scheduled_from/scheduled_to and posted_from/posted_to.
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request);
   if ("error" in auth) return auth.error;
@@ -18,6 +20,10 @@ export async function GET(request: NextRequest) {
 
   const filter: Record<string, unknown> = { user_id: auth.user._id };
   if (status && status !== "all") filter.status = status;
+
+  // Date-range filters (inclusive; "to" covers the whole day in UTC).
+  applyDateRange(filter, params, "scheduled", "scheduled_at");
+  applyDateRange(filter, params, "posted", "posted_at");
 
   if (search) {
     const companies = await Company.find({ name: { $regex: search, $options: "i" } })

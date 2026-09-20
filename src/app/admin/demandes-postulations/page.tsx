@@ -87,7 +87,7 @@ export default function AdminDemandesPostulationsPage() {
       header: t("admin.colName"),
       render: (row) => (
         <div>
-          <p className="font-medium">{row.user?.full_name || "—"}</p>
+          <p className="font-medium">{row.user?.full_name || "-"}</p>
           <p className="aktenzeichen">{row.user?.email}</p>
         </div>
       ),
@@ -191,6 +191,9 @@ export default function AdminDemandesPostulationsPage() {
         endpoint="/api/admin/demandes-postulations"
         columns={columns}
         refreshKey={refreshKey}
+        columnToggle
+        storageKey="admin-demandes-postulations"
+        dateFilters={[{ prefix: "created", label: t("common.createdAt") }]}
         statusFilter={{
           key: "status",
           label: t("common.status"),
@@ -202,7 +205,7 @@ export default function AdminDemandesPostulationsPage() {
         }}
       />
 
-      {/* Price details — parameters frozen at creation time (admin view) */}
+      {/* Price details : parameters frozen at creation time (admin view) */}
       <PriceDetailsDialog
         open={detailsTarget !== null}
         onOpenChange={(o) => !o && setDetailsTarget(null)}

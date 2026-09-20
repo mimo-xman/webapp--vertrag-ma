@@ -3,11 +3,11 @@
 // AND the standalone workflow scripts (workflow/*.ts run via tsx).
 //
 // Prefixes:
-//   P  — demandes de postulation      VT-P-2026-000123
-//   DA — demandes d'ajout de dossier  VT-DA-2026-000045
-//   DC — demandes de création dossier VT-DC-2026-000067
-//   E  — exécutions de workflow       VT-E-2026-000089
-//   S  — messages support             VT-S-2026-000012
+//   P  - demandes de postulation      VT-P-2026-000123
+//   DA - demandes d'ajout de dossier  VT-DA-2026-000045
+//   DC - demandes de création dossier VT-DC-2026-000067
+//   E  - exécutions de workflow       VT-E-2026-000089
+//   S  - messages support             VT-S-2026-000012
 
 export type RefPrefix = "P" | "DA" | "DC" | "E" | "S";
 

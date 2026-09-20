@@ -1,6 +1,6 @@
 "use client";
 
-// Dark theme provider — next-themes with the "Das Amt" design system.
+// Dark theme provider - next-themes with the "Das Amt" design system.
 // class-based strategy (see the .dark block in globals.css), system default
 // so the app follows the OS preference until the user makes an explicit
 // choice (stored in localStorage by next-themes).

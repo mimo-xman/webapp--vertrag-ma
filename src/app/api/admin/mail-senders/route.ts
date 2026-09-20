@@ -3,9 +3,10 @@ import { z } from "zod";
 import { connectDB } from "@/lib/mongodb";
 import { requireAdmin } from "@/lib/auth";
 import { MailSender } from "@/models/MailSender";
-import { logAdminAction } from "@/lib/audit";
+import { logAdminAction } from "@/lib/audit";import { applyDateRange } from "@/lib/api-filters";
 
-// GET — mail senders sorted by usage count (default) or other fields.
+
+// GET - mail senders sorted by usage count (default) or other fields.
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
@@ -22,6 +23,8 @@ export async function GET(request: NextRequest) {
   const filter: Record<string, unknown> = {};
   if (search) filter.name = { $regex: search, $options: "i" };
   if (typeFilter && typeFilter !== "all") filter.type = typeFilter;
+  // Date-range filter on the creation date.
+  applyDateRange(filter, params, "created", "createdAt");
 
   const allowedSorts = ["name", "type", "usage_count", "success_count", "failed_count", "createdAt", "active"];
   const sort: Record<string, 1 | -1> = {
@@ -33,26 +36,37 @@ export async function GET(request: NextRequest) {
     MailSender.countDocuments(filter),
   ]);
 
+  // UTC day boundaries - the same reference the executor uses for limits.
+  const todayStart = new Date();
+  todayStart.setUTCHours(0, 0, 0, 0);
+
   return NextResponse.json({
     success: true,
-    data: items.map((s) => ({
-      _id: String(s._id),
-      name: s.name,
-      type: s.type,
-      // Secrets are never returned — only a masked hint.
-      has_api_key: Boolean(s.api_key),
-      sender_email: s.sender_email || "",
-      smtp_host: s.smtp_config?.host || "",
-      smtp_port: s.smtp_config?.port || 587,
-      active: s.active,
-      in_use: Boolean(s.in_use),
-      last_error: s.last_error || "",
-      last_error_at: s.last_error_at,
-      usage_count: s.usage_count,
-      success_count: s.success_count,
-      failed_count: s.failed_count,
-      createdAt: s.createdAt,
-    })),
+    data: items.map((s) => {
+      const todayUsage = (s.usage_log || []).filter(
+        (at) => new Date(at).getTime() >= todayStart.getTime()
+      ).length;
+      return {
+        _id: String(s._id),
+        name: s.name,
+        type: s.type,
+        // Secrets are never returned - only a masked hint.
+        has_api_key: Boolean(s.api_key),
+        sender_email: s.sender_email || "",
+        smtp_host: s.smtp_config?.host || "",
+        smtp_port: s.smtp_config?.port || 587,
+        active: s.active,
+        in_use: Boolean(s.in_use),
+        last_error: s.last_error || "",
+        last_error_at: s.last_error_at,
+        usage_count: s.usage_count,
+        success_count: s.success_count,
+        failed_count: s.failed_count,
+        daily_limit: s.daily_limit || 0,
+        today_usage: todayUsage,
+        createdAt: s.createdAt,
+      };
+    }),
     pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) },
   });
 }
@@ -72,6 +86,8 @@ const createSchema = z.object({
     })
     .optional()
     .nullable(),
+  // Max sends per UTC day - 0 (or omitted) = unlimited.
+  daily_limit: z.number().int().min(0).max(1000000).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -87,7 +103,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { name, type, sender_email, api_key, smtp_config } = parsed.data;
+  const { name, type, sender_email, api_key, smtp_config, daily_limit } = parsed.data;
   if (type === "api" && !api_key) {
     return NextResponse.json({ success: false, error: "Clé API requise pour un service de type API" }, { status: 400 });
   }
@@ -113,6 +129,7 @@ export async function POST(request: NextRequest) {
     sender_email: type === "api" ? sender_email!.toLowerCase() : null,
     api_key: type === "api" ? api_key! : null,
     smtp_config: type === "smtp" ? smtp_config! : null,
+    daily_limit: daily_limit ?? 0,
     active: true,
   });
 

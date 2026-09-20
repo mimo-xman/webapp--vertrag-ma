@@ -23,6 +23,10 @@ export default {
     perPage: "Per page",
     of: "of",
     page: "Page",
+    columns: "Columns",
+    dateFrom: "From",
+    dateTo: "To",
+    clearFilter: "Clear filter",
     noData: "No data",
     createdAt: "Created",
     confirmDeleteTitle: "Confirm deletion",
@@ -44,6 +48,16 @@ export default {
     themeDark: "Dark",
     themeSystem: "System",
     toggleTheme: "Toggle theme",
+    networkError: "Network error",
+    serverError: "Server error ({status})",
+    unknownError: "An error occurred",
+    errorFallback: "Error",
+    passwordsMismatch: "Passwords do not match.",
+    uploadSendError: "Upload failed",
+    emailPlaceholder: "you@example.com",
+    information: "Information",
+    confirmTitle: "Confirmation",
+    inputTitle: "Input",
   },
   nav: {
     home: "Home",
@@ -58,7 +72,7 @@ export default {
     logout: "Sign out",
   },
   home: {
-    heroEyebrow: "Application service — Germany",
+    heroEyebrow: "Application service · Germany",
     heroTitle: "Apply to hundreds of German companies.",
     heroTitleAccent: "Without lifting a finger.",
     heroSubtitle:
@@ -81,7 +95,7 @@ export default {
     service2Price: "$20",
     service3Title: "Diploma translation",
     service3Desc:
-      "Your diplomas translated into German by our translators — a requirement for any serious application. Price depends on diploma type and quantity.",
+      "Your diplomas translated into German by our translators : a requirement for any serious application. Price depends on diploma type and quantity.",
     service3Price: "on request",
     howTitle: "How it works",
     howSubtitle: "Four simple steps between you and your German job.",
@@ -147,7 +161,7 @@ export default {
     footerServices: "Services",
     footerSupport: "Support",
     footerContact: "Contact",
-    footerLegal: "© {year} Vertrag.ma — All rights reserved.",
+    footerLegal: "© {year} Vertrag.ma · All rights reserved.",
   },
   auth: {
     loginTitle: "Sign in",
@@ -229,6 +243,7 @@ export default {
     category: "Category",
     scheduledAt: "Scheduled",
     postedAt: "Sent",
+    perDayUnit: "day",
     status: "Status",
     failedReason: "Failure reason",
     failedReasonUser: "This application failed. It will be relaunched after the issue is resolved.",
@@ -249,7 +264,7 @@ export default {
     cancelConfirmMessage: "Do you really want to cancel this request? This action is permanent.",
     newTitle: "New application request",
     newSubtitle:
-      "An active dossier is required. Only one pending request at a time — after payment confirmation, you can create another one.",
+      "An active dossier is required. Only one pending request at a time : after payment confirmation, you can create another one.",
     categoriesLabel: "Company categories",
     categoriesPlaceholder: "Select categories (or none for all)",
     companiesAvailable: "{count} companies available",
@@ -261,6 +276,8 @@ export default {
     priceFree: "free",
     priceTotal: "Total to pay",
     daysEstimate: "Estimated duration: {days} days",
+    notEnoughCompanies:
+      "Not enough companies available ({count}): the minimum is {min}. Widen your categories or select none to target all companies.",
     submit: "Create request",
     created: "Request created!",
     createdWhaTitle: "Payment via WhatsApp",
@@ -272,7 +289,7 @@ export default {
     allCategories: "All categories",
     // ── Price details frozen on the demande (parameters at creation) ──
     viewPriceDetails: "Price details",
-    priceDetailsTitle: "Price details — {ref}",
+    priceDetailsTitle: "Price details · {ref}",
     priceDetailsParamsTitle: "Parameters at creation",
     priceDetailsAxisTotal: "Total applications",
     priceDetailsAxisPerDay: "Per day",
@@ -284,8 +301,10 @@ export default {
     priceDetailsBreakdownTitle: "Price computation",
     priceDetailsPerDayFull: "Full price (strikethrough)",
     priceDetailsDiscount: "Discount",
+    priceDetailsLegacy:
+      "Pricing parameters were not saved for this request (older request, created before automatic saving).",
     priceDetailsSnapshotNote:
-      "These parameters were in effect when the request was created — the current settings may differ.",
+      "These parameters were in effect when the request was created : the current settings may differ.",
   },
   dossier: {
     title: "My dossier",
@@ -350,7 +369,7 @@ export default {
     payViaWhatsapp: "Pay via WhatsApp",
     payViaWhatsappHint:
       "Contact the team on WhatsApp to pay {price} $. Once the payment is validated, your dossier verification will start.",
-    cancelMessageTitle: "Cancellation reason — {ref}",
+    cancelMessageTitle: "Cancellation reason · {ref}",
     priceToPay: "to pay",
     pricePaid: "paid",
     sourceAdd: "Add",
@@ -400,6 +419,15 @@ export default {
     deleteAccountFinalMessage:
       "This action is IRREVERSIBLE. All your data will be permanently erased. Confirm?",
     emailUnchangeable: "Email cannot be changed.",
+    registerSuccessDesc:
+      "Click the activation link you received by email to activate your account. The link expires in 24 hours.",
+    accountDeleted: "Account deleted",
+    "2faDisableTitle": "2FA deactivation",
+    "2faDisabledSuccess":
+      "Two-factor authentication has been disabled. You can log in normally again.",
+    "2faLinkInvalid": "Invalid or expired link",
+    "2faLinkInvalidDesc": "This deactivation link is invalid or has expired.",
+    "2faErrorRetry": "An error occurred. Try again from your profile.",
   },
   statuses: {
       en_attente: "Pending",
@@ -407,6 +435,7 @@ export default {
       echouee: "Failed",
       re_execute: "To re-execute",
       executing: "Executing",
+      annulee_admin: "Canceled by admin",
       payed: "Paid",
       canceled: "Cancelled",
       confirmed: "Confirmed",
@@ -434,7 +463,7 @@ export default {
   },
   contact: {
     title: "Contact support",
-    subtitle: "A question, a problem or a request? Write to us — our team replies by email.",
+    subtitle: "A question, a problem or a request? Write to us : our team replies by email.",
     fullName: "Full name",
     email: "Email address",
     reason: "Reason for the message",
@@ -471,7 +500,7 @@ export default {
     demandesCreation: "Dossier creation requests",
     demandesCreationSubtitle: "Tracking of paid dossier creations",
     mailSenders: "Email services",
-    mailSendersSubtitle: "Application sending — API and SMTP",
+    mailSendersSubtitle: "Application sending · API and SMTP",
     senderName: "Name",
     senderType: "Type",
     settings: "Settings",
@@ -498,11 +527,29 @@ export default {
     colEntity: "Entity",
     colType: "Type",
     categoryName: "Category name",
+    categoryNamePlaceholder: "Health, IT, construction…",
+    markInReviewConfirm:
+      "Mark this dossier as in review? The user will no longer be able to cancel it.",
+    markInReviewTitle: "In review",
+    markInCreationConfirm: "Mark this request as in creation?",
+    markInCreationTitle: "In creation",
+    cancelDemandeTitle: "Cancel the request",
+    cancelDemandeDesc:
+      "{ref}: the request will be marked « canceled by admin » and the user will be able to create a new one.",
+    cancelMessageLabel: "Cancellation message (visible to the user)",
+    cancelMessagePlaceholder: "Explain the reason for the cancellation…",
+    noSendersAlert:
+      "No active mail sender available: add or re-activate an email service, then try again.",
+    executeFailedFallback: "Execution failed",
+    testFailed: "Test failed",
+    testErrorMessage: "Error during the test.",
+    workflowLaunchError:
+      "The GitHub Actions workflow could not be launched automatically: {error}. You can launch it manually from GitHub.",
     categoryCount: "{count} company(ies)",
     deleteCategoryWarning:
       "Deleting this category will remove {count} company(ies) from it. Continue?",
     deleteCategoryBlocked:
-      "Cannot delete this category: it contains {count} company(ies). Move or delete them first — or simply deactivate the category: it will no longer be offered to users and its companies will no longer be targeted by new demandes.",
+      "Cannot delete this category: it contains {count} company(ies). Move or delete them first : or simply deactivate the category: it will no longer be offered to users and its companies will no longer be targeted by new demandes.",
     activateCompany: "Activate",
     deactivateCompany: "Deactivate",
     activateCompanyConfirm:
@@ -530,6 +577,9 @@ export default {
     transferToUser: "Demote to user",
     transferConfirmTitle: "Change role",
     transferConfirmMessage: "Change {name}'s role to {role}?",
+    transferRequestSentTitle: "Request sent to the creator",
+    transferRequestSent:
+      "Changing an admin back to user requires the creator's decision. An email has been sent to them : the role will only change after their decision.",
     deleteUserConfirmTitle: "Delete user",
     deleteUserConfirmMessage:
       "This will permanently delete {name} and ALL their data (applications, requests, dossier). Continue?",
@@ -543,10 +593,33 @@ export default {
       "This user has already applied to this company. Create the application anyway?",
     reExecuteTitle: "Relaunch failed applications",
     reExecuteDesc:
-      "Runs the GitHub Actions workflow that re-processes all applications with the « To relaunch » status.",
+      "Runs the GitHub Actions workflow that re-processes all applications with the « To relaunch » status : only those scheduled today or in the past.",
     reExecuteCta: "Start relaunch",
     reExecuteTriggered: "Relaunch workflow started!",
     reExecuteCount: "{count} application(s) will be relaunched",
+    relanceIntervalTitle: "Relaunch interval (optional)",
+    relanceIntervalDesc:
+      "By default only applications scheduled today or in the past are relaunched. Pick an interval to target a specific period.",
+    relanceDateFrom: "Start date",
+    relanceDateTo: "End date",
+    relanceDateError: "The start date must be earlier than or equal to the end date.",
+    executePendingCta: "Run execution",
+    executePendingTitle: "Execute pending applications",
+    executePendingDesc:
+      "The same process as the automatic daily workflow: processes pending and to-relaunch applications scheduled today (or overdue), one parallel execution per email service.",
+    executePendingGithubDesc:
+      "Triggers the daily « send-postulations » GitHub Actions workflow (asynchronous).",
+    executePendingServerDesc:
+      "Runs the wave directly on this server, one parallel execution per email service.",
+    executePendingStarted: "Execution started · {count} live execution(s)",
+    executePendingNone: "No application to execute today.",
+    cancelPostulation: "Cancel (admin)",
+    cancelPostulationTitle: "Cancel the application",
+    cancelPostulationConfirm:
+      "Cancel this application? It will be marked « Canceled by admin » and never executed (kept for history).",
+    colOrigin: "Origin",
+    originManual: "Manual (admin)",
+    originAuto: "Auto · request {ref}",
     failedReasonLabel: "Reason (admin visible)",
     confirmPayment: "Confirm payment",
     confirmPaymentTitle: "Confirm payment",
@@ -555,7 +628,7 @@ export default {
     rejectDemande: "Reject",
     rejectConfirmTitle: "Reject request",
     rejectConfirmMessage: "Do you really want to reject request {ref}?",
-    paymentConfirmed: "Payment confirmed — {count} application(s) created",
+    paymentConfirmed: "Payment confirmed · {count} application(s) created",
     paymentRejected: "Request rejected",
     previewDossier: "Preview dossier",
     confirmDossier: "Approve dossier",
@@ -563,8 +636,8 @@ export default {
     rejectMessageLabel: "Rejection message (visible to the user)",
     rejectMessagePlaceholder: "Explain why the dossier is rejected…",
     viewMessage: "Message",
-    rejectMessageTitle: "Rejection reason — {ref}",
-    cancelMessageTitle: "Cancellation reason — {ref}",
+    rejectMessageTitle: "Rejection reason · {ref}",
+    cancelMessageTitle: "Cancellation reason · {ref}",
     dossierConfirmed: "Dossier approved and activated",
     dossierRejected: "Dossier rejected",
     confirmPayed: "Confirm payment",
@@ -575,7 +648,7 @@ export default {
     replacePdfHint: "PDF replacement: the old link will be replaced by the new one.",
     setTraductionPrice: "Translation price",
     traductionPriceLabel: "Paid translation price ($)",
-    completedSuccess: "Request marked completed — dossier delivered",
+    completedSuccess: "Request marked completed : dossier delivered",
     apiKeyLabel: "API key (Brevo)",
     smtpHost: "SMTP host",
     smtpPort: "Port",
@@ -589,10 +662,23 @@ export default {
     testMessagePlaceholder: "Test message to send…",
     testSend: "Send test",
     testSuccess: "Test email sent!",
+    dailyLimit: "Daily limit",
+    dailyLimitHint:
+      "Maximum sends per day (0 = unlimited). The service automatically stops being used once the limit is reached; the other services take over.",
+    unlimited: "Unlimited",
+    todayUsage: "Today",
+    usageHistory: "Usage history",
+    usageDialogTitle: "Usage of service « {name} »",
+    usageDialogDesc: "Every send is recorded at the exact moment it runs.",
+    usageNoData: "No usage recorded for this service.",
+    usageLifetime: "Lifetime total",
+    usageTimesCount: "{count} usage(s)",
+    usageTimesUtc: "Times are UTC.",
     sortUsage: "Sort by usage",
     priceHundredTotal: "Price of 100 total applications ($)",
     priceHundredPerDay: "Price of 100 applications/day ($)",
     freePerDay: "First applications/day free",
+    freeTotal: "First applications free",
     // ── Pricing v2: organized sections (Applications → total / per day) ──
     pricingSectionPostulations: "Applications",
     pricingSectionPostulationsHint:
@@ -602,7 +688,7 @@ export default {
     stepOptionsLabel: "Options step",
     stepPriceLabel: "Price per step ($)",
     stepPriceHint:
-      "Price of ONE step of {step} applications — the step is the one defined in “Options step” above.",
+      "Price of ONE step of {step} applications : the step is the one defined in “Options step” above.",
     minLabel: "Minimum",
     maxLabel: "Maximum",
     maxLabelHint: "Ceiling on top of the available companies (both limits apply).",
@@ -635,7 +721,7 @@ export default {
       "Required after payment: explain the cancellation to the user (refund, etc.).",
     cancelMessagePlaceholderAdd: "E.g.: payment mismatch, refund in progress…",
     viewCancelMessage: "Cancellation reason",
-    cancelMessageTitleAdd: "Cancellation reason — {ref}",
+    cancelMessageTitleAdd: "Cancellation reason · {ref}",
     demandeCancelledSuccess: "Request cancelled",
     markInReview: "Under review",
     // ── Mail senders activate/deactivate ──
@@ -649,7 +735,7 @@ export default {
     senderDeactivated: "Email sender deactivated",
     // ── Pricing snapshot details (user + admin) ──
     viewPriceDetails: "Price details",
-    priceDetailsTitle: "Price details — {ref}",
+    priceDetailsTitle: "Price details · {ref}",
     settingsSaved: "Settings saved",
     cloudinaryTitle: "File hosting (Cloudinary)",
     cloudinaryHint:
@@ -662,13 +748,13 @@ export default {
     messages: "Support messages",
     messagesSubtitle: "Messages received via the public contact form",
     executions: "Executions",
-    executionsSubtitle: "Postulation workflow executions — live view",
+    executionsSubtitle: "Postulation workflow executions : live view",
     colRef: "Reference",
     colReason: "Reason",
     colExecutions: "Executions",
     colSender: "Mail sender",
     colOutcome: "Outcome",
-    messageViewTitle: "Support message — {ref}",
+    messageViewTitle: "Support message · {ref}",
     messageToggleClosed: "Message closed",
     messageToggleActive: "Message reopened",
     messageCloseHint:
@@ -677,7 +763,7 @@ export default {
     unsuspend: "Lift suspension",
     suspendConfirmTitle: "Suspend this account",
     suspendConfirmMessage:
-      "User {name} will no longer be able to access the app — they will see a suspended-account page with a support link. Continue?",
+      "User {name} will no longer be able to access the app : they will see a suspended-account page with a support link. Continue?",
     suspendReasonLabel: "Reason (optional, visible to the user)",
     suspendReasonPlaceholder: "e.g. suspicious activity, unpaid balance…",
     suspendSuccess: "Account suspended",
@@ -695,7 +781,7 @@ export default {
     executeNoSenders: "No mail sender available (active and not used by a running execution).",
     executeSuccess: "Application sent successfully",
     executeFailedSenderDisabled:
-      "Send failed — the mail sender was disabled and the error recorded (see Email services).",
+      "Send failed : the mail sender was disabled and the error recorded (see Email services).",
     modifyStatus: "Change status",
     modifyStatusTitle: "Change postulation status",
     modifyStatusDesc: "Manual status correction (use with care).",
@@ -705,8 +791,8 @@ export default {
     relanceGithubDesc: "Runs the « re-execute-postulations » GitHub Actions workflow (asynchronous).",
     relanceServer: "Backend server",
     relanceServerDesc:
-      "Runs the relaunch directly on this server — one parallel execution per mail sender, visible live in the Executions page.",
-    relanceServerStarted: "Server relaunch started — {count} live execution(s)",
+      "Runs the relaunch directly on this server : one parallel execution per mail sender, visible live in the Executions page.",
+    relanceServerStarted: "Server relaunch started · {count} live execution(s)",
     viewExecutions: "View executions",
     executionsOfPostulation: "Executions of this application",
     noExecutions: "No execution for this application.",

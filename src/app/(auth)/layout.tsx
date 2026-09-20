@@ -7,7 +7,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <AppPopupProvider>
       <div className="min-h-dvh flex flex-col bg-paper">
-        {/* Briefkopf — letterhead */}
+        {/* Briefkopf : letterhead */}
         <header className="border-b border-border bg-paper/80 backdrop-blur">
           <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
             <Logo />

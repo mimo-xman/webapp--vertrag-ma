@@ -94,7 +94,7 @@ export default function AdminCategoriesPage() {
     }
   };
 
-  // Activate / deactivate — the recommended alternative to deletion: a
+  // Activate / deactivate - the recommended alternative to deletion: a
   // deactivated category disappears from the user's selector and its
   // companies stop being targeted by new demandes, but the data stays intact.
   const handleToggle = async (row: CategoryRow) => {
@@ -202,6 +202,9 @@ export default function AdminCategoriesPage() {
         endpoint="/api/admin/categories"
         columns={columns}
         refreshKey={refreshKey}
+        columnToggle
+        storageKey="admin-categories"
+        dateFilters={[{ prefix: "created", label: t("common.createdAt") }]}
         statusFilter={{
           key: "status",
           label: t("common.status"),
@@ -216,7 +219,7 @@ export default function AdminCategoriesPage() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle className="font-display">
-              {editing ? t("common.edit") : t("common.add")} — {t("admin.categories")}
+              {editing ? t("common.edit") : t("common.add")} · {t("admin.categories")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-1.5">
@@ -225,7 +228,7 @@ export default function AdminCategoriesPage() {
               autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Santé, IT, BTP…"
+              placeholder={t("admin.categoryNamePlaceholder")}
             />
           </div>
           <DialogFooter>

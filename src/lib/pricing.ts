@@ -1,4 +1,4 @@
-// Pricing engine v2 — shared by the dynamic options endpoint, demandes
+// Pricing engine v2 - shared by the dynamic options endpoint, demandes
 // creation, admin settings, and the public home page.
 //
 // Model: each pricing axis (TOTAL postulations, POSTULATIONS PER DAY) is
@@ -7,10 +7,10 @@
 //   - step_price  : the price of ONE step in $ (e.g. 5 $ per 500 posts)
 //   - min         : minimum selectable quantity
 //   - max         : maximum selectable quantity (admin ceiling, on top of
-//                   the real availability — the number of eligible companies)
+//                   the real availability - the number of eligible companies)
 //   - free_amount : the first N units are free (discount shown strikethrough)
 //
-// Price formula per axis — exact pro-rata of the step, so every selectable
+// Price formula per axis - exact pro-rata of the step, so every selectable
 // dropdown option keeps the legacy v1 unit rate after migration:
 //   billable  = max(0, quantity - free_amount)
 //   price     = round2(billable / step * step_price)
@@ -96,6 +96,10 @@ export function buildPerDayOptions(nmbrTotal: number, s: PricingSettings): numbe
 
 export interface PriceBreakdown {
   total_price: number;
+  /** Full total price BEFORE the free-units deduction (for strikethrough display). */
+  total_full_price: number;
+  /** Discount granted by the free units on the TOTAL axis. */
+  total_discount: number;
   per_day_price: number;
   per_day_discount: number;
   per_day_price_after_discount: number;
@@ -108,10 +112,14 @@ export function computePrice(
   nmbrPerDay: number,
   s: PricingSettings
 ): PriceBreakdown {
-  // Total axis — free units deducted, pro-rata of the step price.
+  // Total axis - full price (before the free deduction) is kept for the
+  // strikethrough display, the billable price after it.
+  const total_full =
+    nmbrTotal > 0 ? round2((nmbrTotal / s.total.step) * s.total.step_price) : 0;
   const total_price = axisPrice(nmbrTotal, s.total);
+  const total_discount = Math.max(0, round2(total_full - total_price));
 
-  // Per-day axis — full price (before the free deduction) is shown
+  // Per-day axis - full price (before the free deduction) is shown
   // strikethrough in the UI, the billable price after it.
   const per_day_full =
     nmbrPerDay > 0 ? round2((nmbrPerDay / s.per_day.step) * s.per_day.step_price) : 0;
@@ -123,6 +131,8 @@ export function computePrice(
 
   return {
     total_price: round2(total_price),
+    total_full_price: round2(total_full),
+    total_discount,
     per_day_price: round2(per_day_full),
     per_day_discount,
     per_day_price_after_discount: round2(per_day_price_after_discount),
