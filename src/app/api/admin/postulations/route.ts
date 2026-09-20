@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     filter.$or = [{ user_id: { $in: users.map((u) => u._id) } }, { company_id: { $in: companies.map((c) => c._id) } }];
   }
 
-  const allowedSorts = ["scheduled_at", "posted_at", "status", "createdAt"];
+  const allowedSorts = ["scheduled_at", "posted_at", "status", "createdAt", "updatedAt"];
   const sort: Record<string, 1 | -1> = {
     [allowedSorts.includes(sortField) ? sortField : "scheduled_at"]: sortOrder,
   };
@@ -78,6 +78,7 @@ export async function GET(request: NextRequest) {
       demande_ref: p.demande_ref || null,
       created_by_admin: Boolean(p.created_by_admin),
       createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
       executions: (p.executions || []).map((e) => ({
         execution_id: String(e.execution_id),
         status: e.status,

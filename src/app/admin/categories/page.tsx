@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
+import { dateColumns } from "@/components/table-date-columns";
 import { Plus, Pencil, Trash2, Power, PowerOff } from "lucide-react";
 
 interface CategoryRow {
@@ -25,6 +26,8 @@ interface CategoryRow {
   name: string;
   active: boolean;
   companies_count: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export default function AdminCategoriesPage() {
@@ -149,6 +152,7 @@ export default function AdminCategoriesPage() {
         />
       ),
     },
+    ...dateColumns<CategoryRow>(t),
     {
       key: "actions",
       header: t("common.actions"),

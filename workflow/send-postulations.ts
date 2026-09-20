@@ -7,6 +7,11 @@
 // (status → "executing"), so nothing is ever sent twice - even if several
 // workflow instances run in parallel.
 //
+// Optional DATE_FROM / DATE_TO env (workflow_dispatch inputs from the admin
+// panel's "Lancer l'exécution"): restrict the scheduling window, like the
+// relance interval. Both bounds are capped at TODAY - the future is never
+// executed. When unset, the default window is "today or overdue".
+//
 // Every attempt is recorded in the executions collection (one Execution per
 // sender), and each postulation embeds the outcome of every execution that
 // processed it. If a sender fails (SMTP/API error), it is disabled with the
@@ -25,13 +30,46 @@ import { startExecutionWave } from "../src/lib/postulation-executor";
 // the self re-trigger pattern drains the rest).
 const MAX_PER_SENDER = 5000;
 
+/** Parses a YYYY-MM-DD env value into a Date (UTC midnight + endOfDayMs).
+ *  Returns null for missing/invalid values (default window applies). */
+function parseEnvDate(value: string | undefined, endOfDayMs: number): Date | null {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Date(date.getTime() + endOfDayMs);
+}
+
 async function main() {
   await connectDB();
+
+  // Optional interval from the workflow_dispatch inputs (admin panel).
+  const from = parseEnvDate(process.env.DATE_FROM, 0);
+  const to = parseEnvDate(process.env.DATE_TO, 86_399_999);
+  if (from && to && from.getTime() > to.getTime()) {
+    console.error("[SEND] DATE_FROM doit être antérieure ou égale à DATE_TO.");
+    await disconnectDB();
+    process.exit(2);
+  }
+  // The future is never executed: both bounds are capped at today.
+  const endOfToday = new Date();
+  endOfToday.setUTCHours(23, 59, 59, 999);
+  if ((from && from.getTime() > endOfToday.getTime()) || (to && to.getTime() > endOfToday.getTime())) {
+    console.error("[SEND] DATE_FROM / DATE_TO ne peuvent pas dépasser la date du jour.");
+    await disconnectDB();
+    process.exit(2);
+  }
+  if (from || to) {
+    console.log(
+      `[SEND] Intervalle sélectionné : ${process.env.DATE_FROM || "…"} → ${process.env.DATE_TO || "…"} (UTC).`
+    );
+  }
 
   const wave = await startExecutionWave({
     trigger: "github",
     statuses: ["en_attente", "re_execute"],
-    dueTodayOnly: true,
+    scheduledFrom: from ?? undefined,
+    scheduledTo: to ?? undefined,
+    dueTodayOnly: !from && !to, // default window: today or overdue only
     maxPerSender: MAX_PER_SENDER,
   });
 
@@ -62,19 +100,25 @@ async function main() {
         ? `, désactivé(s) : ${summary.senders_disabled.join(", ")}`
         : "") +
       (summary.senders_limited.length > 0
-        ? `, limite quotidienne atteinte : ${summary.senders_limited.join(", ")}`
+        ? `, limite quotidienne atteinte : ${summary.senders_limited.join(", ")} (les postulations restantes restent en attente)`
         : "")
   );
   if (summary.fatal_error) console.error(`[SEND] ${summary.fatal_error}`);
 
-  // Re-trigger check: anything left due today after this wave?
-  const endOfToday = new Date();
-  endOfToday.setUTCHours(23, 59, 59, 999);
-  const remaining = await Postulation.countDocuments({
+  // Re-trigger check: anything left in the SAME window after this wave?
+  const remainingFilter: Record<string, unknown> = {
     status: { $in: ["en_attente", "re_execute"] },
-    scheduled_at: { $lte: endOfToday },
-  });
-  console.log(`[SEND] ${remaining} postulation(s) restante(s) à traiter aujourd'hui.`);
+  };
+  if (from || to) {
+    remainingFilter.scheduled_at = {
+      ...(from ? { $gte: from } : {}),
+      ...(to ? { $lte: to } : {}),
+    };
+  } else {
+    remainingFilter.scheduled_at = { $lte: endOfToday };
+  }
+  const remaining = await Postulation.countDocuments(remainingFilter);
+  console.log(`[SEND] ${remaining} postulation(s) restante(s) à traiter dans la fenêtre.`);
 
   await disconnectDB();
   process.exit(remaining > 0 ? 0 : 1);

@@ -66,6 +66,7 @@ export async function GET(request: NextRequest) {
         name: cat.name,
       })),
       createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
     })),
     pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) },
   });

@@ -20,6 +20,7 @@ import {
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
+import { dateColumns } from "@/components/table-date-columns";
 import {
   createStatusKey,
   statusVariant,
@@ -42,6 +43,7 @@ interface DemandeRow {
   completed_at: string | null;
   dossier_pdf_link: string | null;
   createdAt: string;
+  updatedAt: string;
   user: { _id: string; full_name: string; email: string } | null;
 }
 
@@ -232,9 +234,11 @@ export default function AdminDemandesCreationDossierPage() {
         </div>
       ),
     },
+    ...dateColumns<DemandeRow>(t),
     {
       key: "actions",
       header: t("common.actions"),
+      alwaysVisible: true,
       render: (row) => (
         <div className="flex gap-1">
           {row.status === "en_attente" && (
@@ -348,7 +352,8 @@ export default function AdminDemandesCreationDossierPage() {
             { value: "payed", label: t("dossier.statusPaidAwaitingCreation") },
             { value: "in_creation", label: t("dossier.statusPaidInCreation") },
             { value: "completed", label: t("dossier.statusCompleted") },
-            { value: "cancelled", label: t("dossier.statusCancelledByUser") },
+            { value: "cancelled_user", label: t("dossier.statusCancelledByUser") },
+            { value: "cancelled_admin", label: t("dossier.statusCancelledByAdmin") },
           ],
         }}
       />

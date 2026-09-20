@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowUpDown, Trash2, ShieldCheck, UserRound, Ban, LockOpen } from "lucide-react";
+import { dateColumns } from "@/components/table-date-columns";
+import { ArrowUpDown, Trash2, ShieldCheck, UserRound, Ban, LockOpen, FileText } from "lucide-react";
 
 interface UserRow {
   _id: string;
@@ -21,7 +22,9 @@ interface UserRow {
   suspended: boolean;
   two_factor_enabled: boolean;
   has_dossier: boolean;
+  dossier_pdf_link: string | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 export default function AdminUsersPage() {
@@ -165,22 +168,26 @@ export default function AdminUsersPage() {
       key: "dossier",
       header: t("nav.dossier"),
       render: (row) => (
-        <span className="text-xs">
-          {row.has_dossier ? "✓" : "-"}
-          {row.two_factor_enabled && <span className="ml-2 text-primary">2FA</span>}
+        <span className="flex items-center gap-1.5 text-xs">
+          {row.has_dossier ? (
+            <a
+              href={row.dossier_pdf_link || undefined}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-semibold text-primary underline-offset-2 hover:underline"
+              title={t("dossier.downloadDossier")}
+            >
+              <FileText className="h-3.5 w-3.5" />
+              ✓
+            </a>
+          ) : (
+            <span className="text-muted-foreground">-</span>
+          )}
+          {row.two_factor_enabled && <span className="text-primary">2FA</span>}
         </span>
       ),
     },
-    {
-      key: "createdAt",
-      header: t("common.createdAt"),
-      sortable: true,
-      render: (row) => (
-        <span className="aktenzeichen">
-          {new Date(row.createdAt).toLocaleDateString("fr-FR")}
-        </span>
-      ),
-    },
+    ...dateColumns<UserRow>(t, { createdVisible: true }),
     {
       key: "actions",
       header: t("common.actions"),

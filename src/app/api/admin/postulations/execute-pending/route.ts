@@ -5,17 +5,26 @@ import { requireAdmin } from "@/lib/auth";
 import { Postulation } from "@/models/Postulation";
 import { logAdminAction } from "@/lib/audit";
 import { hasActiveExecution, startExecutionWave } from "@/lib/postulation-executor";
+import { parseDateParam, END_OF_DAY_MS } from "@/lib/api-filters";
 
 // POST /api/admin/postulations/execute-pending - "Lancer l'exécution".
-// Manual launch of the DAILY wave (same process as the 06:00 UTC GitHub
+// Manual launch of the daily wave (same process as the 06:00 UTC GitHub
 // workflow): processes postulations with status en_attente or re_execute
 // scheduled TODAY or overdue - never future ones.
+//   date_from / date_to (optional) restrict the scheduling window, exactly
+//   like the relance interval: both are capped at TODAY server-side (the
+//   future is never executed), and date_from must be <= date_to.
 //   server → runs the wave directly on this backend (one parallel
 //            execution per available mail sender)
-//   github → dispatches the daily send-postulations workflow
+//   github → dispatches the daily send-postulations workflow (with the
+//            same interval passed as workflow inputs)
 
 const schema = z.object({
   target: z.enum(["github", "server"]).default("server"),
+  // Optional execution interval (YYYY-MM-DD). The picker caps both bounds
+  // at today; the API re-validates so the future is never executed.
+  date_from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  date_to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -25,9 +34,30 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: "Cible invalide" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "Cible ou dates invalides" }, { status: 400 });
   }
-  const target = parsed.data.target;
+  const { target, date_from, date_to } = parsed.data;
+
+  const from = parseDateParam(date_from, 0);
+  const to = parseDateParam(date_to, END_OF_DAY_MS);
+
+  // Interval validation: start <= end, and NO future bound - executing
+  // postulations scheduled ahead is never allowed (also enforced by the
+  // client picker, but the API never trusts the client).
+  if (from && to && from.getTime() > to.getTime()) {
+    return NextResponse.json(
+      { success: false, error: "La date de début doit être antérieure ou égale à la date de fin." },
+      { status: 400 }
+    );
+  }
+  const endOfToday = new Date();
+  endOfToday.setUTCHours(23, 59, 59, 999);
+  if ((from && from.getTime() > endOfToday.getTime()) || (to && to.getTime() > endOfToday.getTime())) {
+    return NextResponse.json(
+      { success: false, error: "Les dates ne peuvent pas dépasser la date du jour (pas d'exécution des postulations futures)." },
+      { status: 400 }
+    );
+  }
 
   await connectDB();
 
@@ -46,13 +76,18 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Only today's + overdue postulations - identical window to the daily workflow.
-  const endOfToday = new Date();
-  endOfToday.setUTCHours(23, 59, 59, 999);
-  const pending = await Postulation.countDocuments({
-    status: { $in: ["en_attente", "re_execute"] },
-    scheduled_at: { $lte: endOfToday },
-  });
+  // Scheduling window: explicit interval, or "today or overdue" (identical
+  // to the daily workflow window).
+  const windowFilter: Record<string, unknown> = { status: { $in: ["en_attente", "re_execute"] } };
+  if (from || to) {
+    windowFilter.scheduled_at = {
+      ...(from ? { $gte: from } : {}),
+      ...(to ? { $lte: to } : {}),
+    };
+  } else {
+    windowFilter.scheduled_at = { $lte: endOfToday };
+  }
+  const pending = await Postulation.countDocuments(windowFilter);
 
   if (pending === 0) {
     return NextResponse.json({
@@ -72,7 +107,9 @@ export async function POST(request: NextRequest) {
     const wave = await startExecutionWave({
       trigger: "server",
       statuses: ["en_attente", "re_execute"],
-      dueTodayOnly: true,
+      scheduledFrom: from ?? undefined,
+      scheduledTo: to ?? undefined,
+      dueTodayOnly: !from && !to, // default window: today or overdue only
       adminId: auth.user._id,
     });
 
@@ -93,7 +130,7 @@ export async function POST(request: NextRequest) {
       admin_email: auth.user.email,
       action: "postulation.execute_pending",
       entity_type: "postulation",
-      details: `Exécution manuelle des postulations en attente (serveur) : ${pending} à traiter, ${wave.execution_ids.length} exécution(s) créée(s)${wave.execution_ids.length === 0 ? " (aucun mail sender disponible)" : ""}`,
+      details: `Exécution manuelle des postulations en attente (serveur) : ${pending} à traiter, ${wave.execution_ids.length} exécution(s) créée(s)${wave.execution_ids.length === 0 ? " (aucun mail sender disponible)" : ""}${from ? ` (du ${date_from}` : ""}${to ? ` au ${date_to})` : from ? ")" : ""}`,
     });
 
     return NextResponse.json({
@@ -108,7 +145,8 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // GitHub workflow: dispatch the daily send-postulations workflow.
+  // GitHub workflow: dispatch the daily send-postulations workflow, passing
+  // the interval as workflow inputs (same pattern as the relance).
   const token = process.env.GITHUB_WORKFLOW_TOKEN;
   const repo = process.env.GITHUB_WORKFLOW_REPO || "mimo-xman/webapp--vertrag-ma";
 
@@ -126,7 +164,13 @@ export async function POST(request: NextRequest) {
             Authorization: `Bearer ${token}`,
             "X-GitHub-Api-Version": "2022-11-28",
           },
-          body: JSON.stringify({ ref: "main" }),
+          body: JSON.stringify({
+            ref: "main",
+            inputs: {
+              ...(date_from ? { date_from } : {}),
+              ...(date_to ? { date_to } : {}),
+            },
+          }),
         }
       );
       workflow_triggered = response.ok;
@@ -145,7 +189,7 @@ export async function POST(request: NextRequest) {
     admin_email: auth.user.email,
     action: "postulation.execute_pending",
     entity_type: "postulation",
-    details: `Exécution manuelle des postulations en attente (GitHub) : ${pending} à traiter. Workflow: ${workflow_triggered ? "lancé" : `non lancé (${workflow_error})`}`,
+    details: `Exécution manuelle des postulations en attente (GitHub) : ${pending} à traiter${from ? ` (du ${date_from}` : ""}${to ? ` au ${date_to})` : from ? ")" : ""}. Workflow: ${workflow_triggered ? "lancé" : `non lancé (${workflow_error})`}`,
   });
 
   return NextResponse.json({

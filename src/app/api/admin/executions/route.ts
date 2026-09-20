@@ -125,22 +125,24 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // ── List mode (by date, default: today) ───────────────────────────────
-  const dateStr = params.get("date") || new Date().toISOString().slice(0, 10);
-  const day = startOfDayUTC(dateStr);
-  if (!day) {
-    return NextResponse.json({ success: false, error: "Date invalide" }, { status: 400 });
+  // ── List mode (optional date; NO date param = ALL executions) ─────────
+  // The admin page picker starts at today but its X clears the date: an
+  // absent/empty date then lists every execution, whatever the day.
+  const dateStr = params.get("date") || "";
+  const filter: Record<string, unknown> = {};
+  if (dateStr) {
+    const day = startOfDayUTC(dateStr);
+    if (!day) {
+      return NextResponse.json({ success: false, error: "Date invalide" }, { status: 400 });
+    }
+    const nextDay = new Date(day);
+    nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+    filter.started_at = { $gte: day, $lt: nextDay };
   }
-  const nextDay = new Date(day);
-  nextDay.setUTCDate(nextDay.getUTCDate() + 1);
 
   const page = Math.max(1, Number(params.get("page") || 1));
   const limit = Math.min(100, Math.max(5, Number(params.get("limit") || 20)));
   const triggerFilter = params.get("trigger");
-
-  const filter: Record<string, unknown> = {
-    started_at: { $gte: day, $lt: nextDay },
-  };
   if (triggerFilter && triggerFilter !== "all") filter.trigger = triggerFilter;
 
   const [items, total, totals] = await Promise.all([

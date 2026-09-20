@@ -597,22 +597,24 @@ export async function startExecutionWave(opts: WaveOptions): Promise<WaveHandle>
     );
 
     // Postulations still due after the wave, with every sender either
-    // limited or disabled → they become "à relancer" so admins see the
-    // backlog (they will be picked up again by the next daily wave or a
-    // manual relance, once quotas reset / senders are re-activated).
+    // limited or disabled → they KEEP their current status (en_attente stays
+    // en_attente). They are NOT flipped to "re_execute" ("à relancer"):
+    // a daily quota or a disabled sender is a TEMPORARY condition, not a
+    // postulation problem. They stay queued and will be picked up again by
+    // the next daily wave, by tomorrow's quota reset, or by an explicit
+    // admin "Lancer l'exécution" (optionally scoped to a date interval).
     if (merged.senders_limited.length > 0) {
       try {
         const remaining = await Postulation.countDocuments(claimFilter);
         if (remaining > 0) {
-          await Postulation.updateMany(claimFilter, { $set: { status: "re_execute" } });
           merged.fatal_error = merged.fatal_error ||
-            `${remaining} postulation(s) non envoyée(s) : limite quotidienne atteinte sur tous les services : marquées « à relancer ».`;
+            `${remaining} postulation(s) non envoyée(s) : limite quotidienne atteinte sur tous les services : elles restent en attente.`;
           console.log(
-            `[EXECUTOR] ${remaining} postulation(s) restante(s) après limite quotidienne : marquée(s) à relancer.`
+            `[EXECUTOR] ${remaining} postulation(s) restante(s) après limite quotidienne : conservées en attente (aucun passage en « à relancer »).`
           );
         }
       } catch (e) {
-        console.error("[EXECUTOR] Failed to mark remaining postulations:", e);
+        console.error("[EXECUTOR] Failed to count remaining postulations:", e);
       }
     }
 

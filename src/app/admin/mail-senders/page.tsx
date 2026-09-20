@@ -28,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
+import { dateColumns } from "@/components/table-date-columns";
 import { Plus, Pencil, Trash2, Send, AlertTriangle, Power, History, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +49,8 @@ interface SenderRow {
   failed_count: number;
   daily_limit: number;
   today_usage: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface UsageDay {
@@ -99,6 +102,7 @@ export default function AdminMailSendersPage() {
   const [usageOpen, setUsageOpen] = useState(false);
   const [usageTarget, setUsageTarget] = useState<SenderRow | null>(null);
   const [usageDays, setUsageDays] = useState<UsageDay[] | null>(null);
+  const [usageInfo, setUsageInfo] = useState<UsageResponse | null>(null);
   const [usageLoading, setUsageLoading] = useState(false);
 
   const openCreate = () => {
@@ -216,11 +220,18 @@ export default function AdminMailSendersPage() {
   const openUsage = async (row: SenderRow) => {
     setUsageTarget(row);
     setUsageDays(null);
+    setUsageInfo(null);
     setUsageOpen(true);
     setUsageLoading(true);
     try {
-      const data = await apiFetch<UsageResponse>(`/api/admin/mail-senders/${row._id}/usage`);
-      setUsageDays(data.days);
+      // apiFetch returns the FULL JSON envelope { success, data } - the
+      // days live under .data. (Previously read .days directly on the
+      // envelope, which is undefined → the popup always looked empty.)
+      const data = await apiFetch<{ success: boolean; data: UsageResponse }>(
+        `/api/admin/mail-senders/${row._id}/usage`
+      );
+      setUsageInfo(data.data);
+      setUsageDays(data.data?.days ?? []);
     } catch {
       setUsageDays([]);
     } finally {
@@ -302,6 +313,20 @@ export default function AdminMailSendersPage() {
       ),
     },
     {
+      key: "daily_limit",
+      header: t("admin.dailyLimit"),
+      sortable: true,
+      render: (row) => (
+        <span className="num text-xs">
+          {row.daily_limit > 0 ? (
+            <span className="font-semibold">{row.daily_limit.toLocaleString("fr-FR")}</span>
+          ) : (
+            <span className="text-muted-foreground">{t("admin.unlimited")}</span>
+          )}
+        </span>
+      ),
+    },
+    {
       key: "success_rate",
       header: t("admin.colSuccessRate"),
       render: (row) => {
@@ -348,9 +373,11 @@ export default function AdminMailSendersPage() {
         </div>
       ),
     },
+    ...dateColumns<SenderRow>(t),
     {
       key: "actions",
       header: t("common.actions"),
+      alwaysVisible: true,
       render: (row) => (
         <div className="flex gap-1">
           <Button
@@ -592,7 +619,8 @@ export default function AdminMailSendersPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Usage history dialog : per day, with the exact time of each send */}
+      {/* Usage history dialog : per day, with the exact time of each send
+          (postulations AND test emails - every real send is logged). */}
       <Dialog open={usageOpen} onOpenChange={setUsageOpen}>
         <DialogContent className="max-h-[85dvh] max-w-md overflow-y-auto scroll-slim">
           <DialogHeader>
@@ -619,12 +647,12 @@ export default function AdminMailSendersPage() {
                 <span>
                   {t("admin.usageLifetime")}:{" "}
                   <span className="num font-semibold text-foreground">
-                    {usageTarget?.usage_count}
+                    {usageInfo?.usage_count ?? usageTarget?.usage_count}
                   </span>
                 </span>
                 <span className="num">
-                  {usageTarget?.daily_limit && usageTarget.daily_limit > 0
-                    ? `${t("admin.dailyLimit")}: ${usageTarget.daily_limit}`
+                  {usageInfo?.daily_limit || usageTarget?.daily_limit
+                    ? `${t("admin.dailyLimit")}: ${usageInfo?.daily_limit ?? usageTarget?.daily_limit}`
                     : t("admin.unlimited")}
                 </span>
               </div>

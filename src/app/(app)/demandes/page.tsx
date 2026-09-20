@@ -272,8 +272,16 @@ function CreateDemandeDialog({
 
   useEffect(() => {
     if (open) {
-      loadOptions([]);
+      // Re-open with the PREVIOUS selection still applied (the user closed
+      // without submitting): options, availability counter and the
+      // Total / Par-jour dropdowns must reflect THOSE categories, not the
+      // full catalogue. Closing the dialog never silently drops the
+      // selection, and the numbers stay consistent with it.
+      loadOptions(selectedCategories);
     }
+    // NOTE: selectedCategories is deliberately NOT a dependency - the effect
+    // must fire only on OPEN transitions, reading the persisted selection at
+    // that moment (loadOptions is already called separately by toggleCategory).
   }, [open, loadOptions]);
 
   // Compute price when selection changes.

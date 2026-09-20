@@ -30,7 +30,8 @@ export async function GET(request: NextRequest) {
   // Date-range filter on the creation date.
   applyDateRange(match, params, "created", "createdAt");
 
-  const sort: Record<string, 1 | -1> = { [sortField === "companies_count" ? "companies_count" : sortField]: sortOrder };
+  const allowedSorts = ["name", "companies_count", "createdAt", "updatedAt"];
+  const sort: Record<string, 1 | -1> = { [allowedSorts.includes(sortField) ? sortField : "companies_count"]: sortOrder };
 
   const [items, total] = await Promise.all([
     Category.aggregate([
@@ -62,6 +63,7 @@ export async function GET(request: NextRequest) {
       active: c.active !== false,
       companies_count: c.companies_count,
       createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
     })),
     pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) },
   });

@@ -11,6 +11,7 @@ import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
 import { MessageSquare, Lock, LockOpen } from "lucide-react";
+import { dateColumns } from "@/components/table-date-columns";
 
 interface MessageRow {
   _id: string;
@@ -22,6 +23,7 @@ interface MessageRow {
   status: "active" | "closed";
   closed_at: string | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 const REASON_LABELS: Record<string, string> = {
@@ -118,16 +120,7 @@ export default function AdminMessagesPage() {
         />
       ),
     },
-    {
-      key: "createdAt",
-      header: t("common.createdAt"),
-      sortable: true,
-      render: (row) => (
-        <span className="aktenzeichen">
-          {new Date(row.createdAt).toLocaleDateString("fr-FR")}
-        </span>
-      ),
-    },
+    ...dateColumns<MessageRow>(t, { createdVisible: true }),
     {
       key: "actions",
       header: t("common.actions"),

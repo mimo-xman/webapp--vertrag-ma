@@ -108,20 +108,22 @@ export function DatePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "w-full justify-start font-normal",
+            "w-full justify-start overflow-hidden font-normal",
             compact && "h-8 px-2.5 text-xs",
             !selected && "text-muted-foreground",
             className
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
-          <span className={cn(selected && "num")}>{displayLabel}</span>
+          <span className={cn("min-w-0 flex-1 truncate text-left", selected && "num")}>
+            {displayLabel}
+          </span>
           {selected && !disabled && (
             <span
               role="button"
               tabIndex={0}
               aria-label="Effacer la date"
-              className="ml-auto rounded-sm p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="ml-auto shrink-0 rounded-sm p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
               onClick={(e) => {
                 e.stopPropagation();
                 onChange("");

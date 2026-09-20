@@ -25,6 +25,7 @@ import {
   adminCanCancel,
   isAddDemandePayed,
 } from "@/lib/dossier-status";
+import { dateColumns } from "@/components/table-date-columns";
 import {
   CheckCircle2,
   XCircle,
@@ -47,6 +48,7 @@ interface DemandeRow {
   cancel_message: string | null;
   message_on_failed: string | null;
   createdAt: string;
+  updatedAt: string;
   user: { _id: string; full_name: string; email: string } | null;
 }
 
@@ -183,16 +185,7 @@ export default function AdminDemandesAjoutDossierPage() {
       sortable: true,
       render: (row) => <span className="num">{addPriceParts(t, row)}</span>,
     },
-    {
-      key: "createdAt",
-      header: t("common.createdAt"),
-      sortable: true,
-      render: (row) => (
-        <span className="aktenzeichen">
-          {new Date(row.createdAt).toLocaleDateString("fr-FR")}
-        </span>
-      ),
-    },
+    ...dateColumns<DemandeRow>(t, { createdVisible: true }),
     {
       key: "status",
       header: t("demandes.status"),
@@ -355,7 +348,8 @@ export default function AdminDemandesAjoutDossierPage() {
             { value: "en_cours_de_revision", label: t("dossier.statusUnderReview") },
             { value: "confirmed", label: t("dossier.statusConfirmed") },
             { value: "rejected", label: t("dossier.statusRejected") },
-            { value: "cancelled", label: t("dossier.statusCancelledByUser") },
+            { value: "cancelled_user", label: t("dossier.statusCancelledByUser") },
+            { value: "cancelled_admin", label: t("dossier.statusCancelledByAdmin") },
           ],
         }}
       />

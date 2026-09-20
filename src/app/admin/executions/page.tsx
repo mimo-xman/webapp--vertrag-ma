@@ -89,11 +89,13 @@ export default function AdminExecutionsPage() {
 
   const fetchExecutions = useCallback(async () => {
     try {
+      // Empty date = NO date filter (all executions, every day). The X of
+      // the picker clears it; picking a day narrows the history to that day.
       const data = await apiFetch<{
         data: ExecutionRow[];
         totals: { executions: number; sent: number; failed: number };
         pagination: { total: number; totalPages: number };
-      }>(`/api/admin/executions?date=${date}&trigger=${trigger}&page=${page}&limit=${limit}`);
+      }>(`/api/admin/executions?${date ? `date=${date}&` : ""}trigger=${trigger}&page=${page}&limit=${limit}`);
       setRows(data.data);
       setTotals(data.totals);
       setPagination({ total: data.pagination.total, totalPages: data.pagination.totalPages });
@@ -141,7 +143,8 @@ export default function AdminExecutionsPage() {
   };
 
   const changeDate = (value: string) => {
-    setDate(value || todayISO());
+    // "" = cleared (X button) → show EVERYTHING, not just today.
+    setDate(value);
     setPage(1);
   };
 
@@ -179,9 +182,9 @@ export default function AdminExecutionsPage() {
           <div className="space-y-1">
             <label className="eyebrow block">{t("common.date")}</label>
             {/* Custom popup picker (same as /register) : executions history,
-                so the selectable range stops at today. */}
+                so the selectable range stops at today. Empty = all days. */}
             <div className="w-40">
-              <DatePicker value={date} onChange={changeDate} compact />
+              <DatePicker value={date} onChange={changeDate} compact placeholder={t("common.all")} />
             </div>
           </div>
           <div className="space-y-1">

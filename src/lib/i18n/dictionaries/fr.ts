@@ -29,6 +29,7 @@ export default {
     clearFilter: "Effacer le filtre",
     noData: "Aucune donnée",
     createdAt: "Créé le",
+    updatedAt: "Modifié le",
     confirmDeleteTitle: "Confirmer la suppression",
     confirmDeleteMessage: "Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.",
     savedSuccess: "Enregistré avec succès",
@@ -611,6 +612,8 @@ export default {
     executePendingTitle: "Exécuter les postulations en attente",
     executePendingDesc:
       "Le même processus que le workflow quotidien automatique : traite les postulations en attente et à relancer programmées aujourd'hui (ou en retard), une exécution parallèle par service email.",
+    execPendingIntervalDesc:
+      "Optionnel : par défaut seules les postulations programmées aujourd'hui (ou en retard) sont exécutées. Sélectionnez un intervalle pour cibler une période précise, jusqu'à aujourd'hui au maximum.",
     executePendingGithubDesc:
       "Déclenche le workflow GitHub Actions quotidien « send-postulations » (asynchrone).",
     executePendingServerDesc:

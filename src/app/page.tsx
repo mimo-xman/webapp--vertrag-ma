@@ -125,12 +125,12 @@ export default function HomePage() {
               <div className="doc-paper relative rotate-[1.5deg] rounded-sm p-6">
                 <div className="flex items-start justify-between border-b-2 border-foreground pb-3">
                   <div>
-                    <p className="font-display text-sm font-extrabold tracking-tight">BEWERBUNG</p>
+                    <p className="font-display text-sm font-extrabold tracking-tight text-foreground">BEWERBUNG</p>
                     <p className="aktenzeichen mt-0.5">AKTE VT-2026-0042</p>
                   </div>
                   <div className="text-right">
                     <p className="aktenzeichen">DATUM</p>
-                    <p className="font-mono text-xs font-semibold">13.02.2026</p>
+                    <p className="font-mono text-xs font-semibold text-foreground">13.02.2026</p>
                   </div>
                 </div>
                 <div className="space-y-2.5 py-4">

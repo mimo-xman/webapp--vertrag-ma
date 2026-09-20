@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
   // Date-range filter on the entry date (inclusive whole days, UTC).
   applyDateRange(filter, params, "created", "createdAt");
 
-  const allowedSorts = ["createdAt", "action", "admin_email", "entity_type"];
+  const allowedSorts = ["createdAt", "updatedAt", "action", "admin_email", "entity_type"];
   const sort: Record<string, 1 | -1> = {
     [allowedSorts.includes(sortField) ? sortField : "createdAt"]: sortOrder,
   };
@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
       entity_id: a.entity_id,
       details: a.details,
       createdAt: a.createdAt,
+      updatedAt: a.updatedAt,
     })),
     pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) },
   });

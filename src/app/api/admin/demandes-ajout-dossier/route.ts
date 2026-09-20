@@ -20,7 +20,17 @@ export async function GET(request: NextRequest) {
   const sortOrder = params.get("order") === "asc" ? 1 : -1;
 
   const filter: Record<string, unknown> = {};
-  if (status && status !== "all") filter.status = status;
+  if (status && status !== "all") {
+    // Split cancelled filters: "cancelled_user" / "cancelled_admin" select
+    // ONLY the demandes cancelled by that side (the plain "cancelled"
+    // value still matches both, for backwards compatibility).
+    if (status === "cancelled_user" || status === "cancelled_admin") {
+      filter.status = "cancelled";
+      filter.cancelled_by = status === "cancelled_user" ? "user" : "admin";
+    } else {
+      filter.status = status;
+    }
+  }
   // Date-range filter on the demande creation date.
   applyDateRange(filter, params, "created", "createdAt");
   if (search) {
@@ -35,7 +45,7 @@ export async function GET(request: NextRequest) {
     filter.user_id = { $in: users.map((u) => u._id) };
   }
 
-  const allowedSorts = ["createdAt", "status", "confirmed_at"];
+  const allowedSorts = ["createdAt", "updatedAt", "status", "confirmed_at"];
   const sort: Record<string, 1 | -1> = {
     [allowedSorts.includes(sortField) ? sortField : "createdAt"]: sortOrder,
   };
@@ -65,6 +75,7 @@ export async function GET(request: NextRequest) {
       message_on_failed: d.message_on_failed,
       confirmed_at: d.confirmed_at,
       createdAt: d.createdAt,
+      updatedAt: d.updatedAt,
       user: d.user_id
         ? {
             _id: String((d.user_id as { _id: unknown })._id),

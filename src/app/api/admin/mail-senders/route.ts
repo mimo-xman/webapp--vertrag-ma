@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
   // Date-range filter on the creation date.
   applyDateRange(filter, params, "created", "createdAt");
 
-  const allowedSorts = ["name", "type", "usage_count", "success_count", "failed_count", "createdAt", "active"];
+  const allowedSorts = ["name", "type", "usage_count", "success_count", "failed_count", "daily_limit", "createdAt", "updatedAt", "active"];
   const sort: Record<string, 1 | -1> = {
     [allowedSorts.includes(sortField) ? sortField : "usage_count"]: sortOrder,
   };
@@ -65,6 +65,7 @@ export async function GET(request: NextRequest) {
         daily_limit: s.daily_limit || 0,
         today_usage: todayUsage,
         createdAt: s.createdAt,
+        updatedAt: s.updatedAt,
       };
     }),
     pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) },

@@ -29,6 +29,7 @@ export default {
     clearFilter: "Clear filter",
     noData: "No data",
     createdAt: "Created",
+    updatedAt: "Updated",
     confirmDeleteTitle: "Confirm deletion",
     confirmDeleteMessage: "Are you sure you want to delete this item? This action is irreversible.",
     savedSuccess: "Saved successfully",
@@ -607,6 +608,8 @@ export default {
     executePendingTitle: "Execute pending applications",
     executePendingDesc:
       "The same process as the automatic daily workflow: processes pending and to-relaunch applications scheduled today (or overdue), one parallel execution per email service.",
+    execPendingIntervalDesc:
+      "Optional: by default only applications scheduled today (or overdue) are executed. Pick an interval to target a specific period, today at the latest.",
     executePendingGithubDesc:
       "Triggers the daily « send-postulations » GitHub Actions workflow (asynchronous).",
     executePendingServerDesc:

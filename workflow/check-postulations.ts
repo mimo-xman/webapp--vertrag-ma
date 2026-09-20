@@ -1,11 +1,14 @@
 // Gate script for the self re-trigger pattern:
-// exit 0 = there are due postulations remaining (re-run the workflow),
+// exit 0 = there are postulations remaining in the window (re-run the workflow),
 // exit 1 = queue drained for today, OR no mail sender has capacity left
 //          today (all limited / none active) - re-running now would be an
 //          infinite loop, so the wave stops until tomorrow.
 // exit 2 = fatal error (fails the CI job - never masked as "drained").
 //
 // Optional argument: a specific status to check (default: en_attente + re_execute).
+// Optional DATE_FROM / DATE_TO env (forwarded by the workflow when the admin
+// selected an interval): the "remaining" count uses the SAME window, so a
+// past-dated interval keeps re-triggering until fully drained.
 
 import { connectDB, disconnectDB } from "./db";
 import { Postulation } from "../src/models/Postulation";
@@ -31,6 +34,14 @@ async function senderWithCapacityToday(): Promise<boolean> {
   });
 }
 
+/** Parses a YYYY-MM-DD env value into a Date (UTC midnight + endOfDayMs). */
+function parseEnvDate(value: string | undefined, endOfDayMs: number): Date | null {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Date(date.getTime() + endOfDayMs);
+}
+
 async function main() {
   const statusArg = process.argv[2];
   const statuses: string[] =
@@ -41,10 +52,22 @@ async function main() {
   const endOfToday = new Date();
   endOfToday.setUTCHours(23, 59, 59, 999);
 
-  const count = await Postulation.countDocuments({
-    status: { $in: statuses },
-    scheduled_at: { $lte: endOfToday },
-  });
+  // Scheduling window: the admin-selected interval when provided (env),
+  // otherwise the default "today or overdue" window.
+  const from = parseEnvDate(process.env.DATE_FROM, 0);
+  const to = parseEnvDate(process.env.DATE_TO, 86_399_999);
+
+  const filter: Record<string, unknown> = { status: { $in: statuses } };
+  if (from || to) {
+    filter.scheduled_at = {
+      ...(from ? { $gte: from } : {}),
+      ...(to ? { $lte: to } : {}),
+    };
+  } else {
+    filter.scheduled_at = { $lte: endOfToday };
+  }
+
+  const count = await Postulation.countDocuments(filter);
 
   if (count === 0) {
     console.log(`[CHECK] ${count} postulation(s) restante(s) (${statuses.join(", ")}).`);

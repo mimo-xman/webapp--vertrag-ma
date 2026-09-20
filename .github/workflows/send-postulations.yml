@@ -8,6 +8,13 @@ name: Send Postulations
 
 on:
   workflow_dispatch:
+    inputs:
+      date_from:
+        description: "Début de l'intervalle d'exécution (YYYY-MM-DD, optionnel, max aujourd'hui)"
+        required: false
+      date_to:
+        description: "Fin de l'intervalle d'exécution (YYYY-MM-DD, optionnel, max aujourd'hui)"
+        required: false
   schedule:
     - cron: "0 6 * * *" # 06:00 UTC daily
 
@@ -41,6 +48,8 @@ jobs:
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+          DATE_FROM: ${{ github.event.inputs.date_from }}
+          DATE_TO: ${{ github.event.inputs.date_to }}
         run: npx tsx send-postulations.ts || test $? -eq 1
         # exit 1 = queue drained (expected), exit 0 = more to process
 
@@ -73,6 +82,8 @@ jobs:
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+          DATE_FROM: ${{ github.event.inputs.date_from }}
+          DATE_TO: ${{ github.event.inputs.date_to }}
         # exit 0 = more to process (re-run) · exit 1 = drained (stop) ·
         # exit 2+ = fatal error → fail the job (never masked as "drained").
         run: |
@@ -96,4 +107,8 @@ jobs:
         run: |
           echo "More postulations pending, re-triggering in 30s..."
           sleep 30
-          gh workflow run send-postulations.yml -R ${{ github.repository }}
+          # Forward the interval (if any) so the re-run targets the SAME window.
+          ARGS=""
+          if [ -n "${{ github.event.inputs.date_from }}" ]; then ARGS="$ARGS -f date_from=${{ github.event.inputs.date_from }}"; fi
+          if [ -n "${{ github.event.inputs.date_to }}" ]; then ARGS="$ARGS -f date_to=${{ github.event.inputs.date_to }}"; fi
+          gh workflow run send-postulations.yml -R ${{ github.repository }} $ARGS

@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     filter.user_id = { $in: users.map((u) => u._id) };
   }
 
-  const allowedSorts = ["createdAt", "nmbr_total", "price", "status", "confirmed_at"];
+  const allowedSorts = ["createdAt", "updatedAt", "nmbr_total", "price", "status", "confirmed_at"];
   const sort: Record<string, 1 | -1> = {
     [allowedSorts.includes(sortField) ? sortField : "createdAt"]: sortOrder,
   };
@@ -68,6 +68,7 @@ export async function GET(request: NextRequest) {
       status: d.status,
       confirmed_at: d.confirmed_at,
       createdAt: d.createdAt,
+      updatedAt: d.updatedAt,
       categories: (d.categorie_ids as { name: string }[]).map((c) => c.name),
       user: d.user_id
         ? {

@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
   // Date-range filter on the message date.
   applyDateRange(filter, params, "created", "createdAt");
 
-  const allowedSorts = ["createdAt", "status", "full_name", "email", "ref_id"];
+  const allowedSorts = ["createdAt", "updatedAt", "status", "full_name", "email", "ref_id"];
   const sort: Record<string, 1 | -1> = {
     [allowedSorts.includes(sortField) ? sortField : "createdAt"]: sortOrder,
   };
@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
       status: m.status,
       closed_at: m.closed_at,
       createdAt: m.createdAt,
+      updatedAt: m.updatedAt,
     })),
     counts: { active: activeCount, closed: closedCount },
     pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) },

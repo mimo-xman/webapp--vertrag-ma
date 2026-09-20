@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
   // Date-range filter on the account creation date.
   applyDateRange(filter, params, "created", "createdAt");
 
-  const allowedSorts = ["full_name", "email", "role", "createdAt", "active"];
+  const allowedSorts = ["full_name", "email", "role", "createdAt", "updatedAt", "active"];
   const sort: Record<string, 1 | -1> = {
     [allowedSorts.includes(sortField) ? sortField : "createdAt"]: sortOrder,
   };
@@ -56,7 +56,9 @@ export async function GET(request: NextRequest) {
       suspended: Boolean(u.suspended),
       two_factor_enabled: u.two_factor_enabled,
       has_dossier: Boolean(u.dossier_pdf_link),
+      dossier_pdf_link: u.dossier_pdf_link || null,
       createdAt: u.createdAt,
+      updatedAt: u.updatedAt,
     })),
     pagination: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) },
   });

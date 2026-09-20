@@ -57,6 +57,7 @@ interface PostulationRow {
   demande_ref: string | null;
   created_by_admin: boolean;
   createdAt?: string;
+  updatedAt?: string;
   executions: PostulationExecutionEntry[];
   user: { _id: string; full_name: string; email: string } | null;
   company: { _id: string; name: string; email: string } | null;
@@ -119,6 +120,10 @@ export default function AdminPostulationsPage() {
   // "Lancer l'exécution" - manual launch of the daily wave (pending postulations).
   const [execPendingOpen, setExecPendingOpen] = useState(false);
   const [execPendingRunning, setExecPendingRunning] = useState(false);
+  // Optional scheduling window for the manual execution - same custom picker
+  // as the relance, both bounds capped at TODAY (never execute the future).
+  const [execPendingFrom, setExecPendingFrom] = useState("");
+  const [execPendingTo, setExecPendingTo] = useState("");
 
   // Execute-one-postulation dialog (mail sender selection).
   const [execOpen, setExecOpen] = useState(false);
@@ -256,7 +261,15 @@ export default function AdminPostulationsPage() {
 
   // ── "Lancer l'exécution" - manual daily wave (pending postulations) ────
 
+  // Same interval rule as the relance: ISO dates compare lexically.
+  const execPendingIntervalValid =
+    !execPendingFrom || !execPendingTo || execPendingFrom <= execPendingTo;
+
   const handleExecutePending = async (target: "github" | "server") => {
+    if (!execPendingIntervalValid) {
+      await alertApp(t("admin.relanceDateError"));
+      return;
+    }
     setExecPendingRunning(true);
     try {
       const data = await apiFetch<{
@@ -268,7 +281,11 @@ export default function AdminPostulationsPage() {
         message?: string | null;
       }>("/api/admin/postulations/execute-pending", {
         method: "POST",
-        body: JSON.stringify({ target }),
+        body: JSON.stringify({
+          target,
+          ...(execPendingFrom ? { date_from: execPendingFrom } : {}),
+          ...(execPendingTo ? { date_to: execPendingTo } : {}),
+        }),
       });
       setExecPendingOpen(false);
 
@@ -544,6 +561,20 @@ export default function AdminPostulationsPage() {
       ),
     },
     {
+      key: "updatedAt",
+      header: t("common.updatedAt"),
+      sortable: true,
+      defaultHidden: true,
+      render: (row) =>
+        row.updatedAt ? (
+          <span className="aktenzeichen">
+            {new Date(row.updatedAt).toLocaleDateString("fr-FR")}
+          </span>
+        ) : (
+          <span className="aktenzeichen text-muted-foreground/50">-</span>
+        ),
+    },
+    {
       key: "actions",
       header: t("common.actions"),
       alwaysVisible: true,
@@ -618,7 +649,11 @@ export default function AdminPostulationsPage() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => setExecPendingOpen(true)}
+              onClick={() => {
+                setExecPendingFrom("");
+                setExecPendingTo("");
+                setExecPendingOpen(true);
+              }}
               disabled={execPendingRunning}
               className="gap-1.5"
             >
@@ -723,10 +758,34 @@ export default function AdminPostulationsPage() {
             <DialogDescription>{t("admin.executePendingDesc")}</DialogDescription>
           </DialogHeader>
 
+          {/* Date interval : same custom popup picker as the relance, max = today
+              so postulations scheduled in the future are never executed. */}
+          <div className="space-y-2.5 rounded-sm border border-border bg-paper p-3.5">
+            <div>
+              <p className="eyebrow">{t("admin.relanceIntervalTitle")}</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                {t("admin.execPendingIntervalDesc")}
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="space-y-1">
+                <Label className="text-xs">{t("admin.relanceDateFrom")}</Label>
+                <DatePicker value={execPendingFrom} onChange={setExecPendingFrom} compact />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("admin.relanceDateTo")}</Label>
+                <DatePicker value={execPendingTo} onChange={setExecPendingTo} compact />
+              </div>
+            </div>
+            {!execPendingIntervalValid && (
+              <p className="text-xs text-destructive">{t("admin.relanceDateError")}</p>
+            )}
+          </div>
+
           <div className="grid gap-3 sm:grid-cols-2">
             <button
               type="button"
-              disabled={execPendingRunning}
+              disabled={execPendingRunning || !execPendingIntervalValid}
               onClick={() => handleExecutePending("github")}
               className="form-sheet group flex flex-col items-start gap-2 p-4 text-left transition-shadow hover:shadow-md disabled:opacity-60"
             >
@@ -739,7 +798,7 @@ export default function AdminPostulationsPage() {
             </button>
             <button
               type="button"
-              disabled={execPendingRunning}
+              disabled={execPendingRunning || !execPendingIntervalValid}
               onClick={() => handleExecutePending("server")}
               className="form-sheet group flex flex-col items-start gap-2 p-4 text-left transition-shadow hover:shadow-md disabled:opacity-60"
             >

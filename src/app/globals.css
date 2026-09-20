@@ -353,9 +353,20 @@
 
   /* ─── The paper document (Bewerbung visual) ──────────────── */
   /* A physical sheet of paper stays white in BOTH themes - it is a scanned
-     document, not a UI surface. Only its shadow adapts to the night office. */
+     document, not a UI surface. Only its shadow adapts to the night office.
+     FINAL dark-theme strategy (two independent layers, so it can never
+     regress again):
+       1. Direct `color: ink` on the sheet itself - plain text elements
+          (BEWERBUNG title, DATUM value…) carry no text-* class, so they
+          inherit the COMPUTED color of <body> (cream at night), which
+          variables alone cannot beat. Setting the color property directly
+          re-anchors every descendant that does not opt out explicitly.
+       2. ALL semantic tokens re-pinned to their daylight values - covers
+          every child that reads a token (muted text, borders, bars, boxes,
+          the three stamp inks: Behoerdenblau / Stempelrot / Genehmigtgrün). */
   .doc-paper {
     background: #ffffff;
+    color: #1a1d21;
     border: 1px solid #c9c6bc;
     box-shadow: 0 8px 24px rgba(26, 29, 33, 0.08);
   }
@@ -364,18 +375,26 @@
     border-color: #3a3f46;
     /* The sheet itself is always white: pin the semantic tokens to their
        light-theme values so every child element (title, file numbers, bars,
-       placeholder boxes) renders exactly like in daylight mode. Without
-       this, dark-mode text colors (cream / pale gray) land on the white
-       sheet and become unreadable. */
+       placeholder boxes, stamps) renders exactly like in daylight mode. */
+    color: #1a1d21;
     --foreground: #1a1d21;
     --muted-foreground: #75797f;
     --primary: #1e4475;
+    --primary-foreground: #f4f2ec;
     --secondary: #e9e6dd;
     --secondary-foreground: #1a1d21;
     --border: #d8d5cc;
     --input: #c9c6bc;
     --paper: #fafaf6;
     --paper-foreground: #1a1d21;
+    --behordenblau: #1e4475;
+    --stempelrot: #b3391f;
+    --genehmigtgrun: #2f6b4a;
+    --grid-line: #d8d5cc;
+    --success: #2f6b4a;
+    --warning: #8a6a1f;
+    --gold: #d9a441;
+    color-scheme: light;
   }
 
   /* ─── Misc ───────────────────────────────────────────────── */

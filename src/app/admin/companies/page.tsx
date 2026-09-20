@@ -20,6 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
+import { dateColumns } from "@/components/table-date-columns";
 import { Plus, Pencil, Trash2, Loader2, CheckCircle2, Power, PowerOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,8 @@ interface CompanyRow {
   email: string;
   active: boolean;
   categories: { _id: string; name: string }[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Category {
@@ -226,6 +229,7 @@ export default function AdminCompaniesPage() {
         />
       ),
     },
+    ...dateColumns<CompanyRow>(t),
     {
       key: "actions",
       header: t("common.actions"),

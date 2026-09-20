@@ -11,6 +11,7 @@ import { apiFetch } from "@/lib/api-utils";
 import { useAppPopup } from "@/components/app-popup";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2, XCircle, ReceiptText } from "lucide-react";
+import { dateColumns } from "@/components/table-date-columns";
 import {
   PriceDetailsDialog,
   type PricingSnapshotData,
@@ -25,6 +26,7 @@ interface DemandeRow {
   pricing_snapshot: PricingSnapshotData | null;
   status: string;
   createdAt: string;
+  updatedAt: string;
   categories: string[];
   user: { _id: string; full_name: string; email: string } | null;
 }
@@ -152,6 +154,7 @@ export default function AdminDemandesPostulationsPage() {
       sortable: true,
       render: (row) => <StatusStamp status={row.status} label={t(`statuses.${row.status}`)} />,
     },
+    ...dateColumns<DemandeRow>(t),
     {
       key: "actions",
       header: t("common.actions"),

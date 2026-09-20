@@ -4,6 +4,7 @@ import { useI18n } from "@/components/language-provider";
 import { AdminPageHeader } from "@/components/admin-page-header";
 import { DataTable, type DataTableColumn } from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
+import { formatDate } from "@/components/table-date-columns";
 
 interface AuditRow {
   _id: string;
@@ -13,6 +14,7 @@ interface AuditRow {
   entity_id: string | null;
   details: string | null;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export default function AdminAuditLogsPage() {
@@ -64,6 +66,15 @@ export default function AdminAuditLogsPage() {
       header: t("common.details"),
       render: (row) => (
         <span className="text-xs">{row.details || "-"}</span>
+      ),
+    },
+    {
+      key: "updatedAt",
+      header: t("common.updatedAt"),
+      sortable: true,
+      defaultHidden: true,
+      render: (row) => (
+        <span className="aktenzeichen">{formatDate(row.updatedAt)}</span>
       ),
     },
   ];

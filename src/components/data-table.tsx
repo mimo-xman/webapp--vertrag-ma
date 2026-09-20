@@ -308,7 +308,7 @@ export function DataTable<T extends { _id: string }>({
                 onChange={(v) => setDatePart(df.prefix, "from", v)}
                 placeholder={t("common.dateFrom")}
                 maxDate={FILTER_MAX_DATE}
-                className="h-7 w-[8.5rem] px-2 text-xs"
+                className="h-7 w-[9.5rem] px-2 text-xs"
               />
               <span className="text-xs text-muted-foreground">→</span>
               <DatePicker
@@ -317,7 +317,7 @@ export function DataTable<T extends { _id: string }>({
                 onChange={(v) => setDatePart(df.prefix, "to", v)}
                 placeholder={t("common.dateTo")}
                 maxDate={FILTER_MAX_DATE}
-                className="h-7 w-[8.5rem] px-2 text-xs"
+                className="h-7 w-[9.5rem] px-2 text-xs"
               />
               {active && (
                 <Button

@@ -1,7 +1,7 @@
 // Supplementary e2e tests for the 2026-09-20 features:
 //   1. usage_log — every send recorded immediately with its timestamp
 //   2. daily_limit — sender stops at its limit, remaining postulations
-//      are picked by other senders or marked re_execute
+//      are picked by other senders or STAY en_attente (never auto-flipped)
 //   3. annulee_admin — a canceled postulation is never executed
 //   4. scheduledFrom/scheduledTo — the wave only claims the interval
 //   5. re-execute window — only today-or-past scheduled postulations
@@ -140,8 +140,8 @@ async function main() {
     )
   );
 
-  // ── TEST B: daily_limit — stop at limit, remaining → re_execute ──────
-  console.log("\n[TEST B] daily_limit — arrêt propre + basculement");
+  // ── TEST B: daily_limit — stop at limit, remaining STAY en_attente ─
+  console.log("\n[TEST B] daily_limit — arrêt propre + conservation en attente");
   const senderB = await MailSender.create({
     name: "Sender-B",
     type: "smtp",
@@ -171,12 +171,12 @@ async function main() {
   check("sender B : in_use libéré", senderBAfter?.in_use === false);
   check("sender B : actif", senderBAfter?.active === true);
   check(
-    "les restantes sont marquées re_execute",
-    (await Postulation.countDocuments({ status: "re_execute" })) === 2
+    "les restantes RESTENT en_attente (aucun passage automatique en re_execute)",
+    (await Postulation.countDocuments({ status: "en_attente" })) === 2
   );
   check(
-    "plus aucune en_attente",
-    (await Postulation.countDocuments({ status: "en_attente" })) === 0
+    "aucune postulation re_execute créée par la limite quotidienne",
+    (await Postulation.countDocuments({ status: "re_execute" })) === 0
   );
 
   // ── TEST C: annulee_admin never claimed ──────────────────────────────
@@ -204,7 +204,7 @@ async function main() {
     stillCanceled?.status === "annulee_admin" && stillCanceled?.posted_at === null
   );
   check(
-    "les re_execute restantes ont pu être traitées sans toucher l'annulée",
+    "les restantes (en_attente) ont pu être traitées sans toucher l'annulée",
     summaryC.sent >= 0
   );
 
