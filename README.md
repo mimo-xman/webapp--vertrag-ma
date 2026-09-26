@@ -90,6 +90,8 @@ bun run dev
 
 ### Production environment
 
+Dokploy production builds use Nixpacks with Node.js 20 and the npm lockfile.
+
 | Variable | Usage |
 |---|---|
 | `MONGODB_URI` + `DB_NAME` | Database (required) |
