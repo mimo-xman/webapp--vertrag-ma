@@ -1,6 +1,6 @@
 # Vertrag.ma
 
-Next.js web application that sends automatic job applications to German companies : from Morocco.
+Next.js web application that sends automatic job applications to German companies from Morocco.
 
 **Services:** automatic applications (postulations) · professional dossier preparation (20 $) · diploma translation.
 
